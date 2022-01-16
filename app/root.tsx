@@ -28,7 +28,6 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Link to="/posts">Posts</Link>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
