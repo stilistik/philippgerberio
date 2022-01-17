@@ -1,18 +1,26 @@
-import { Post } from "@prisma/client";
+import { Post, User } from "@prisma/client";
 import { Link, LoaderFunction, Outlet, useLoaderData } from "remix";
 import { PageLayout } from "~/components/PageLayout";
-import { db } from "~/utils/db";
-import { requireUserId } from "~/utils/session";
+import { db } from "~/utils/db.server";
+import { getUser, requireLoggedInUser } from "~/utils/session.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  await requireUserId(request, "/admin");
-  return db.post.findMany();
+  const userId = await requireLoggedInUser(request);
+  const hasUser = Boolean(userId);
+  const posts = await db.post.findMany();
+  return { hasUser, posts };
 };
 
+interface LoaderData {
+  posts: Post[];
+  hasUser: boolean;
+}
+
 export default function Admin() {
-  const posts = useLoaderData<Post[]>();
+  const { posts, hasUser } = useLoaderData<LoaderData>();
+
   return (
-    <PageLayout>
+    <PageLayout showLogout={hasUser}>
       <nav>
         <ul>
           {posts.map((post) => (

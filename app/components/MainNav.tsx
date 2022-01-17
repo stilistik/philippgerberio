@@ -34,21 +34,34 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   );
 };
 
-export const MainNav = () => {
+interface MainNavProps {
+  showLogout?: boolean;
+}
+
+export const MainNav = ({ showLogout = false }: MainNavProps) => {
   return (
-    <div className="flex items-center gap-10">
-      <Link to="/">
-        <Button
-          variant="center"
-          className="rounded-full text-4xl font-medium flex justify-center pt-2"
-          style={{ width: 70, height: 70 }}
-        >
-          pg
-        </Button>
-      </Link>
-      <NavLink to="/projects">Projects</NavLink>
-      <NavLink to="/posts">Blog</NavLink>
-      <NavLink to="/about">About</NavLink>
+    <div className="flex justify-between">
+      <div className="flex items-center gap-10">
+        <Link to="/" className="mr-10">
+          <Button
+            variant="center"
+            className="rounded-full text-4xl font-medium flex justify-center pt-2"
+            style={{ width: 70, height: 70 }}
+          >
+            pg
+          </Button>
+        </Link>
+        <NavLink to="/projects">Projects</NavLink>
+        <NavLink to="/posts">Blog</NavLink>
+        <NavLink to="/about">About</NavLink>
+      </div>
+      {showLogout && (
+        <form action="/logout" method="post">
+          <Button type="submit" className="py-1 px-2 -mt-1">
+            Logout
+          </Button>
+        </form>
+      )}
     </div>
   );
 };

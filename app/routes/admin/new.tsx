@@ -2,12 +2,12 @@ import { ActionFunction, Form, redirect } from "remix";
 import { Button } from "~/components/Button";
 import { Input } from "~/components/Input";
 import { TextArea } from "~/components/TextArea";
-import { db } from "~/utils/db";
-import { badRequest } from "~/utils/routing";
-import { requireUserId } from "~/utils/session";
+import { db } from "~/utils/db.server";
+import { badRequest } from "~/utils/routing.server";
+import { requireLoggedInUser } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const userId = await requireUserId(request, "/admin/login");
+  const userId = await requireLoggedInUser(request, "/admin/login");
 
   const formData = await request.formData();
 

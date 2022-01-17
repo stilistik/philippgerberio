@@ -2,7 +2,7 @@ import { Post } from "@prisma/client";
 import { LoaderFunction, useLoaderData } from "remix";
 import invariant from "tiny-invariant";
 import { PageLayout } from "~/components/PageLayout";
-import { db } from "~/utils/db";
+import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.slug, "expected params.slug");

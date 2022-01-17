@@ -1,7 +1,7 @@
 import { Post } from "@prisma/client";
 import { Link, useLoaderData } from "remix";
 import { PageLayout } from "~/components/PageLayout";
-import { db } from "~/utils/db";
+import { db } from "~/utils/db.server";
 
 export function loader() {
   return db.post.findMany();

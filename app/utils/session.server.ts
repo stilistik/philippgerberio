@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import { createCookieSessionStorage, redirect } from "remix";
 import invariant from "tiny-invariant";
-import { db } from "./db";
+import { db } from "./db.server";
 
 const sessionSecret = process.env.SESSION_SECRET;
 invariant(sessionSecret, "Session secret must be defined at .env");
@@ -39,7 +39,7 @@ export async function getUserId(request: Request) {
   return userId;
 }
 
-export async function requireUserId(
+export async function requireLoggedInUser(
   request: Request,
   redirectTo: string = new URL(request.url).pathname
 ) {
@@ -50,6 +50,22 @@ export async function requireUserId(
     throw redirect(`/login?${searchParams}`);
   }
   return userId;
+}
+
+export async function getUser(request: Request) {
+  const userId = await getUserId(request);
+  if (typeof userId !== "string") {
+    return null;
+  }
+
+  try {
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+    return user;
+  } catch {
+    throw logout(request);
+  }
 }
 
 type LoginForm = {
@@ -67,4 +83,13 @@ export async function login({ username, password }: LoginForm) {
   if (!isCorrectPassword) return null;
 
   return user;
+}
+
+export async function logout(request: Request) {
+  const session = await storage.getSession(request.headers.get("Cookie"));
+  return redirect("/login", {
+    headers: {
+      "Set-Cookie": await storage.destroySession(session),
+    },
+  });
 }
