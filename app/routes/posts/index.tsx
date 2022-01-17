@@ -1,5 +1,6 @@
 import { Post } from "@prisma/client";
 import { Link, useLoaderData } from "remix";
+import { PageLayout } from "~/components/PageLayout";
 import { getPosts } from "~/post";
 
 export function loader() {
@@ -10,7 +11,7 @@ export default function Index() {
   const posts = useLoaderData<Post[]>();
 
   return (
-    <div className="container mx-auto px-10 py-20">
+    <PageLayout>
       {posts.map((post) => {
         return (
           <div key={post.id} className="my-10">
@@ -22,6 +23,6 @@ export default function Index() {
           </div>
         );
       })}
-    </div>
+    </PageLayout>
   );
 }

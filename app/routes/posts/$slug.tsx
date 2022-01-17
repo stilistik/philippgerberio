@@ -1,6 +1,7 @@
 import { Post } from "@prisma/client";
 import { LoaderFunction, useLoaderData } from "remix";
 import invariant from "tiny-invariant";
+import { PageLayout } from "~/components/PageLayout";
 import { getPost } from "~/post";
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -11,10 +12,10 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Post() {
   const post = useLoaderData<Post>();
   return (
-    <div className="container mx-auto">
-      <h1>{post.title}</h1>
-      <div>{post.description}</div>
-      <div>{post.fullText}</div>
-    </div>
+    <PageLayout>
+      <h1 className="font-black text-6xl text-red-400">{post.title}</h1>
+      <h3 className="font-black text-2xl text-gray-400">{post.description}</h3>
+      <article>{post.fullText}</article>
+    </PageLayout>
   );
 }
