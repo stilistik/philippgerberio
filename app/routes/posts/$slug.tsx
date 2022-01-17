@@ -2,11 +2,11 @@ import { Post } from "@prisma/client";
 import { LoaderFunction, useLoaderData } from "remix";
 import invariant from "tiny-invariant";
 import { PageLayout } from "~/components/PageLayout";
-import { getPost } from "~/post";
+import { db } from "~/utils/db";
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.slug, "expected params.slug");
-  return getPost(params.slug);
+  return db.post.findUnique({ where: { slug: params.slug } });
 };
 
 export default function Post() {

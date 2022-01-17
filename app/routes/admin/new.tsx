@@ -2,9 +2,13 @@ import { ActionFunction, Form, redirect } from "remix";
 import { Button } from "~/components/Button";
 import { Input } from "~/components/Input";
 import { TextArea } from "~/components/TextArea";
-import { createPost } from "~/post";
+import { db } from "~/utils/db";
+import { badRequest } from "~/utils/routing";
+import { requireUserId } from "~/utils/session";
 
 export const action: ActionFunction = async ({ request }) => {
+  const userId = await requireUserId(request, "/admin/login");
+
   const formData = await request.formData();
 
   const title = formData.get("title");
@@ -12,17 +16,20 @@ export const action: ActionFunction = async ({ request }) => {
   const fullText = formData.get("fullText");
   const description = formData.get("description");
 
-  const errors: Record<string, boolean> = {};
-  if (!title) errors.title = true;
-  if (!slug) errors.slug = true;
-  if (!fullText) errors.fullText = true;
-  if (!description) errors.description = true;
-
-  if (Object.keys(errors).length) {
-    return errors;
+  if (
+    typeof title !== "string" ||
+    typeof slug !== "string" ||
+    typeof fullText !== "string" ||
+    typeof description !== "string"
+  ) {
+    return badRequest({
+      formError: `Form not submitted correctly.`,
+    });
   }
 
-  await createPost({ title, slug, description, fullText, authorId: 1 });
+  await db.post.create({
+    data: { title, slug, description, fullText, authorId: userId },
+  });
 
   return redirect("/posts/" + slug);
 };

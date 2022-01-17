@@ -1,10 +1,10 @@
 import { Post } from "@prisma/client";
 import { Link, useLoaderData } from "remix";
 import { PageLayout } from "~/components/PageLayout";
-import { getPosts } from "~/post";
+import { db } from "~/utils/db";
 
 export function loader() {
-  return getPosts();
+  return db.post.findMany();
 }
 
 export default function Index() {

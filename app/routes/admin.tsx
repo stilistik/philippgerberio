@@ -1,10 +1,12 @@
 import { Post } from "@prisma/client";
-import { Link, Outlet, useLoaderData } from "remix";
+import { Link, LoaderFunction, Outlet, useLoaderData } from "remix";
 import { PageLayout } from "~/components/PageLayout";
-import { getPosts } from "~/post";
+import { db } from "~/utils/db";
+import { requireUserId } from "~/utils/session";
 
-export const loader = () => {
-  return getPosts();
+export const loader: LoaderFunction = async ({ request }) => {
+  await requireUserId(request, "/admin");
+  return db.post.findMany();
 };
 
 export default function Admin() {

@@ -532,10 +532,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   margin-bottom: 2.5rem;
 }
 
-.mt-5 {
-  margin-top: 1.25rem;
-}
-
 .mt-6 {
   margin-top: 1.5rem;
 }
@@ -544,16 +540,12 @@ Ensure the default browser behavior of the `hidden` attribute.
   display: flex;
 }
 
+.hidden {
+  display: none;
+}
+
 .w-full {
   width: 100%;
-}
-
-.w-60 {
-  width: 15rem;
-}
-
-.w-80 {
-  width: 20rem;
 }
 
 .w-96 {
@@ -772,26 +764,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   left: -10%;
 }
 
-.after\:-top-\[400px\]::after {
-  content: var(--tw-content);
-  top: -400px;
-}
-
-.after\:-left-\[400px\]::after {
-  content: var(--tw-content);
-  left: -400px;
-}
-
-.after\:-left-\[200px\]::after {
-  content: var(--tw-content);
-  left: -200px;
-}
-
-.after\:-top-\[600px\]::after {
-  content: var(--tw-content);
-  top: -600px;
-}
-
 .after\:-z-10::after {
   content: var(--tw-content);
   z-index: -10;
@@ -802,44 +774,19 @@ Ensure the default browser behavior of the `hidden` attribute.
   height: 120%;
 }
 
-.after\:h-\[200\%\]::after {
-  content: var(--tw-content);
-  height: 200%;
-}
-
-.after\:h-\[800px\]::after {
-  content: var(--tw-content);
-  height: 800px;
-}
-
 .after\:w-\[120\%\]::after {
   content: var(--tw-content);
   width: 120%;
 }
 
-.after\:w-\[200\%\]::after {
+.after\:origin-center::after {
   content: var(--tw-content);
-  width: 200%;
-}
-
-.after\:w-\[800px\]::after {
-  content: var(--tw-content);
-  width: 800px;
+  transform-origin: center;
 }
 
 .after\:origin-left::after {
   content: var(--tw-content);
   transform-origin: left;
-}
-
-.after\:origin-top-left::after {
-  content: var(--tw-content);
-  transform-origin: top left;
-}
-
-.after\:origin-center::after {
-  content: var(--tw-content);
-  transform-origin: center;
 }
 
 .after\:scale-0::after {
@@ -855,12 +802,6 @@ Ensure the default browser behavior of the `hidden` attribute.
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
 }
 
-.after\:scale-y-0::after {
-  content: var(--tw-content);
-  --tw-scale-y: 0;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
 .after\:rounded-full::after {
   content: var(--tw-content);
   border-radius: 9999px;
@@ -872,39 +813,11 @@ Ensure the default browser behavior of the `hidden` attribute.
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
 }
 
-.after\:opacity-0::after {
-  content: var(--tw-content);
-  opacity: 0;
-}
-
-.after\:blur-sm::after {
-  content: var(--tw-content);
-  --tw-blur: blur(4px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.after\:blur-xl::after {
-  content: var(--tw-content);
-  --tw-blur: blur(24px);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
-.after\:blur-0::after {
-  content: var(--tw-content);
-  --tw-blur: blur(0);
-  filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
-}
-
 .after\:transition-all::after {
   content: var(--tw-content);
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
-}
-
-.after\:duration-300::after {
-  content: var(--tw-content);
-  transition-duration: 300ms;
 }
 
 .after\:duration-500::after {
@@ -928,15 +841,4 @@ Ensure the default browser behavior of the `hidden` attribute.
   content: var(--tw-content);
   --tw-scale-x: 1;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.hover\:after\:scale-y-100:hover::after {
-  content: var(--tw-content);
-  --tw-scale-y: 1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-}
-
-.hover\:after\:opacity-100:hover::after {
-  content: var(--tw-content);
-  opacity: 1;
 }
