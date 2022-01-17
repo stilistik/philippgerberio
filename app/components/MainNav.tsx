@@ -39,7 +39,7 @@ export const MainNav = () => {
     <div className="flex items-center gap-10">
       <Link to="/">
         <Button
-          animation="center"
+          variant="center"
           className="rounded-full text-4xl font-medium flex justify-center pt-2"
           style={{ width: 70, height: 70 }}
         >
