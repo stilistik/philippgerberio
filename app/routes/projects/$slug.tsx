@@ -1,10 +1,11 @@
 import { Project } from "@prisma/client";
 import { LoaderFunction, useLoaderData } from "remix";
 import invariant from "tiny-invariant";
-import { PageLayout } from "~/components/PageLayout";
+import { PageLayout } from "~/components//main/PageLayout";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { parsemd } from "~/utils/md.server";
+import { MainHeader } from "~/components/layout/MainHeader";
 
 interface LoaderData {
   project: Project;
@@ -24,12 +25,12 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Project() {
   const { project, html } = useLoaderData<LoaderData>();
   return (
-    <PageLayout>
-      <h1 className="font-black text-6xl text-red-400 mb-6">{project.title}</h1>
+    <>
+      <MainHeader>{project.title}</MainHeader>
       <article
         className="markdown"
         dangerouslySetInnerHTML={{ __html: html }}
       />
-    </PageLayout>
+    </>
   );
 }

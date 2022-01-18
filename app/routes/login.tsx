@@ -1,7 +1,7 @@
 import { ActionFunction, Form, useSearchParams } from "remix";
-import { Button } from "~/components/Button";
-import { Input } from "~/components/Input";
-import { PageLayout } from "~/components/PageLayout";
+import { Button } from "~/components/interaction/Button";
+import { Input } from "~/components/interaction/Input";
+import { PageLayout } from "~/components/main/PageLayout";
 import { badRequest } from "~/utils/routing.server";
 import { createUserSession, login } from "~/utils/session.server";
 

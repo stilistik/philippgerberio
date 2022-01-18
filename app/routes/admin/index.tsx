@@ -1,5 +1,5 @@
 import { Link, redirect } from "remix";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/interaction/Button";
 
 export const loader = () => {
   return redirect("/admin/projects");

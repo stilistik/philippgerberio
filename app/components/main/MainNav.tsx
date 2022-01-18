@@ -1,7 +1,7 @@
 import { Link, useLocation } from "remix";
 import clx from "classnames";
 import React from "react";
-import { Button } from "./Button";
+import { Button } from "../interaction/Button";
 
 interface NavLinkProps {
   to: string;

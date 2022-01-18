@@ -1,6 +1,6 @@
 import { Project } from "@prisma/client";
 import { Link, LoaderFunction, useLoaderData } from "remix";
-import { Button } from "~/components/Button";
+import { Button } from "~/components/interaction/Button";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {

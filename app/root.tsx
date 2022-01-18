@@ -9,6 +9,7 @@ import {
 import type { MetaFunction } from "remix";
 import styles from "./tailwind.css";
 import highlights from "highlight.js/styles/rainbow.css";
+import { PageLayout } from "./components/main/PageLayout";
 
 export function links() {
   return [
@@ -37,7 +38,9 @@ export default function App() {
         />
       </head>
       <body>
-        <Outlet />
+        <PageLayout>
+          <Outlet />
+        </PageLayout>
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

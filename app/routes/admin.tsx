@@ -1,7 +1,4 @@
-import { Post, User } from "@prisma/client";
-import { Link, LoaderFunction, Outlet, redirect, useLoaderData } from "remix";
-import { PageLayout } from "~/components/PageLayout";
-import { db } from "~/utils/db.server";
+import { LoaderFunction, Outlet, useLoaderData } from "remix";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 export const loader: LoaderFunction = async ({ request }) => {
@@ -17,9 +14,5 @@ interface LoaderData {
 export default function Admin() {
   const { hasUser } = useLoaderData<LoaderData>();
 
-  return (
-    <PageLayout showLogout={hasUser}>
-      <Outlet />
-    </PageLayout>
-  );
+  return <Outlet />;
 }

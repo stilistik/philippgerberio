@@ -1,7 +1,7 @@
 import { Post } from "@prisma/client";
 import { Link, useLoaderData } from "remix";
-import { Button } from "~/components/Button";
-import { PageLayout } from "~/components/PageLayout";
+import { Button } from "~/components/interaction/Button";
+import { PageLayout } from "~/components/main/PageLayout";
 import { db } from "~/utils/db.server";
 
 export function loader() {

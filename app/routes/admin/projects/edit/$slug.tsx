@@ -7,9 +7,9 @@ import {
   useLoaderData,
 } from "remix";
 import invariant from "tiny-invariant";
-import { Button } from "~/components/Button";
-import { Input } from "~/components/Input";
-import { TextArea } from "~/components/TextArea";
+import { Button } from "~/components/interaction/Button";
+import { Input } from "~/components/interaction/Input";
+import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
