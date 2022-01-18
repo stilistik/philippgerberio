@@ -16,8 +16,7 @@ export default function Projects() {
             <div
               className="h-80 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center text-white font-black text-2xl"
               style={{
-                backgroundImage:
-                  "url(https://www.littleleloo.com/wp-content/uploads/Colorful-Abstract-Painting-Against-All-Odds-1-960x720.jpg.webp)",
+                backgroundImage: `url(${project.thumbnail})`,
                 backgroundSize: "cover",
               }}
             >
