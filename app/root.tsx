@@ -8,12 +8,12 @@ import {
 } from "remix";
 import type { MetaFunction } from "remix";
 import styles from "./tailwind.css";
-import globalStyles from "./styles/global.css";
+import highlights from "highlight.js/styles/rainbow.css";
 
 export function links() {
   return [
     { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: globalStyles },
+    { rel: "stylesheet", href: highlights },
   ];
 }
 
