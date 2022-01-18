@@ -7,10 +7,7 @@ export function Input(props: InputProps) {
   return (
     <input
       {...rest}
-      className={clx(
-        "border rounded-xl shadow-2xl p-3 focus:outline-gray-600",
-        className
-      )}
+      className={clx("border rounded-xl p-3 focus:outline-gray-600", className)}
     />
   );
 }

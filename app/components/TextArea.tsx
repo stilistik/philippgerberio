@@ -8,7 +8,7 @@ export function TextArea(props: TextAreaProps) {
   return (
     <textarea
       {...rest}
-      className={clx("border rounded-xl shadow-2xl p-3", className)}
+      className={clx("border rounded-xl p-3 focus:outline-gray-600", className)}
     />
   );
 }

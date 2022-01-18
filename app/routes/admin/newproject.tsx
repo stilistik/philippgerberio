@@ -27,26 +27,26 @@ export const action: ActionFunction = async ({ request }) => {
     });
   }
 
-  await db.post.create({
+  await db.project.create({
     data: { title, slug, description, fullText, authorId: userId },
   });
 
-  return redirect("/posts/" + slug);
+  return redirect("/projects/" + slug);
 };
 
 export default function NewPost() {
   return (
     <Form method="post" className="flex flex-col gap-5 w-full">
       <p>
-        <label htmlFor="title">Post Title:</label>
+        <label htmlFor="title">Project Title</label>
         <Input type="text" id="title" name="title" className="w-full" />
       </p>
       <p>
-        <label htmlFor="slug">Post Slug:</label>
+        <label htmlFor="slug">Project Slug</label>
         <Input type="text" id="slug" name="slug" className="w-full" />
       </p>
       <p>
-        <label htmlFor="description">Description:</label>
+        <label htmlFor="description">Description</label>
         <TextArea
           id="description"
           rows={5}
@@ -55,11 +55,11 @@ export default function NewPost() {
         />
       </p>
       <p>
-        <label htmlFor="fullText">Full Text:</label>
+        <label htmlFor="fullText">Full Text</label>
         <TextArea id="fullText" rows={10} name="fullText" className="w-full" />
       </p>
       <p>
-        <Button type="submit">Create Post</Button>
+        <Button type="submit">Create Project</Button>
       </p>
     </Form>
   );

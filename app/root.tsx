@@ -7,11 +7,14 @@ import {
   ScrollRestoration,
 } from "remix";
 import type { MetaFunction } from "remix";
-import { Link } from "remix";
 import styles from "./tailwind.css";
+import globalStyles from "./styles/global.css";
 
 export function links() {
-  return [{ rel: "stylesheet", href: styles }];
+  return [
+    { rel: "stylesheet", href: styles },
+    { rel: "stylesheet", href: globalStyles },
+  ];
 }
 
 export const meta: MetaFunction = () => {
