@@ -1,7 +1,6 @@
 import { Project } from "@prisma/client";
 import { LoaderFunction, useLoaderData } from "remix";
 import invariant from "tiny-invariant";
-import { PageLayout } from "~/components//main/PageLayout";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { parsemd } from "~/utils/md.server";

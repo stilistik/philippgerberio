@@ -1,15 +1,18 @@
 import {
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "remix";
 import type { MetaFunction } from "remix";
 import styles from "./tailwind.css";
 import highlights from "highlight.js/styles/rainbow.css";
 import { PageLayout } from "./components/main/PageLayout";
+import { getUserId } from "./utils/session.server";
 
 export function links() {
   return [
@@ -22,7 +25,14 @@ export const meta: MetaFunction = () => {
   return { title: "New Remix App" };
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const userId = await getUserId(request);
+  const hasUser = Boolean(userId);
+  return hasUser;
+};
+
 export default function App() {
+  const hasUser = useLoaderData<boolean>();
   return (
     <html lang="en">
       <head>
@@ -38,7 +48,7 @@ export default function App() {
         />
       </head>
       <body>
-        <PageLayout>
+        <PageLayout showLogout={hasUser}>
           <Outlet />
         </PageLayout>
         <ScrollRestoration />

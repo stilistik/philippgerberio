@@ -96,7 +96,7 @@ export default function EditProject() {
         />
       </p>
       <p>
-        <Button type="submit">Create Project</Button>
+        <Button type="submit">Update Project</Button>
       </p>
     </Form>
   );
