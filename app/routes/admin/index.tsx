@@ -1,5 +1,9 @@
-import { Link } from "remix";
+import { Link, redirect } from "remix";
 import { Button } from "~/components/Button";
+
+export const loader = () => {
+  return redirect("/admin/projects");
+};
 
 export default function AdminIndex() {
   return (

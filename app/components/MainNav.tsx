@@ -40,7 +40,7 @@ interface MainNavProps {
 
 export const MainNav = ({ showLogout = false }: MainNavProps) => {
   return (
-    <div className="flex justify-between">
+    <div className="flex justify-between items-center">
       <div className="flex items-center gap-10">
         <Link to="/" className="mr-10">
           <Button

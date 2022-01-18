@@ -503,6 +503,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h1 {
+  margin-bottom: 1.25rem;
   font-size: 3rem;
   line-height: 1;
   font-weight: 900;
@@ -511,6 +512,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h2 {
+  margin-bottom: 1rem;
   font-size: 2.25rem;
   line-height: 2.5rem;
   font-weight: 900;
@@ -519,6 +521,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h3 {
+  margin-bottom: 0.75rem;
   font-size: 1.875rem;
   line-height: 2.25rem;
   font-weight: 900;
@@ -527,6 +530,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h4 {
+  margin-bottom: 0.75rem;
   font-size: 1.5rem;
   line-height: 2rem;
   font-weight: 900;
@@ -535,6 +539,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h5 {
+  margin-bottom: 0.75rem;
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 900;
@@ -543,6 +548,7 @@ Ensure the default browser behavior of the `hidden` attribute.
 }
 
 .markdown h6 {
+  margin-bottom: 0.75rem;
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 900;
@@ -550,9 +556,13 @@ Ensure the default browser behavior of the `hidden` attribute.
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
+.markdown p {
+  margin-bottom: 0.75rem;
+}
+
 .markdown pre {
-  margin-top: 2.5rem;
-  margin-bottom: 2.5rem;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
   border-radius: 1rem;
   --tw-bg-opacity: 1;
   background-color: rgb(75 85 99 / var(--tw-bg-opacity));
@@ -604,6 +614,10 @@ Ensure the default browser behavior of the `hidden` attribute.
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.mb-6 {
+  margin-bottom: 1.5rem;
 }
 
 .flex {

@@ -34,7 +34,7 @@ export const action: ActionFunction = async ({ request }) => {
   return redirect("/projects/" + slug);
 };
 
-export default function NewPost() {
+export default function NewProject() {
   return (
     <Form method="post" className="flex flex-col gap-5 w-full">
       <p>
