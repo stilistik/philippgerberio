@@ -34,4 +34,8 @@
   .markdown pre {
     @apply bg-gray-600 text-white p-5 rounded-2xl shadow-2xl my-5;
   }
+
+  .markdown img {
+    @apply rounded-2xl shadow-2xl my-5;
+  }
 }

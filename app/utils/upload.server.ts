@@ -4,17 +4,15 @@ import path from "path";
 
 const UPLOAD_DIR = "public/uploads";
 
-export const uploadHandler: UploadHandler = ({ stream, filename }) => {
-  return new Promise((resolve, reject) => {
-    const fileURL = `uploads/${filename}`;
-    const filepath = path.resolve(UPLOAD_DIR, filename);
-    stream
-      .pipe(fs.createWriteStream(filepath))
-      .on("error", (error) => {
-        reject(error);
-      })
-      .on("finish", () => {
-        resolve(fileURL);
-      });
-  });
+export const uploadHandler: UploadHandler = async ({ stream, filename }) => {
+  const fileURL = `uploads/${filename}`;
+  const filepath = path.resolve(UPLOAD_DIR, filename);
+
+  // Get the file as a buffer
+  const chunks = [];
+  for await (const chunk of stream) chunks.push(chunk);
+  const buffer = Buffer.concat(chunks);
+
+  fs.writeFileSync(filepath, buffer);
+  return fileURL;
 };

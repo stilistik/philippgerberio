@@ -44,7 +44,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
       <div className="flex items-center gap-10">
         <Link to="/" className="mr-10">
           <Button
-            variant="center"
+            variant="round"
             className="rounded-full text-4xl font-medium flex justify-center pt-2"
             style={{ width: 70, height: 70 }}
           >
@@ -57,7 +57,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
       </div>
       {showLogout && (
         <form action="/logout" method="post">
-          <Button type="submit" className="py-1 px-2 -mt-1">
+          <Button type="submit" size="small" className="-mt-1">
             Logout
           </Button>
         </form>

@@ -6,6 +6,7 @@ import {
 } from "remix";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
+import { MarkdownField } from "~/components/interaction/MarkdownField";
 import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
@@ -14,6 +15,8 @@ import { uploadHandler } from "~/utils/upload.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
+
+  console.log(request);
 
   const formData = await unstable_parseMultipartFormData(
     request,
@@ -53,6 +56,20 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function NewProject() {
+  function handleChange(e: any) {
+    const file = e.currentTarget.files[0];
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    fetch("/upload", {
+      method: "POST",
+      body: formData,
+    }).then((response) => {
+      console.log(response);
+    });
+  }
+
   return (
     <Form
       method="post"
@@ -69,7 +86,14 @@ export default function NewProject() {
       </p>
       <p>
         <label htmlFor="thumbnail">Thumbnail</label>
-        <Input type="file" id="thumbnail" name="thumbnail" className="w-full" />
+        <Input
+          type="file"
+          id="thumbnail"
+          name="thumbnail"
+          accept="image/*"
+          className="w-full"
+          onChange={handleChange}
+        />
       </p>
       <p>
         <label htmlFor="description">Description</label>
@@ -82,7 +106,12 @@ export default function NewProject() {
       </p>
       <p>
         <label htmlFor="fullText">Full Text</label>
-        <TextArea id="fullText" rows={10} name="fullText" className="w-full" />
+        <MarkdownField
+          id="fullText"
+          rows={10}
+          name="fullText"
+          className="w-full"
+        />
       </p>
       <p>
         <Button type="submit">Create Project</Button>

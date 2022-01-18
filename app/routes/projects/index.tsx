@@ -1,5 +1,6 @@
 import { Project } from "@prisma/client";
 import { Link, LoaderFunction, useLoaderData } from "remix";
+import { ProjectElement } from "~/components/elements/ProjectElement";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
@@ -13,15 +14,7 @@ export default function Projects() {
       {projects.map((project) => {
         return (
           <Link to={`/projects/${project.slug}`} key={project.id}>
-            <div
-              className="h-80 bg-gray-200 rounded-2xl shadow-2xl flex items-center justify-center text-white font-black text-2xl"
-              style={{
-                backgroundImage: `url(${project.thumbnail})`,
-                backgroundSize: "cover",
-              }}
-            >
-              {project.title}
-            </div>
+            <ProjectElement project={project} />
           </Link>
         );
       })}
