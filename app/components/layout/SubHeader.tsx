@@ -10,7 +10,7 @@ export const SubHeader: React.FC<SubHeaderProps> = ({
 }) => {
   return (
     <h3
-      className={clx("font-black text-3xl text-gray-400 mb-6", className)}
+      className={clx("font-base text-3xl text-gray-400 mb-6", className)}
       {...rest}
     >
       {children}

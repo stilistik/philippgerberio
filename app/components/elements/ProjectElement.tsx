@@ -15,7 +15,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
       <div
         className="h-80 border-b"
         style={{
-          backgroundImage: `url(/${project.thumbnail})`,
+          backgroundImage: `url(${project.thumbnail})`,
           backgroundSize: "cover",
           backgroundPosition: "center center",
         }}
@@ -23,6 +23,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
       <div className="p-3">
         <SubHeader>{project.title}</SubHeader>
         <p>{project.description}</p>
+        {children}
       </div>
     </div>
   );

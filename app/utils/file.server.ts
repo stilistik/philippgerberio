@@ -18,7 +18,8 @@ export const parseFormData = (request: Request) => {
 
 export const deletefile = (filePath: string) => {
   try {
-    fs.unlinkSync(path.resolve("public", filePath));
+    const p = path.resolve(UPLOAD_DIR, filePath.replace("/uploads/", ""));
+    fs.unlinkSync(p);
   } catch (error) {
     console.log(error);
   }

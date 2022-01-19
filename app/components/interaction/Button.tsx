@@ -19,18 +19,18 @@ export function Button({
 
   let sizeClasses = "";
   if (size === "large") {
-    sizeClasses = "text-2xl px-6 py-4";
+    sizeClasses = "text-2xl px-6 py-4 rounded-2xl";
   } else if (size === "small") {
-    sizeClasses = "text-xl px-4 py-1.5";
+    sizeClasses = "text-xl px-4 py-1.5 rounded-xl";
   } else {
-    sizeClasses = "text-xl px-6 py-4";
+    sizeClasses = "text-xl px-6 py-4 rounded-2xl";
   }
 
   return (
     <button
       {...rest}
       className={clx(
-        "relative overflow-hidden border-4 border-gray-600 rounded-2xl shadow-2xl transition-all bezier duration-300 font-black z-0 bg-gray-600 text-white hover:text-gray-600 after:w-[120%] after:h-[120%] after:rounded-full after:absolute after:-top-[10%] after:-left-[10%] after:bg-white  after:transition-all after:duration-500 after:bezier after:-z-10",
+        "relative overflow-hidden border-4 border-gray-600 shadow-2xl transition-all bezier duration-300 font-black z-0 bg-gray-600 text-white hover:text-gray-600 after:w-[120%] after:h-[120%] after:rounded-full after:absolute after:-top-[10%] after:-left-[10%] after:bg-white  after:transition-all after:duration-500 after:bezier after:-z-10",
         variantClasses,
         sizeClasses,
         className

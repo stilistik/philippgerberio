@@ -9,7 +9,7 @@ export const PageLayout: React.FC<PageLayoutProps> = ({
   children,
 }) => {
   return (
-    <div className="container mx-auto px-40 py-20">
+    <div className="container mx-auto px-60 py-20">
       <MainNav showLogout={showLogout} />
       <main className="pt-10 w-full">{children}</main>
     </div>

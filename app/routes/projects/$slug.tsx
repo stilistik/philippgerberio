@@ -5,6 +5,7 @@ import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { parsemd } from "~/utils/md.server";
 import { MainHeader } from "~/components/layout/MainHeader";
+import { SubHeader } from "~/components/layout/SubHeader";
 
 interface LoaderData {
   project: Project;
@@ -26,6 +27,14 @@ export default function Project() {
   return (
     <>
       <MainHeader>{project.title}</MainHeader>
+
+      <img
+        src={project.thumbnail}
+        className="w-full rounded-2xl border shadow-2xl mb-10"
+      />
+
+      <SubHeader>{project.description}</SubHeader>
+
       <article
         className="markdown"
         dangerouslySetInnerHTML={{ __html: html }}

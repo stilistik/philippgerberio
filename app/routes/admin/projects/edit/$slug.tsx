@@ -1,4 +1,5 @@
 import { Project } from "@prisma/client";
+import { NodeOnDiskFile } from "@remix-run/node";
 import {
   ActionFunction,
   Form,
@@ -12,35 +13,49 @@ import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
 import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
+import { parseFormData } from "~/utils/file.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
+  const formData = await parseFormData(request);
 
-  const formData = await request.formData();
+  console.log(await request.formData());
+  console.log(request.body);
 
   const id = formData.get("id");
   const title = formData.get("title");
   const slug = formData.get("slug");
   const fullText = formData.get("fullText");
   const description = formData.get("description");
+  const thumbnail = formData.get("thumbnail");
 
   if (
     typeof id !== "string" ||
     typeof title !== "string" ||
     typeof slug !== "string" ||
     typeof fullText !== "string" ||
-    typeof description !== "string"
+    typeof description !== "string" ||
+    !(thumbnail instanceof NodeOnDiskFile)
   ) {
     return badRequest({
       formError: `Form not submitted correctly.`,
     });
   }
 
+  console.log(thumbnail);
+
   await db.project.update({
     where: { id: id },
-    data: { title, slug, description, fullText, authorId: userId },
+    data: {
+      title,
+      slug,
+      description,
+      fullText,
+      thumbnail: thumbnail ? `/uploads/${thumbnail.name}` : undefined,
+      authorId: userId,
+    },
   });
 
   return redirect("/projects/" + slug);
@@ -54,7 +69,11 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function EditProject() {
   const project = useLoaderData<Project>();
   return (
-    <Form method="post" className="flex flex-col gap-5 w-full">
+    <Form
+      method="post"
+      encType="multipart/form-data"
+      className="flex flex-col gap-5 w-full"
+    >
       <input type="hidden" name="id" value={project.id} />
       <p>
         <label htmlFor="title">Project Title</label>
@@ -73,6 +92,16 @@ export default function EditProject() {
           id="slug"
           name="slug"
           defaultValue={project.slug}
+          className="w-full"
+        />
+      </p>
+      <p>
+        <label htmlFor="thumbnail">Thumbnail</label>
+        <Input
+          type="file"
+          id="thumbnail"
+          name="thumbnail"
+          accept="image/*"
           className="w-full"
         />
       </p>

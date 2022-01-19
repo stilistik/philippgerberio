@@ -36,6 +36,6 @@
   }
 
   .markdown img {
-    @apply rounded-2xl shadow-2xl my-5 mx-auto max-w-4xl;
+    @apply rounded-2xl shadow-2xl my-5 mx-auto max-w-3xl;
   }
 }

@@ -1,9 +1,4 @@
-import {
-  ActionFunction,
-  Form,
-  redirect,
-  unstable_parseMultipartFormData,
-} from "remix";
+import { ActionFunction, Form, redirect } from "remix";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
@@ -11,15 +6,12 @@ import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
-import { uploadHandler } from "~/utils/file.server";
+import { parseFormData } from "~/utils/file.server";
+import { NodeOnDiskFile } from "@remix-run/node";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
-
-  const formData = await unstable_parseMultipartFormData(
-    request,
-    uploadHandler
-  );
+  const formData = await parseFormData(request);
 
   const title = formData.get("title");
   const slug = formData.get("slug");
@@ -32,7 +24,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof slug !== "string" ||
     typeof fullText !== "string" ||
     typeof description !== "string" ||
-    typeof thumbnail !== "string"
+    !(thumbnail instanceof NodeOnDiskFile)
   ) {
     return badRequest({
       formError: `Form not submitted correctly.`,
@@ -45,7 +37,7 @@ export const action: ActionFunction = async ({ request }) => {
       slug,
       description,
       fullText,
-      thumbnail,
+      thumbnail: "/uploads/" + thumbnail.name,
       authorId: userId,
     },
   });
@@ -54,20 +46,6 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export default function NewProject() {
-  function handleChange(e: any) {
-    const file = e.currentTarget.files[0];
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    fetch("/upload", {
-      method: "POST",
-      body: formData,
-    }).then((response) => {
-      console.log(response);
-    });
-  }
-
   return (
     <Form
       method="post"
@@ -90,7 +68,6 @@ export default function NewProject() {
           name="thumbnail"
           accept="image/*"
           className="w-full"
-          onChange={handleChange}
         />
       </p>
       <p>

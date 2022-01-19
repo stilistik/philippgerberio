@@ -12,7 +12,7 @@ export default function Projects() {
   const projects = useLoaderData<Project[]>();
   return (
     <>
-      <p>
+      <p className="my-10">
         <Link to="newproject">
           <Button>New Project</Button>
         </Link>
@@ -21,9 +21,17 @@ export default function Projects() {
         {projects.map((project) => (
           <Link to={`edit/${project.slug}`} key={project.id}>
             <ProjectElement project={project}>
-              <form action={`delete/${project.slug}`} method="post">
-                <Button type="submit" onClick={(e) => e.stopPropagation()}>
-                  Delete Project
+              <form
+                action={`/admin/projects/delete/${project.slug}`}
+                method="post"
+              >
+                <Button
+                  type="submit"
+                  size="small"
+                  onClick={(e) => e.stopPropagation()}
+                  className="my-5"
+                >
+                  Delete
                 </Button>
               </form>
             </ProjectElement>
