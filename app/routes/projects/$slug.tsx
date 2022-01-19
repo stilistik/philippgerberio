@@ -30,7 +30,7 @@ export default function Project() {
 
       <img
         src={project.thumbnail}
-        className="w-full rounded-2xl border shadow-2xl mb-10"
+        className="w-full rounded-2xl border shadow-2xl mb-20"
       />
 
       <SubHeader>{project.description}</SubHeader>
