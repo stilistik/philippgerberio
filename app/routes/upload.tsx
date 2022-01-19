@@ -1,9 +1,14 @@
-import { ActionFunction, redirect } from "remix";
+import {
+  ActionFunction,
+  redirect,
+  unstable_parseMultipartFormData,
+} from "remix";
 import { uploadHandler } from "~/utils/upload.server";
 
 export const action: ActionFunction = async ({ request }) => {
-  const data = await (request as any).formData(uploadHandler);
-  return data.get("file");
+  const data = await unstable_parseMultipartFormData(request, uploadHandler);
+  const file: any = data.get("file");
+  return `uploads/${file.name}`;
 };
 
 export const loader = () => {

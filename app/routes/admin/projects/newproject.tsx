@@ -16,8 +16,6 @@ import { uploadHandler } from "~/utils/upload.server";
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
 
-  console.log(request);
-
   const formData = await unstable_parseMultipartFormData(
     request,
     uploadHandler

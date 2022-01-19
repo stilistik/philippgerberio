@@ -9,6 +9,7 @@ import {
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
+import { MarkdownField } from "~/components/interaction/MarkdownField";
 import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
@@ -87,7 +88,7 @@ export default function EditProject() {
       </p>
       <p>
         <label htmlFor="fullText">Full Text</label>
-        <TextArea
+        <MarkdownField
           id="fullText"
           rows={10}
           name="fullText"

@@ -1,36 +1,30 @@
 import React from "react";
 import { TextArea } from "./TextArea";
 import { v4 as uuid } from "uuid";
+import clx from "classnames";
 
 interface MarkdownFieldProps
   extends React.HTMLAttributes<HTMLTextAreaElement>,
     React.HTMLProps<HTMLTextAreaElement> {}
 
-export const MarkdownField: React.FC<MarkdownFieldProps> = (props) => {
+export const MarkdownField: React.FC<MarkdownFieldProps> = ({
+  className,
+  ...rest
+}) => {
   const inputRef = React.useRef<HTMLTextAreaElement>();
+  const [draggingOver, setDraggingOver] = React.useState(false);
 
   React.useEffect(() => {
-    window.addEventListener(
-      "dragover",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-    window.addEventListener(
-      "drop",
-      function (e) {
-        e.preventDefault();
-      },
-      false
-    );
-  }, []);
+    window.ondragenter = (e) => e.preventDefault();
+    window.ondragover = (e) => e.preventDefault();
+    window.ondrop = (e) => e.preventDefault();
+  });
 
   function handleDragOver(e: any) {
-    props.onDragOver?.(e);
+    setDraggingOver(true);
   }
 
-  function handleDropFile(e: any) {
+  function handleDrop(e: any) {
     const file = e.dataTransfer.files[0];
     if (!file || !inputRef.current) return;
 
@@ -58,19 +52,18 @@ export const MarkdownField: React.FC<MarkdownFieldProps> = (props) => {
       var endPos = inputRef.current.selectionEnd;
       inputRef.current.value =
         inputRef.current.value.substring(0, startPos) +
-        `![img](${placeholder})` +
+        `![img](/${placeholder})` +
         inputRef.current.value.substring(endPos, inputRef.current.value.length);
     }
-
-    props.onDrop?.(e);
   }
 
   return (
     <TextArea
       ref={inputRef as any}
-      {...props}
-      onDrop={handleDropFile}
+      onDrop={handleDrop}
       onDragOver={handleDragOver}
+      className={clx(className, { "border-2": draggingOver })}
+      {...rest}
     />
   );
 };
