@@ -11,7 +11,7 @@ import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
-import { uploadHandler } from "~/utils/upload.server";
+import { uploadHandler } from "~/utils/file.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");

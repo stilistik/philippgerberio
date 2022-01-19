@@ -52,7 +52,7 @@ export const MarkdownField: React.FC<MarkdownFieldProps> = ({
       var endPos = inputRef.current.selectionEnd;
       inputRef.current.value =
         inputRef.current.value.substring(0, startPos) +
-        `![img](/${placeholder})` +
+        `![img](${placeholder})` +
         inputRef.current.value.substring(endPos, inputRef.current.value.length);
     }
   }
