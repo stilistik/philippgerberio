@@ -6,12 +6,11 @@ import { TextArea } from "~/components/interaction/TextArea";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
-import { parseFormData } from "~/utils/file.server";
-import { NodeOnDiskFile } from "@remix-run/node";
+import { ImageInput } from "~/components/interaction/ImageInput";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
-  const formData = await parseFormData(request);
+  const formData = await request.formData();
 
   const title = formData.get("title");
   const slug = formData.get("slug");
@@ -24,7 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
     typeof slug !== "string" ||
     typeof fullText !== "string" ||
     typeof description !== "string" ||
-    !(thumbnail instanceof NodeOnDiskFile)
+    typeof thumbnail !== "string"
   ) {
     return badRequest({
       formError: `Form not submitted correctly.`,
@@ -37,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
       slug,
       description,
       fullText,
-      thumbnail: "/uploads/" + thumbnail.name,
+      thumbnail,
       authorId: userId,
     },
   });
@@ -47,30 +46,20 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewProject() {
   return (
-    <Form
-      method="post"
-      encType="multipart/form-data"
-      className="flex flex-col gap-5 w-full"
-    >
-      <p>
+    <Form method="post" className="flex flex-col gap-5 w-full">
+      <div>
         <label htmlFor="title">Project Title</label>
         <Input type="text" id="title" name="title" className="w-full" />
-      </p>
-      <p>
+      </div>
+      <div>
         <label htmlFor="slug">Project Slug</label>
         <Input type="text" id="slug" name="slug" className="w-full" />
-      </p>
-      <p>
+      </div>
+      <div>
         <label htmlFor="thumbnail">Thumbnail</label>
-        <Input
-          type="file"
-          id="thumbnail"
-          name="thumbnail"
-          accept="image/*"
-          className="w-full"
-        />
-      </p>
-      <p>
+        <ImageInput id="thumbnail" name="thumbnail" className="w-full" />
+      </div>
+      <div>
         <label htmlFor="description">Description</label>
         <TextArea
           id="description"
@@ -78,8 +67,8 @@ export default function NewProject() {
           name="description"
           className="w-full"
         />
-      </p>
-      <p>
+      </div>
+      <div>
         <label htmlFor="fullText">Full Text</label>
         <MarkdownField
           id="fullText"
@@ -87,10 +76,10 @@ export default function NewProject() {
           name="fullText"
           className="w-full"
         />
-      </p>
-      <p>
+      </div>
+      <div>
         <Button type="submit">Create Project</Button>
-      </p>
+      </div>
     </Form>
   );
 }

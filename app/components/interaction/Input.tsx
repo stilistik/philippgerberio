@@ -1,6 +1,7 @@
 import clx from "classnames";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {}
 
 export function Input(props: InputProps) {
   const { className, ...rest } = props;
