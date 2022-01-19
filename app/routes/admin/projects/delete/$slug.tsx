@@ -1,6 +1,7 @@
 import { ActionFunction, LoaderFunction, redirect } from "remix";
 import invariant from "tiny-invariant";
 import { db } from "~/utils/db.server";
+import { deletefile } from "~/utils/file.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ request, params }) => {
@@ -8,9 +9,11 @@ export const action: ActionFunction = async ({ request, params }) => {
 
   invariant(params.slug, "Expected params.slug");
 
-  await db.project.delete({
+  const deleted = await db.project.delete({
     where: { slug: params.slug },
   });
+
+  deletefile(deleted.thumbnail);
 
   return redirect("/admin/projects");
 };
