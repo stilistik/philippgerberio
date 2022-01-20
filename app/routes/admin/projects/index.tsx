@@ -35,17 +35,30 @@ export default function Projects() {
         {projects.map((project) => (
           <Link to={project.id} key={project.id}>
             <ProjectElement project={project}>
-              <form action="/admin/projects/delete" method="post">
-                <input type="hidden" name="id" value={project.id} />
-                <Button
-                  type="submit"
-                  size="small"
-                  onClick={(e) => e.stopPropagation()}
-                  className="my-5"
-                >
-                  Delete
-                </Button>
-              </form>
+              <div className="flex gap-5">
+                <Form action="delete" method="post">
+                  <input type="hidden" name="id" value={project.id} />
+                  <Button
+                    type="submit"
+                    size="small"
+                    onClick={(e) => e.stopPropagation()}
+                    className="my-5"
+                  >
+                    Delete
+                  </Button>
+                </Form>
+                <Form action="publish" method="post">
+                  <input type="hidden" name="id" value={project.id} />
+                  <Button
+                    type="submit"
+                    size="small"
+                    onClick={(e) => e.stopPropagation()}
+                    className="my-5"
+                  >
+                    {project.published ? "Unpublish" : "Publish"}
+                  </Button>
+                </Form>
+              </div>
             </ProjectElement>
           </Link>
         ))}

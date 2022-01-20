@@ -3,7 +3,7 @@ import { Link, useLoaderData } from "remix";
 import { db } from "~/utils/db.server";
 
 export function loader() {
-  return db.post.findMany();
+  return db.post.findMany({ where: { published: true } });
 }
 
 export default function Index() {

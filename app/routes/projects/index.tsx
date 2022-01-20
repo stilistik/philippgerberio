@@ -4,7 +4,7 @@ import { ProjectElement } from "~/components/elements/ProjectElement";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
-  return db.project.findMany();
+  return db.project.findMany({ where: { published: true } });
 };
 
 export default function Projects() {
