@@ -22,27 +22,28 @@ model User {
 
 model Post {
   id          String     @id @default(uuid())
-  slug        String     @unique
-  title       String
-  description String
-  fullText    String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   authorId    String
+  slug        String?    @unique
+  title       String?
+  description String?
+  fullText    String?
+  thumbnail   String?
   author      User       @relation(fields: [authorId], references: [id])
   resources   Resource[]
 }
 
 model Project {
   id          String     @id @default(uuid())
-  slug        String     @unique
-  title       String
-  description String
-  fullText    String
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   authorId    String
-  thumbnail   String
+  slug        String?    @unique
+  title       String?
+  description String?
+  fullText    String?
+  thumbnail   String?
   author      User       @relation(fields: [authorId], references: [id])
   resources   Resource[]
 }
