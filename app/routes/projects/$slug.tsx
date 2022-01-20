@@ -18,7 +18,7 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!project) {
     return badRequest({ slug: params.slug, error: "Project not found" });
   }
-  const html = parsemd(project.fullText);
+  const html = parsemd(project.fullText || "");
   return { project, html };
 };
 
@@ -29,7 +29,7 @@ export default function Project() {
       <MainHeader>{project.title}</MainHeader>
 
       <img
-        src={project.thumbnail}
+        src={project.thumbnail || ""}
         className="w-full rounded-2xl border shadow-2xl mb-20"
       />
 

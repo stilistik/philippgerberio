@@ -18,7 +18,7 @@ export default function Index() {
             <h3 className="font-black text-2xl text-gray-400">
               {post.description}
             </h3>
-            <Link to={post.slug}>read more</Link>
+            {post.slug && <Link to={post.slug}>read more</Link>}
           </div>
         );
       })}

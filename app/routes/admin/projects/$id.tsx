@@ -58,8 +58,8 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
-  invariant(params.slug, "Expected params.slug");
-  return db.project.findUnique({ where: { slug: params.slug } });
+  invariant(params.id, "Expected params.id");
+  return db.project.findUnique({ where: { id: params.id } });
 };
 
 export default function EditProject() {
@@ -80,7 +80,7 @@ export default function EditProject() {
             id="title"
             name="title"
             className="w-full"
-            defaultValue={project.title}
+            defaultValue={project.title || ""}
           />
         </div>
         <div>
@@ -90,7 +90,7 @@ export default function EditProject() {
             id="slug"
             name="slug"
             className="w-full"
-            defaultValue={project.slug}
+            defaultValue={project.slug || ""}
           />
         </div>
         <div>
@@ -99,7 +99,7 @@ export default function EditProject() {
             id="thumbnail"
             name="thumbnail"
             className="w-full"
-            defaultValue={project.thumbnail}
+            defaultValue={project.thumbnail || ""}
           />
         </div>
         <div>
@@ -109,7 +109,7 @@ export default function EditProject() {
             rows={5}
             name="description"
             className="w-full"
-            defaultValue={project.description}
+            defaultValue={project.description || ""}
           />
         </div>
         <div>
@@ -119,7 +119,7 @@ export default function EditProject() {
             rows={10}
             name="fullText"
             className="w-full"
-            defaultValue={project.fullText}
+            defaultValue={project.fullText || ""}
           />
         </div>
         <div>
