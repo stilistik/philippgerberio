@@ -2,7 +2,7 @@ import clx from "classnames";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "round" | "default";
-  size?: "large" | "default" | "small";
+  size?: "large" | "default" | "small" | "tiny";
 }
 
 export function Button({
@@ -20,6 +20,8 @@ export function Button({
     sizeClass = "button-large";
   } else if (size === "small") {
     sizeClass = "button-small";
+  } else if (size === "tiny") {
+    sizeClass = "button-tiny";
   } else {
     sizeClass = "button-default";
   }
@@ -27,12 +29,7 @@ export function Button({
   return (
     <button
       {...rest}
-      className={clx(
-        "relative overflow-hidden border-4 border-gray-600 shadow-2xl transition-all bezier duration-300 font-black z-0 bg-gray-600 text-white hover:text-gray-600 after:w-[120%] after:h-[120%] after:rounded-full after:absolute after:-top-[10%] after:-left-[10%] after:bg-white  after:transition-all after:duration-500 after:bezier after:-z-10",
-        variantClass,
-        sizeClass,
-        className
-      )}
+      className={clx("button-base", variantClass, sizeClass, className)}
     >
       {children}
     </button>

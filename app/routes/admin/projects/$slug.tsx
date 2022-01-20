@@ -2,7 +2,9 @@ import { Project } from "@prisma/client";
 import {
   ActionFunction,
   Form,
+  Link,
   LoaderFunction,
+  Outlet,
   redirect,
   useLoaderData,
 } from "remix";
@@ -52,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect("/projects/" + slug);
+  return redirect("/admin/projects/" + slug);
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -63,60 +65,64 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function EditProject() {
   const project = useLoaderData<Project>();
   return (
-    <Form method="post" className="flex flex-col gap-5 w-full">
-      <input type="hidden" name="id" value={project.id} />
-      <div>
-        <label htmlFor="title">Project Title</label>
-        <Input
-          type="text"
-          id="title"
-          name="title"
-          className="w-full"
-          defaultValue={project.title}
-        />
-      </div>
-      <div>
-        <label htmlFor="slug">Project Slug</label>
-        <Input
-          type="text"
-          id="slug"
-          name="slug"
-          className="w-full"
-          defaultValue={project.slug}
-        />
-      </div>
-      <div>
-        <label htmlFor="thumbnail">Thumbnail</label>
-        <ImageInput
-          id="thumbnail"
-          name="thumbnail"
-          className="w-full"
-          defaultValue={project.thumbnail}
-        />
-      </div>
-      <div>
-        <label htmlFor="description">Description</label>
-        <TextArea
-          id="description"
-          rows={5}
-          name="description"
-          className="w-full"
-          defaultValue={project.description}
-        />
-      </div>
-      <div>
-        <label htmlFor="fullText">Full Text</label>
-        <MarkdownField
-          id="fullText"
-          rows={10}
-          name="fullText"
-          className="w-full"
-          defaultValue={project.fullText}
-        />
-      </div>
-      <div>
-        <Button type="submit">Update Project</Button>
-      </div>
-    </Form>
+    <>
+      <Link to="resources">Resources</Link>
+      <Form method="post" className="flex flex-col gap-5 w-full">
+        <input type="hidden" name="id" value={project.id} />
+        <div>
+          <label htmlFor="title">Project Title</label>
+          <Input
+            type="text"
+            id="title"
+            name="title"
+            className="w-full"
+            defaultValue={project.title}
+          />
+        </div>
+        <div>
+          <label htmlFor="slug">Project Slug</label>
+          <Input
+            type="text"
+            id="slug"
+            name="slug"
+            className="w-full"
+            defaultValue={project.slug}
+          />
+        </div>
+        <div>
+          <label htmlFor="thumbnail">Thumbnail</label>
+          <ImageInput
+            id="thumbnail"
+            name="thumbnail"
+            className="w-full"
+            defaultValue={project.thumbnail}
+          />
+        </div>
+        <div>
+          <label htmlFor="description">Description</label>
+          <TextArea
+            id="description"
+            rows={5}
+            name="description"
+            className="w-full"
+            defaultValue={project.description}
+          />
+        </div>
+        <div>
+          <label htmlFor="fullText">Full Text</label>
+          <MarkdownField
+            id="fullText"
+            rows={10}
+            name="fullText"
+            className="w-full"
+            defaultValue={project.fullText}
+          />
+        </div>
+        <div>
+          <Button type="submit">Update Project</Button>
+        </div>
+      </Form>
+      <Outlet />
+    </>
   );
 }

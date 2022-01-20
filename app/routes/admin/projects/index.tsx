@@ -13,18 +13,16 @@ export default function Projects() {
   return (
     <>
       <p className="my-10">
-        <Link to="newproject">
+        <Link to="new">
           <Button>New Project</Button>
         </Link>
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {projects.map((project) => (
-          <Link to={`edit/${project.slug}`} key={project.id}>
+          <Link to={project.slug} key={project.id}>
             <ProjectElement project={project}>
-              <form
-                action={`/admin/projects/delete/${project.slug}`}
-                method="post"
-              >
+              <form action="/admin/projects/delete" method="post">
+                <input type="hidden" name="id" value={project.id} />
                 <Button
                   type="submit"
                   size="small"

@@ -3,8 +3,11 @@ import { ActionFunction, redirect } from "remix";
 import { db } from "~/utils/db.server";
 import { parseFormData } from "~/utils/file.server";
 import { badRequest } from "~/utils/routing.server";
+import { requireLoggedInUser } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ request }) => {
+  await requireLoggedInUser(request);
+
   const data = await parseFormData(request);
   const file: any = data.get("file");
 

@@ -33,7 +33,7 @@ export const MarkdownField: React.FC<MarkdownFieldProps> = ({
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch("/upload", {
+    fetch("/api/upload", {
       method: "POST",
       body: formData,
     })

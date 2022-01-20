@@ -1,7 +1,6 @@
 import React from "react";
 import { Project } from "@prisma/client";
 import { SubHeader } from "../layout/SubHeader";
-import clx from "classnames";
 
 interface ProjectProps {
   project: Project;

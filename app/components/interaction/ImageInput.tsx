@@ -13,7 +13,7 @@ export const ImageInput = (props: InputProps) => {
     const formData = new FormData();
     formData.append("file", file);
 
-    fetch("/upload", {
+    fetch("/api/upload", {
       method: "POST",
       body: formData,
     })
