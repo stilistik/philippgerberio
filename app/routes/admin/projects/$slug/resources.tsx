@@ -65,7 +65,7 @@ export default function Resources() {
     submit(e.currentTarget, { replace: true });
   };
   return (
-    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen w-96">
+    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen w-96 flex flex-col">
       <div className="flex justify-between p-3 bg-gray-100">
         <Form
           method="post"
@@ -94,7 +94,7 @@ export default function Resources() {
           </Button>
         </Link>
       </div>
-      <ResourceBrowser resources={resources} onDelete={handleChange} />;
+      <ResourceBrowser resources={resources} onDelete={handleChange} />
     </div>
   );
 }
