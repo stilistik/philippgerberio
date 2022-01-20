@@ -1,9 +1,57 @@
 import { Resource } from "@prisma/client";
-import { Link, LoaderFunction, useLoaderData } from "remix";
+import { NodeOnDiskFile } from "@remix-run/node";
+import {
+  ActionFunction,
+  Form,
+  Link,
+  LoaderFunction,
+  useLoaderData,
+  useSubmit,
+} from "remix";
 import { Button } from "~/components/interaction/Button";
 import { ResourceBrowser } from "~/components/interaction/ResourceBrowser";
 import { CloseIcon } from "~/icons/Close";
+import { UploadIcon } from "~/icons/Upload";
 import { db } from "~/utils/db.server";
+import { deletefile, parseFormData } from "~/utils/file.server";
+import { requireLoggedInUser } from "~/utils/session.server";
+
+async function handlePostRequest(request: Request) {
+  const data = await parseFormData(request);
+  const file = data.get("file") as NodeOnDiskFile;
+
+  return db.resource.create({
+    data: {
+      name: file.name,
+      url: `/uploads/${file.name}`,
+      mimetype: file.type,
+    },
+  });
+}
+
+async function handleDeleteRequest(request: Request) {
+  const data = await request.formData();
+  const id = data.get("id") as string;
+
+  const deleted = await db.resource.delete({
+    where: { id },
+  });
+
+  deletefile(deleted.url);
+  return deleted;
+}
+
+export const action: ActionFunction = async ({ request }) => {
+  await requireLoggedInUser(request);
+  switch (request.method) {
+    case "POST":
+      return handlePostRequest(request);
+    case "DELETE":
+      return handleDeleteRequest(request);
+    default:
+      throw new Error("Unsupported request method");
+  }
+};
 
 export const loader: LoaderFunction = () => {
   return db.resource.findMany();
@@ -11,14 +59,42 @@ export const loader: LoaderFunction = () => {
 
 export default function Resources() {
   const resources = useLoaderData<Resource[]>();
+  const submit = useSubmit();
+
+  const handleChange = (e: any) => {
+    submit(e.currentTarget, { replace: true });
+  };
   return (
-    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen">
-      <Link to="../">
-        <Button size="small" className="m-2">
-          <CloseIcon />
-        </Button>
-      </Link>
-      <ResourceBrowser resources={resources} />;
+    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen w-96">
+      <div className="flex justify-between p-3 bg-gray-100">
+        <Form
+          method="post"
+          encType="multipart/form-data"
+          onChange={handleChange}
+        >
+          <input
+            accept="*"
+            style={{ display: "none" }}
+            id="upload-input"
+            type="file"
+            name="file"
+          />
+          <label htmlFor="upload-input">
+            <div
+              role="button"
+              className="button-base button-small button-grow-left cursor-pointer"
+            >
+              <UploadIcon />
+            </div>
+          </label>
+        </Form>
+        <Link to="../">
+          <Button size="small">
+            <CloseIcon />
+          </Button>
+        </Link>
+      </div>
+      <ResourceBrowser resources={resources} onDelete={handleChange} />;
     </div>
   );
 }

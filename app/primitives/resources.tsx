@@ -40,7 +40,7 @@ async function handleDeleteRequest(request: Request) {
   return deleted;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const _action: ActionFunction = async ({ request }) => {
   await requireLoggedInUser(request);
   switch (request.method) {
     case "POST":
@@ -52,11 +52,11 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export const loader: LoaderFunction = () => {
+export const _loader: LoaderFunction = () => {
   return db.resource.findMany();
 };
 
-export default function Resources() {
+export function Resources() {
   const resources = useLoaderData<Resource[]>();
   const submit = useSubmit();
 

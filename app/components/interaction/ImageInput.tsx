@@ -1,41 +1,27 @@
 import React from "react";
-import { InputProps } from "./Input";
+import { Link } from "remix";
+import { ImageIcon } from "~/icons/Image";
+import { Input, InputProps } from "./Input";
 
 export const ImageInput = (props: InputProps) => {
-  const [url, setUrl] = React.useState<string | null>(
-    (props.defaultValue as string) ?? null
-  );
+  const [url, setUrl] = React.useState(props.defaultValue);
+  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   function handleChange(e: any) {
-    const file = e.target.files[0];
-    if (!file) return;
+    setUrl(e.target.value);
+  }
 
-    const formData = new FormData();
-    formData.append("file", file);
-
-    fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    })
-      .then((response) => response.json())
-      .then((fileUrl) => {
-        setUrl(fileUrl);
-      });
+  function handleClick() {
+    if (!inputRef.current) return;
+    inputRef.current.focus();
+    inputRef.current.select();
   }
 
   return (
-    <div>
-      <input {...props} type="hidden" value={String(url)} />
-      <input
-        accept="image/*"
-        style={{ display: "none" }}
-        id="image-input"
-        type="file"
-        onChange={handleChange}
-      />
-      <br />
-      <label htmlFor="image-input">
-        <div
+    <div className="flex gap-3">
+      <Link to="resources">
+        <button
+          onClick={handleClick}
           className="w-40 h-40 border rounded-xl cursor-pointer flex items-center justify-center"
           style={{
             backgroundPosition: "center center",
@@ -43,9 +29,12 @@ export const ImageInput = (props: InputProps) => {
             backgroundSize: "cover",
           }}
         >
-          {url ? "" : "Image"}
-        </div>
-      </label>
+          {url ? null : <ImageIcon />}
+        </button>
+      </Link>
+      <div className="w-full">
+        <Input ref={inputRef} {...props} onChange={handleChange} />
+      </div>
     </div>
   );
 };

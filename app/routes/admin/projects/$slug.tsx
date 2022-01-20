@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect("/admin/projects/" + slug);
+  return redirect("/admin/projects/");
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -66,7 +66,11 @@ export default function EditProject() {
   const project = useLoaderData<Project>();
   return (
     <>
-      <Link to="resources">Resources</Link>
+      <div className="fixed bottom-10 right-10">
+        <Link to="resources">
+          <Button>Resources</Button>
+        </Link>
+      </div>
       <Form method="post" className="flex flex-col gap-5 w-full">
         <input type="hidden" name="id" value={project.id} />
         <div>

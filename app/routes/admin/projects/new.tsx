@@ -1,4 +1,4 @@
-import { ActionFunction, Form, redirect } from "remix";
+import { ActionFunction, Form, Link, redirect } from "remix";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
@@ -46,40 +46,47 @@ export const action: ActionFunction = async ({ request }) => {
 
 export default function NewProject() {
   return (
-    <Form method="post" className="flex flex-col gap-5 w-full">
-      <div>
-        <label htmlFor="title">Project Title</label>
-        <Input type="text" id="title" name="title" className="w-full" />
+    <>
+      <div className="fixed bottom-10 right-10">
+        <Link to="resources">
+          <Button>Resources</Button>
+        </Link>
       </div>
-      <div>
-        <label htmlFor="slug">Project Slug</label>
-        <Input type="text" id="slug" name="slug" className="w-full" />
-      </div>
-      <div>
-        <label htmlFor="thumbnail">Thumbnail</label>
-        <ImageInput id="thumbnail" name="thumbnail" className="w-full" />
-      </div>
-      <div>
-        <label htmlFor="description">Description</label>
-        <TextArea
-          id="description"
-          rows={5}
-          name="description"
-          className="w-full"
-        />
-      </div>
-      <div>
-        <label htmlFor="fullText">Full Text</label>
-        <MarkdownField
-          id="fullText"
-          rows={10}
-          name="fullText"
-          className="w-full"
-        />
-      </div>
-      <div>
-        <Button type="submit">Create Project</Button>
-      </div>
-    </Form>
+      <Form method="post" className="flex flex-col gap-5 w-full">
+        <div>
+          <label htmlFor="title">Project Title</label>
+          <Input type="text" id="title" name="title" className="w-full" />
+        </div>
+        <div>
+          <label htmlFor="slug">Project Slug</label>
+          <Input type="text" id="slug" name="slug" className="w-full" />
+        </div>
+        <div>
+          <label htmlFor="thumbnail">Thumbnail</label>
+          <ImageInput id="thumbnail" name="thumbnail" className="w-full" />
+        </div>
+        <div>
+          <label htmlFor="description">Description</label>
+          <TextArea
+            id="description"
+            rows={5}
+            name="description"
+            className="w-full"
+          />
+        </div>
+        <div>
+          <label htmlFor="fullText">Full Text</label>
+          <MarkdownField
+            id="fullText"
+            rows={10}
+            name="fullText"
+            className="w-full"
+          />
+        </div>
+        <div>
+          <Button type="submit">Create Project</Button>
+        </div>
+      </Form>
+    </>
   );
 }
