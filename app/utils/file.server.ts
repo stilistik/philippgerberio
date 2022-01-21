@@ -10,6 +10,7 @@ const UPLOAD_DIR = "public/uploads";
 export const uploadHandler = unstable_createFileUploadHandler({
   directory: UPLOAD_DIR,
   maxFileSize: 5_000_000,
+  file: ({ filename }) => filename,
 });
 
 export const parseFormData = (request: Request) => {

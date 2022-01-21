@@ -1,7 +1,6 @@
 import { ActionFunction, LoaderFunction, redirect } from "remix";
 import invariant from "tiny-invariant";
 import { db } from "~/utils/db.server";
-import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 export const action: ActionFunction = async ({ request, params }) => {
