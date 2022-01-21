@@ -9,6 +9,7 @@ import {
 } from "remix";
 import { ProjectElement } from "~/components/elements/ProjectElement";
 import { Button } from "~/components/interaction/Button";
+import { DeleteIcon } from "~/icons/Delete";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
@@ -36,17 +37,6 @@ export default function Projects() {
           <Link to={project.id} key={project.id}>
             <ProjectElement project={project}>
               <div className="flex gap-5">
-                <Form action="delete" method="post">
-                  <input type="hidden" name="id" value={project.id} />
-                  <Button
-                    type="submit"
-                    size="small"
-                    onClick={(e) => e.stopPropagation()}
-                    className="my-5"
-                  >
-                    Delete
-                  </Button>
-                </Form>
                 <Form action="publish" method="post">
                   <input type="hidden" name="id" value={project.id} />
                   <Button
@@ -56,6 +46,17 @@ export default function Projects() {
                     className="my-5"
                   >
                     {project.published ? "Unpublish" : "Publish"}
+                  </Button>
+                </Form>
+                <Form action="delete" method="post">
+                  <input type="hidden" name="id" value={project.id} />
+                  <Button
+                    type="submit"
+                    size="small"
+                    onClick={(e) => e.stopPropagation()}
+                    className="my-5"
+                  >
+                    <DeleteIcon />
                   </Button>
                 </Form>
               </div>
