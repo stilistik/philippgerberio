@@ -35,32 +35,7 @@ export default function Projects() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {projects.map((project) => (
           <Link to={project.id} key={project.id}>
-            <ProjectElement project={project}>
-              <div className="flex gap-5">
-                <Form action="publish" method="post">
-                  <input type="hidden" name="id" value={project.id} />
-                  <Button
-                    type="submit"
-                    size="small"
-                    onClick={(e) => e.stopPropagation()}
-                    className="my-5"
-                  >
-                    {project.published ? "Unpublish" : "Publish"}
-                  </Button>
-                </Form>
-                <Form action="delete" method="post">
-                  <input type="hidden" name="id" value={project.id} />
-                  <Button
-                    type="submit"
-                    size="small"
-                    onClick={(e) => e.stopPropagation()}
-                    className="my-5"
-                  >
-                    <DeleteIcon />
-                  </Button>
-                </Form>
-              </div>
-            </ProjectElement>
+            <ProjectElement project={project} />
           </Link>
         ))}
       </div>

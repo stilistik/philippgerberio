@@ -14,6 +14,11 @@ import { ImageInput } from "~/components/interaction/ImageInput";
 import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
 import { TextArea } from "~/components/interaction/TextArea";
+import { AirplayIcon } from "~/icons/Airplay";
+import { DeleteIcon } from "~/icons/Delete";
+import { FolderOpenIcon } from "~/icons/FolderOpen";
+import { ReplyIcon } from "~/icons/Reply";
+import { SendIcon } from "~/icons/Send";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
@@ -67,14 +72,34 @@ export default function EditProject() {
   return (
     <>
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
+        <Form action="publish" method="post">
+          <input type="hidden" name="id" value={project.id} />
+          <Button
+            type="submit"
+            variant="round"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {project.published ? <ReplyIcon /> : <SendIcon />}
+          </Button>
+        </Form>
+        <Form action="delete" method="post">
+          <input type="hidden" name="id" value={project.id} />
+          <Button
+            type="submit"
+            variant="round"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DeleteIcon />
+          </Button>
+        </Form>
         <Link to="preview">
-          <Button variant="round" style={{ width: 70, height: 70 }}>
-            P
+          <Button variant="round">
+            <AirplayIcon />
           </Button>
         </Link>
         <Link to="resources">
-          <Button variant="round" style={{ width: 70, height: 70 }}>
-            R
+          <Button variant="round">
+            <FolderOpenIcon />
           </Button>
         </Link>
       </div>

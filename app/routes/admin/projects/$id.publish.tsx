@@ -7,21 +7,20 @@ export const action: ActionFunction = async ({ request, params }) => {
   await requireLoggedInUser(request, "/admin/login");
 
   const data = await request.formData();
-  const id = data.get("id") as string;
 
-  invariant(id, "Expected id to be defined");
+  invariant(params.id, "Expected id to be defined");
 
-  const project = await db.project.findUnique({ where: { id } });
+  const project = await db.project.findUnique({ where: { id: params.id } });
   if (project) {
-    return db.project.update({
-      where: { id },
+    await db.project.update({
+      where: { id: params.id },
       data: {
         published: !project.published,
       },
     });
   }
 
-  return null;
+  return redirect("/admin/projects/" + params.id);
 };
 
 export const loader: LoaderFunction = async () => {

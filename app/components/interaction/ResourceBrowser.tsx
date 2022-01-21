@@ -4,6 +4,7 @@ import { CodeIcon } from "~/icons/Code";
 import { DeleteIcon } from "~/icons/Delete";
 import { LinksIcon } from "~/icons/Links";
 import { Button } from "./Button";
+import { IconButton } from "./IconButton";
 
 function getMd(resource: Resource): string {
   if (resource.mimetype.includes("image")) {
@@ -68,18 +69,18 @@ const ResourceElement = ({ resource, onDelete }: ResourceElementProps) => {
       <ResourceDisplay resource={resource} />
       <div>
         <p>{resource.name}</p>
-        <div className="flex gap-3 mt-2">
-          <Button size="tiny" onClick={copyUrl}>
+        <div className="flex gap-5 mt-2">
+          <IconButton onClick={copyUrl}>
             <LinksIcon />
-          </Button>
-          <Button size="tiny" onClick={copyMd}>
+          </IconButton>
+          <IconButton onClick={copyMd}>
             <CodeIcon />
-          </Button>
+          </IconButton>
           <Form method="delete" onChange={onDelete}>
             <input type="hidden" name="id" value={resource.id} />
-            <Button size="tiny" type="submit">
+            <IconButton type="submit">
               <DeleteIcon />
-            </Button>
+            </IconButton>
           </Form>
         </div>
       </div>
