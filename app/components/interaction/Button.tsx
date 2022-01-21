@@ -13,7 +13,7 @@ export function Button({
   ...rest
 }: ButtonProps) {
   const variantClass =
-    variant === "round" ? "button-grow-center" : "button-grow-left";
+    variant === "round" ? "button-variant-round" : "button-variant-default";
 
   let sizeClass = "";
   if (size === "large") {

@@ -66,9 +66,16 @@ export default function EditProject() {
   const project = useLoaderData<Project>();
   return (
     <>
-      <div className="fixed bottom-10 right-10">
+      <div className="fixed bottom-10 right-10 flex flex-col gap-5">
+        <Link to="preview">
+          <Button variant="round" style={{ width: 70, height: 70 }}>
+            P
+          </Button>
+        </Link>
         <Link to="resources">
-          <Button>Resources</Button>
+          <Button variant="round" style={{ width: 70, height: 70 }}>
+            R
+          </Button>
         </Link>
       </div>
       <Form method="post" className="flex flex-col gap-5 w-full">

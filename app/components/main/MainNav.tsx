@@ -45,10 +45,10 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
         <Link to="/" className="mr-10">
           <Button
             variant="round"
-            className="rounded-full text-4xl font-medium flex justify-center pt-2"
+            className="text-4xl font-medium"
             style={{ width: 70, height: 70 }}
           >
-            pg
+            <span className="-mt-2">pg</span>
           </Button>
         </Link>
         <NavLink to="/projects">Projects</NavLink>

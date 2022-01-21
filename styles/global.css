@@ -63,12 +63,12 @@
     @apply text-2xl px-6 py-4 rounded-2xl;
   }
 
-  .button-grow-left {
+  .button-variant-default {
     @apply after:origin-left after:scale-x-0 hover:after:scale-x-100;
   }
 
-  .button-grow-center {
-    @apply after:origin-center after:scale-0 hover:after:scale-100;
+  .button-variant-round {
+    @apply rounded-full flex justify-center items-center after:origin-center after:scale-0 hover:after:scale-100;
   }
 
   .markdown a {

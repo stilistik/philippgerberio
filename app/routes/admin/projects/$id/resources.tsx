@@ -88,7 +88,7 @@ export default function Resources() {
           <label htmlFor="upload-input">
             <div
               role="button"
-              className="button-base button-small button-grow-left cursor-pointer"
+              className="button-base button-small button-variant-default cursor-pointer"
             >
               <UploadIcon />
             </div>
