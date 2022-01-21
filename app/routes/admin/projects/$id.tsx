@@ -10,6 +10,7 @@ import {
 } from "remix";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
+import { Checkbox } from "~/components/interaction/Checkbox";
 import { ImageInput } from "~/components/interaction/ImageInput";
 import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
@@ -17,8 +18,6 @@ import { TextArea } from "~/components/interaction/TextArea";
 import { AirplayIcon } from "~/icons/Airplay";
 import { DeleteIcon } from "~/icons/Delete";
 import { FolderOpenIcon } from "~/icons/FolderOpen";
-import { ReplyIcon } from "~/icons/Reply";
-import { SendIcon } from "~/icons/Send";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
@@ -33,6 +32,7 @@ export const action: ActionFunction = async ({ request }) => {
   const fullText = formData.get("fullText");
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
+  const published = Boolean(formData.get("published"));
 
   if (
     typeof id !== "string" ||
@@ -40,7 +40,8 @@ export const action: ActionFunction = async ({ request }) => {
     typeof slug !== "string" ||
     typeof fullText !== "string" ||
     typeof description !== "string" ||
-    typeof thumbnail !== "string"
+    typeof thumbnail !== "string" ||
+    typeof published !== "boolean"
   ) {
     return badRequest({
       formError: `Form not submitted correctly.`,
@@ -55,6 +56,7 @@ export const action: ActionFunction = async ({ request }) => {
       description,
       fullText,
       thumbnail,
+      published,
       authorId: userId,
     },
   });
@@ -72,16 +74,6 @@ export default function EditProject() {
   return (
     <>
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
-        <Form action="publish" method="post">
-          <input type="hidden" name="id" value={project.id} />
-          <Button
-            type="submit"
-            variant="round"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {project.published ? <ReplyIcon /> : <SendIcon />}
-          </Button>
-        </Form>
         <Form action="delete" method="post">
           <input type="hidden" name="id" value={project.id} />
           <Button
@@ -154,6 +146,12 @@ export default function EditProject() {
             defaultValue={project.fullText || ""}
           />
         </div>
+        <Checkbox
+          label="Published"
+          name="published"
+          id="published"
+          defaultChecked={project.published}
+        />
         <div>
           <Button type="submit">Update Project</Button>
         </div>

@@ -27,11 +27,11 @@ export default function Projects() {
   const projects = useLoaderData<Project[]>();
   return (
     <>
-      <p className="my-10">
+      <div className="my-10">
         <Form method="post">
           <Button type="submit">New Project</Button>
         </Form>
-      </p>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {projects.map((project) => (
           <Link to={project.id} key={project.id}>

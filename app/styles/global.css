@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @layer components {
+  /*-----------------------------------MARKDOWN--------------------------------------*/
   .markdown h1 {
     @apply text-5xl font-black text-gray-400 mb-5;
   }
@@ -43,6 +44,12 @@
     @apply rounded-2xl shadow-2xl my-10 mx-auto max-w-3xl;
   }
 
+  .markdown a {
+    @apply font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-black after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100;
+  }
+  /*------------------------------------END MARKDOWN--------------------------------------*/
+
+  /*------------------------------------BUTTON--------------------------------------*/
   .button-base {
     @apply relative overflow-hidden border-4 border-gray-600 shadow-2xl transition-all ease-in-out duration-300 font-black z-0 bg-gray-600 text-white hover:text-gray-600 after:w-[120%] after:h-[120%] after:rounded-full after:absolute after:-top-[10%] after:-left-[10%] after:bg-white  after:transition-all after:duration-500 after:ease-in-out after:-z-10;
   }
@@ -70,11 +77,9 @@
   .button-variant-round {
     @apply rounded-full flex justify-center items-center after:origin-center after:scale-0 hover:after:scale-100;
   }
+  /*-----------------------------------END BUTTON---------------------------------------*/
 
-  .markdown a {
-    @apply font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-black after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100;
-  }
-
+  /*-----------------------------------HEADERS---------------------------------------*/
   .subheader {
     @apply text-3xl text-gray-400 mb-6;
   }
@@ -86,4 +91,36 @@
   .project-element:hover .subheader {
     @apply after:scale-x-100;
   }
+  /*-----------------------------------END HEADERS---------------------------------------*/
+
+  /*-----------------------------------CHECKBOX---------------------------------------*/
+  .checkbox-root {
+    @apply flex items-center gap-5 cursor-pointer;
+  }
+
+  .checkbox-root > input {
+    @apply hidden;
+  }
+
+  .checkbox-root > label {
+    @apply select-none;
+  }
+
+  .checkbox-root > input ~ div {
+    @apply border-4 border-gray-600 w-10 h-10 rounded-xl relative;
+  }
+
+  .checkbox-root > input:checked ~ div {
+    @apply border-4 bg-gray-600 w-10 h-10 rounded-xl text-white flex items-center justify-center;
+  }
+
+  .checkbox-root > input:not(:checked) ~ div > svg {
+    @apply hidden;
+  }
+
+  .checkbox-root > input:checked ~ div > svg {
+    @apply block;
+  }
+
+  /*-----------------------------------END CHECKBOX---------------------------------------*/
 }
