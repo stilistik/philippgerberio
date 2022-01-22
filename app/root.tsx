@@ -11,8 +11,8 @@ import {
 import type { MetaFunction } from "remix";
 import styles from "./tailwind.css";
 import highlights from "highlight.js/styles/rainbow.css";
-import { PageLayout } from "./components/main/PageLayout";
 import { getUserId } from "./utils/session.server";
+import { MainNav } from "./components/main/MainNav";
 
 export function links() {
   return [
@@ -123,10 +123,9 @@ export default function App() {
         />
         <meta name="theme-color" content="#ffffff"></meta>
       </head>
-      <body>
-        <PageLayout showLogout={hasUser}>
-          <Outlet />
-        </PageLayout>
+      <body className="overflow-x-hidden">
+        <MainNav showLogout={hasUser} />
+        <Outlet />
         <ScrollRestoration />
         <Scripts />
         {process.env.NODE_ENV === "development" && <LiveReload />}

@@ -16,7 +16,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   return (
     <Link
       to={to}
-      className="relative font-bold text-2xl text-gray-600 pb-1"
+      className="relative font-bold text-2xl text-gray pb-1"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
@@ -40,7 +40,7 @@ interface MainNavProps {
 
 export const MainNav = ({ showLogout = false }: MainNavProps) => {
   return (
-    <div className="flex justify-between items-center">
+    <div className="flex justify-between items-center container mx-auto px-60 py-20">
       <div className="flex items-center gap-10">
         <Link to="/" className="mr-10">
           <Button

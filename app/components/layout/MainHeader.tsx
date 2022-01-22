@@ -11,7 +11,7 @@ export const MainHeader: React.FC<MainHeaderProps> = ({
 }) => {
   return (
     <h1
-      className={clx("font-medium text-6xl text-gray-600  my-12", className)}
+      className={clx("font-medium text-6xl text-gray  my-12", className)}
       {...rest}
     >
       {children}
