@@ -9,7 +9,6 @@ import {
 } from "remix";
 import { ProjectElement } from "~/components/elements/ProjectElement";
 import { Button } from "~/components/interaction/Button";
-import { DeleteIcon } from "~/icons/Delete";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
