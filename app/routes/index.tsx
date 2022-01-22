@@ -47,10 +47,10 @@ const TitleSection = () => {
   const d = Math.max(0, percent - 0.5);
   return (
     <section ref={ref} className="w-full h-[300vh]">
-      <div className="sticky top-56 pt-20">
+      <div className="sticky top-56 pt-10">
         <div className="flex flex-col items-center bg-white">
           <div
-            className="absolute top-0 rounded-full shadow-2xl bg-black flex items-center justify-center"
+            className="absolute top-0 rounded-full bg-black flex items-center justify-center"
             style={{
               width: 500,
               height: 500,
@@ -69,13 +69,22 @@ const TitleSection = () => {
             />
           </div>
           <div
-            className="bg-white mix-blend-difference origin-bottom rounded-full mb-4"
+            className="bg-white mix-blend-difference origin-bottom rounded-full"
             style={{
               transform: `scale(${1 - percent})`,
-              width: 800,
+              width: 1000,
               height: 8,
             }}
           />
+          <h2
+            className="text-[3.5rem] font-black text-rose-400 text-center mix-blend-screen origin-bottom"
+            style={{
+              transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
+              opacity: 1 - lerp(percent, 0.8, 1),
+            }}
+          >
+            My name is Philipp
+          </h2>
           <h1
             className="relative text-[20rem] leading-[15rem] font-black text-white bg-black text-center mix-blend-difference origin-top"
             style={{
@@ -86,19 +95,19 @@ const TitleSection = () => {
             Hello
           </h1>
           <h2
-            className="text-[3.5rem] font-black text-red-400 text-center mix-blend-difference origin-bottom"
+            className="text-[3.5rem] font-black text-rose-400 text-center mix-blend-screen origin-bottom"
             style={{
               transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
             }}
           >
-            I'm Philipp, nice to meet you.
+            It's nice to meet you.
           </h2>
           <div
             className="bg-white mix-blend-difference origin-bottom rounded-full"
             style={{
               transform: `scale(${1 - percent})`,
-              width: 800,
+              width: 1000,
               height: 8,
             }}
           />
@@ -126,7 +135,7 @@ const PictureSection = () => {
   return (
     <section ref={ref} className="w-full h-[300vh]">
       <div className="sticky top-0 flex gap-10 px-60 pt-56 items-center">
-        <h2 className="text-[3rem] font-medium text-gray-400">
+        <h2 className="text-[3rem] ">
           That's me when i was catching Pokemon out in the wilderness of
           Alabastia.
         </h2>
