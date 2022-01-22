@@ -1,8 +1,5 @@
 import React from "react";
-import { Link } from "remix";
-import { Button } from "~/components/interaction/Button";
-import { MainHeader } from "~/components/layout/MainHeader";
-import { SubHeader } from "~/components/layout/SubHeader";
+import clx from "classnames";
 
 const useScrollPosition = () => {
   const ref = React.useRef<HTMLDivElement>(null);
@@ -35,11 +32,15 @@ const Spacer = () => <div className="h-[20vh]"></div>;
 
 const TitleSection = () => {
   const { ref, percent } = useScrollPosition();
+
+  const hasScrolled = percent > 0;
+
+  const d = Math.max(0, percent - 0.5);
   return (
-    <section ref={ref} className="w-full h-[200vh]">
-      <div className="sticky top-56 pt-20">
+    <section ref={ref} className="w-full h-[260vh]">
+      <div className="sticky top-0 pt-80 flex flex-col items-center">
         <div
-          className="absolute top-0 left-0 rounded-full shadow-2xl -z-10 bg-gray-200"
+          className="absolute top-44 left-0 rounded-full shadow-2xl -z-10 bg-gray-200"
           style={{
             width: 500,
             height: 500,
@@ -48,24 +49,51 @@ const TitleSection = () => {
             })`,
           }}
         />
+        <div
+          className="bg-gray mix-blend-difference origin-bottom rounded-full mb-4"
+          style={{
+            transform: `scale(${1 - percent})`,
+            width: 800,
+            height: 8,
+          }}
+        />
         <h1
           className="relative text-[20rem] leading-[15rem] font-black text-center text-gray"
           style={{
-            transform: `translate(${percent * 100}%, 0)`,
+            transform: `translate(${percent * 80}vw, 0)`,
             mixBlendMode: "difference",
           }}
         >
           Hello
         </h1>
         <h2
-          className="text-[5rem] font-black text-gray-400 text-center"
+          className="text-[3.5rem] font-black text-gray-400 text-center"
           style={{
-            transform: `translate(-${percent * 100}%, 0)`,
+            transform: `translate(-${percent * 80}vw, 0)`,
             mixBlendMode: "difference",
           }}
         >
           I'm Philipp, nice to meet you.
         </h2>
+        <div
+          className="bg-gray mix-blend-difference origin-bottom rounded-full"
+          style={{
+            transform: `scale(${1 - percent})`,
+            width: 800,
+            height: 8,
+          }}
+        />
+        <svg
+          width={50}
+          className={clx("mix-blend-difference text-gray  mt-16", {
+            "animate-bounce": !hasScrolled,
+          })}
+          style={{
+            transform: `scale(${1 - percent})`,
+          }}
+        >
+          <path fill="currentColor" d={`M0,0 L50,0 L25,25, L0,0`} />
+        </svg>
       </div>
     </section>
   );
@@ -94,7 +122,7 @@ const PictureSection = () => {
 
 export default function Index() {
   return (
-    <div className="bg-white">
+    <div className="bg-white -mt-[230px]">
       <TitleSection />
       <PictureSection />
     </div>
