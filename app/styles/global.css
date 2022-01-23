@@ -138,7 +138,7 @@
   }
 
   .project-element {
-    @apply relative p-3 overflow-hidden bg-white transition-all duration-500 rounded-xl;
+    @apply relative p-3 overflow-hidden bg-white transition-all duration-500 rounded-md;
   }
 
   .project-element:hover {
@@ -159,6 +159,10 @@
 
   .project-element .project-border-left {
     @apply left-0 top-0 w-[4px] h-full;
+  }
+
+  .project-element .project-border-right {
+    @apply right-0 top-0 w-[4px] h-full;
   }
 
   .project-element:hover .project-border {
