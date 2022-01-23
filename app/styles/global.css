@@ -98,13 +98,6 @@
     @apply text-3xl text-gray-400 mb-6;
   }
 
-  .project-element .subheader {
-    @apply text-gray inline-block relative font-semibold after:absolute after:-bottom-2 after:left-0 after:h-[4px] after:w-full after:bg-gray-600 after:transform after:scale-x-0 after:origin-left after:transition-all after:ease-in-out after:duration-300;
-  }
-
-  .project-element:hover .subheader {
-    @apply after:scale-x-100;
-  }
   /*-----------------------------------END HEADERS---------------------------------------*/
 
   /*-----------------------------------CHECKBOX---------------------------------------*/
@@ -137,4 +130,40 @@
   }
 
   /*-----------------------------------END CHECKBOX---------------------------------------*/
+
+  /*-----------------------------------PROJECT ELEMENT---------------------------------------*/
+
+  .project-element .subheader {
+    @apply text-gray-200 inline-block relative font-semibold mix-blend-difference;
+  }
+
+  .project-element {
+    @apply relative p-3 overflow-hidden bg-white transition-all duration-500 rounded-xl;
+  }
+
+  .project-element:hover {
+    @apply shadow-2xl;
+  }
+
+  .project-border {
+    @apply absolute rounded-full bg-gray transform scale-0 transition-all duration-500;
+  }
+
+  .project-element .project-border-top {
+    @apply top-0 left-0 w-full h-[4px];
+  }
+
+  .project-element .project-border-bottom {
+    @apply bottom-0 left-0 w-full h-[4px];
+  }
+
+  .project-element .project-border-left {
+    @apply left-0 top-0 w-[4px] h-full;
+  }
+
+  .project-element:hover .project-border {
+    @apply scale-100;
+  }
+
+  /*-----------------------------------END PROJECT ELEMENT---------------------------------------*/
 }

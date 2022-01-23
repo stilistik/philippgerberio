@@ -16,14 +16,14 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   return (
     <Link
       to={to}
-      className="relative font-bold text-2xl text-gray pb-1"
+      className="relative font-bold text-2xl text-main pb-1"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
       {children}
       <span
         className={clx(
-          "absolute bottom-0 left-0 border-b-4 w-full transform border-gray-600 transition-all origin-left ease-in-out duration-300",
+          "absolute bottom-0 left-0 border-b-4 w-full transform rounded-full border-gray-600 transition-all origin-left ease-in-out duration-300",
           {
             "scale-x-100": showUnderline,
             "scale-x-0": !showUnderline,
