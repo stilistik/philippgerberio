@@ -6,10 +6,14 @@ import clx from "classnames";
 
 interface ProjectProps {
   project: Project;
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const ProjectElement: React.FC<ProjectProps> = ({
   project,
+  onMouseEnter,
+  onMouseLeave,
   children,
 }) => {
   const [hovered, setHovered] = React.useState(false);
@@ -17,9 +21,8 @@ export const ProjectElement: React.FC<ProjectProps> = ({
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const bbox = e.currentTarget.getBoundingClientRect();
-    const x = ((e.pageX - bbox.x) / bbox.width) * 100;
-    const y = ((e.pageY - bbox.y) / bbox.height) * 100;
-
+    const x = ((e.clientX - bbox.x) / bbox.width) * 100;
+    const y = ((e.clientY - bbox.y) / bbox.height) * 100;
     setPosition({ x, y });
     setHovered(true);
   }
@@ -27,8 +30,12 @@ export const ProjectElement: React.FC<ProjectProps> = ({
   return (
     <div
       className="project-element"
+      onMouseEnter={onMouseEnter}
       onMouseMove={handleMouseMove}
-      onMouseLeave={() => setHovered(false)}
+      onMouseLeave={(e) => {
+        setHovered(false);
+        onMouseLeave(e);
+      }}
     >
       <div className="project-border project-border-top" />
       <div className="project-border project-border-left" />
@@ -41,7 +48,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
           left: position?.x + "%",
           width: "100%",
           height: "100%",
-          transform: `translate(-50%, -100%) scale(${hovered ? 1.6 : 0})`,
+          transform: `translate(-50%, -50%) scale(${hovered ? 1.6 : 0})`,
         }}
       />
       {project.thumbnail ? (

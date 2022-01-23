@@ -26,7 +26,7 @@ export default function Projects() {
   const projects = useLoaderData<Project[]>();
   return (
     <>
-      <div className="my-10">
+      <div className="mb-10">
         <Form method="post">
           <Button type="submit">New Project</Button>
         </Form>
