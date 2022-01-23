@@ -77,11 +77,10 @@ const TitleSection = () => {
             }}
           />
           <h2
-            className="text-[3.5rem] font-black text-center mix-blend-screen origin-bottom"
+            className="text-[3.5rem] text-white font-thin text-center mix-blend-screen origin-bottom"
             style={{
               transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
-              color: "salmon",
             }}
           >
             My name is Philipp
@@ -96,11 +95,10 @@ const TitleSection = () => {
             Hello
           </h1>
           <h2
-            className="text-[3.5rem] font-black text-center mix-blend-screen origin-bottom"
+            className="text-[3.5rem] text-white font-thin text-center mix-blend-screen origin-bottom"
             style={{
               transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
-              color: "salmon",
             }}
           >
             It's nice to meet you.
