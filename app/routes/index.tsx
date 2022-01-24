@@ -134,15 +134,24 @@ const PictureSection = () => {
 
   return (
     <section ref={ref} className="w-full h-[300vh]">
-      <div className="sticky top-0 flex gap-10 px-60 pt-56 items-center">
-        <h2 className="text-[3rem] ">
-          That's me when i was catching Pokemon out in the wilderness of
-          Alabastia.
-        </h2>
-        <img
-          src="me.jpeg"
-          alt="Picture of myself"
-          className="rounded-full shadow-2xl"
+      <div className="sticky top-0 px-60 ">
+        <div
+          className="absolute top-0 left-0 flex justify-center p-10 items-center"
+          style={{ width: "50vw", height: "100vh" }}
+        >
+          <h2 className="text-[3rem]">
+            That's me when i was catching Pokemon out in the wilderness of
+            Alabastia.
+          </h2>
+        </div>
+        <div
+          className="absolute top-0 right-0 h-screen"
+          style={{
+            width: "50vw",
+            backgroundImage: `url(me.jpeg)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 20%",
+          }}
         />
       </div>
     </section>
