@@ -6,8 +6,8 @@ import clx from "classnames";
 
 interface ProjectProps {
   project: Project;
-  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
-  onMouseLeave: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseEnter?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const ProjectElement: React.FC<ProjectProps> = ({
@@ -34,7 +34,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
       onMouseMove={handleMouseMove}
       onMouseLeave={(e) => {
         setHovered(false);
-        onMouseLeave(e);
+        onMouseLeave?.(e);
       }}
     >
       <div className="project-border project-border-top" />
