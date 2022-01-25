@@ -1,7 +1,7 @@
 import { Outlet } from "remix";
 import { PageLayout } from "~/components/main/PageLayout";
 
-export default function AdminProjectsIndex() {
+export default function AdminBlogIndex() {
   return (
     <PageLayout>
       <Outlet />
