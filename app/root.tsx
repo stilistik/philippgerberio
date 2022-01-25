@@ -123,7 +123,7 @@ export default function App() {
         />
         <meta name="theme-color" content="#ffffff"></meta>
       </head>
-      <body className="overflow-x-hidden">
+      <body className="overflow-x-hidden w-screen">
         <MainNav showLogout={hasUser} />
         <Outlet />
         <ScrollRestoration />

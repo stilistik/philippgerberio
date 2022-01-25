@@ -36,6 +36,30 @@ function lerp(percent: number, start: number, end: number) {
   }
 }
 
+function getWidth() {
+  if (typeof document !== "undefined") {
+    return window.innerWidth;
+  } else {
+    return 1200; // default assumed window size for if js is disabled
+  }
+}
+
+function getHeight() {
+  if (typeof document !== "undefined") {
+    return window.innerHeight;
+  } else {
+    return 800; // default assumed window size for if js is disabled
+  }
+}
+
+function useWindowDimensions() {
+  const [dim, setDim] = React.useState({ width: 1200, height: 800 });
+  React.useLayoutEffect(() => {
+    setDim({ width: window.innerWidth, height: window.innerHeight });
+  }, []);
+  return dim;
+}
+
 const Spacer = () => <div className="h-[20vh]"></div>;
 
 const TitleSection = () => {
@@ -55,7 +79,7 @@ const TitleSection = () => {
               width: 500,
               height: 500,
               transform: `translate(${
-                40 - percent * 300
+                40 - percent * (500000 / getWidth())
               }vw, ${-yPercent}px) scale(${0.1 + Math.min(10, percent * 12)})`,
             }}
           >
@@ -130,18 +154,40 @@ const TitleSection = () => {
 
 const PictureSection = () => {
   const { ref, percent } = useScrollPosition();
-  console.log(percent);
-
   return (
     <section ref={ref} className="w-full h-[300vh]">
       <div className="sticky top-0 px-60 ">
         <div
-          className="absolute top-0 left-0 flex justify-center p-10 items-center"
-          style={{ width: "50vw", height: "100vh" }}
+          className="absolute top-0 left-0 flex flex-col gap-10 items-center p-10 justify-center"
+          style={{
+            width: "50vw",
+            height: "100vh",
+            transform: `translate(${-lerp(percent, 0.9, 1.0) * 50}vw, 0)`,
+          }}
         >
-          <h2 className="text-[3rem]">
-            That's me when i was catching Pokemon out in the wilderness of
-            Alabastia.
+          <h2
+            className="text-[3rem]"
+            style={{
+              opacity: 0 + lerp(percent, 0, 0.3),
+            }}
+          >
+            That's me {"->"}
+          </h2>
+          <h2
+            className="text-[3rem]"
+            style={{
+              opacity: 0 + lerp(percent, 0.3, 0.6),
+            }}
+          >
+            I like technology and art
+          </h2>
+          <h2
+            className="text-[3rem] text-center"
+            style={{
+              opacity: 0 + lerp(percent, 0.6, 0.9),
+            }}
+          >
+            I am a software engineer by profession and passion
           </h2>
         </div>
         <div
@@ -151,8 +197,78 @@ const PictureSection = () => {
             backgroundImage: `url(me.jpeg)`,
             backgroundSize: "cover",
             backgroundPosition: "center 20%",
+            transform: `translate(${lerp(percent, 0.9, 1.0) * 50}vw, 0)`,
           }}
         />
+      </div>
+    </section>
+  );
+};
+
+const technologies = [
+  "React",
+  "Remix",
+  "NextJS",
+  "Vue",
+  "Node",
+  "Postgres",
+  "DynamoDB",
+  "JavaScript",
+  "TypeScript",
+  "Python",
+  "Docker",
+  "C#",
+  "C++",
+  "SQL",
+];
+
+const TechnologySection = () => {
+  const { ref, percent } = useScrollPosition();
+  const { width, height } = useWindowDimensions();
+  return (
+    <section ref={ref} className="w-full h-[300vh]">
+      <div className="sticky top-0 p-20 gap-10 bg-white">
+        <div
+          className="absolute top-0 rounded-full bg-black flex items-center justify-center shadow-2xl"
+          style={{
+            width: 500,
+            height: 500,
+            marginLeft: -250,
+            transform: `translate(${10 + percent * 150}vw, ${
+              percent * 80
+            }%) scale(${0.1 + lerp(percent, 0, 0.5) * 3})`,
+          }}
+        />
+        <div className="flex flex-wrap">
+          {technologies.map((tech, i) => {
+            const t_in = 0.6;
+            const inc_in = t_in / technologies.length;
+            const inc_out = 0.4 / technologies.length;
+
+            return (
+              <span
+                className="relative border-r-4 border-white px-10 my-5 text-9xl mix-blend-difference text-white bg-black"
+                style={{
+                  opacity:
+                    lerp(percent, i * inc_in, (i + 1) * inc_in) -
+                    lerp(percent, t_in + i * inc_out, t_in + (i + 1) * inc_out),
+                  transform: `translate(${
+                    10 -
+                    lerp(percent, i * inc_in, (i + 1) * inc_in) * 10 -
+                    lerp(
+                      percent,
+                      t_in + i * inc_out,
+                      t_in + (i + 1) * inc_out
+                    ) *
+                      10
+                  }%, 0)`,
+                }}
+              >
+                {tech}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -163,6 +279,7 @@ export default function Index() {
     <div className="bg-white">
       <TitleSection />
       <PictureSection />
+      <TechnologySection />
     </div>
   );
 }

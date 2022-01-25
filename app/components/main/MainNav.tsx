@@ -11,15 +11,17 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   const [hovered, setHovered] = React.useState(false);
   const location = useLocation();
 
+  const isAdmin = location.pathname.includes("admin");
   const showUnderline = hovered || location.pathname.includes(to);
 
   return (
     <Link
-      to={to}
+      to={isAdmin ? `/admin${to}` : to}
       className="relative font-bold text-2xl text-main pb-1"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
+      {isAdmin ? "Admin:" : ""}
       {children}
       <span
         className={clx(
@@ -40,7 +42,7 @@ interface MainNavProps {
 
 export const MainNav = ({ showLogout = false }: MainNavProps) => {
   return (
-    <div className="flex justify-between items-center container mx-auto px-60 py-20">
+    <div className="w-screen overflow-x-hidden flex justify-between items-center container mx-auto lg:px-60 py-20">
       <div className="flex items-center gap-10">
         <Link to="/" className="mr-10">
           <Button
