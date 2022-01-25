@@ -1,27 +1,24 @@
 import { Post } from "@prisma/client";
-import { Link, useLoaderData } from "remix";
+import { Link, LoaderFunction, useLoaderData } from "remix";
+import { PostElement } from "~/components/elements/PostElement";
 import { db } from "~/utils/db.server";
 
-export function loader() {
+export const loader: LoaderFunction = async () => {
   return db.post.findMany({ where: { published: true } });
-}
+};
 
-export default function Index() {
+export default function Posts() {
   const posts = useLoaderData<Post[]>();
 
   return (
-    <>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
       {posts.map((post) => {
         return (
-          <div key={post.id} className="my-10">
-            <h1 className="font-black text-6xl text-red-400">{post.title}</h1>
-            <h3 className="font-black text-2xl text-gray-400">
-              {post.description}
-            </h3>
-            {post.slug && <Link to={post.slug}>read more</Link>}
-          </div>
+          <Link to={`/posts/${post.slug}`} key={post.id}>
+            <PostElement post={post} />
+          </Link>
         );
       })}
-    </>
+    </div>
   );
 }

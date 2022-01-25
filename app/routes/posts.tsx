@@ -1,7 +1,7 @@
 import { Outlet } from "remix";
 import { PageLayout } from "~/components/main/PageLayout";
 
-export default function ProjectsIndex() {
+export default function BlogIndex() {
   return (
     <PageLayout>
       <Outlet />
