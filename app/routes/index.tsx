@@ -239,7 +239,7 @@ const TechnologySection = () => {
             }%) scale(${0.1 + lerp(percent, 0, 0.5) * 3})`,
           }}
         />
-        <div className="flex flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {technologies.map((tech, i) => {
             const t_in = 0.6;
             const inc_in = t_in / technologies.length;
@@ -247,7 +247,9 @@ const TechnologySection = () => {
 
             return (
               <span
-                className="relative border-r-4 border-white px-10 my-5 text-9xl mix-blend-difference text-white bg-black"
+                className={clx(
+                  "relative px-8 py-3 font-thin text-7xl lg:text-8xl 2xl:text-9xl mix-blend-difference bg-black text-white border-white border-4"
+                )}
                 style={{
                   opacity:
                     lerp(percent, i * inc_in, (i + 1) * inc_in) -

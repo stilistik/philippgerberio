@@ -42,7 +42,7 @@ interface MainNavProps {
 
 export const MainNav = ({ showLogout = false }: MainNavProps) => {
   return (
-    <div className="w-screen overflow-x-hidden flex justify-between items-center container mx-auto lg:px-60 py-20">
+    <div className="w-screen flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20">
       <div className="flex items-center gap-10">
         <Link to="/" className="mr-10">
           <Button
