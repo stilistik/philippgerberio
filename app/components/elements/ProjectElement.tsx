@@ -3,6 +3,7 @@ import { Project } from "@prisma/client";
 import { SubHeader } from "../layout/SubHeader";
 import { ImageIcon } from "~/icons/Image";
 import clx from "classnames";
+import { useIsMobile, useScrollPosition } from "~/utils/hooks";
 
 interface ProjectProps {
   project: Project;
@@ -18,6 +19,19 @@ export const ProjectElement: React.FC<ProjectProps> = ({
 }) => {
   const [hovered, setHovered] = React.useState(false);
   const [position, setPosition] = React.useState({ x: 0, y: 0 });
+  const isMobile = useIsMobile();
+  const { ref, bbox } = useScrollPosition();
+
+  React.useEffect(() => {
+    if (bbox && isMobile) {
+      if (bbox.y > 0 && bbox.y < window.innerHeight / 2) {
+        setHovered(true);
+        setPosition({ x: 25, y: 25 });
+      } else {
+        setHovered(false);
+      }
+    }
+  }, [bbox, isMobile]);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const bbox = e.currentTarget.getBoundingClientRect();
@@ -29,6 +43,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
 
   return (
     <div
+      ref={ref}
       className="project-element"
       onMouseEnter={onMouseEnter}
       onMouseMove={handleMouseMove}

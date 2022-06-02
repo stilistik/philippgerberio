@@ -1,34 +1,7 @@
-import React from "react";
 import clx from "classnames";
 import { Button } from "~/components/interaction/Button";
 import { Link } from "remix";
-
-const useScrollPosition = () => {
-  const ref = React.useRef<HTMLDivElement>(null);
-  const [percent, setPercent] = React.useState<number>(0);
-  const [scrollY, setScrollY] = React.useState<number>(0);
-
-  React.useEffect(() => {
-    function scrollListener() {
-      const bbox = ref.current?.getBoundingClientRect();
-      if (bbox) {
-        const percent = Math.min(
-          1,
-          Math.max(0, -bbox.y) / (bbox.height - window.innerHeight)
-        );
-        setPercent(percent);
-        setScrollY(window.scrollY);
-      }
-    }
-
-    window.addEventListener("scroll", scrollListener);
-    return () => {
-      window.removeEventListener("scroll", scrollListener);
-    };
-  }, []);
-
-  return { ref, percent, scrollY };
-};
+import { useScrollPosition } from "~/utils/hooks";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
