@@ -47,7 +47,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
         <Link to="/" className="mr-5 sm:mr-10">
           <Button
             variant="round"
-            className="text-4xl font-medium"
+            className="text-4xl font-medium shadow-md"
             style={{ width: 70, height: 70 }}
           >
             <span className="-mt-2">pg</span>
