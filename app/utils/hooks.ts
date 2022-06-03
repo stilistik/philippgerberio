@@ -66,6 +66,9 @@ export const useScrollPosition = () => {
       }
     }
 
+    const bbox = ref.current?.getBoundingClientRect();
+    if (bbox) setBbox(bbox);
+
     window.addEventListener("scroll", scrollListener);
     return () => {
       window.removeEventListener("scroll", scrollListener);
@@ -74,3 +77,22 @@ export const useScrollPosition = () => {
 
   return { ref, percent, scrollY, bbox };
 };
+
+export function useMobileAutoHoverOnScroll(
+  setHovered: React.Dispatch<React.SetStateAction<boolean>>
+) {
+  const isMobile = useIsMobile();
+  const { ref, bbox } = useScrollPosition();
+
+  React.useEffect(() => {
+    if (bbox && isMobile) {
+      if (bbox.y > 0 && bbox.y < window.innerHeight / 2) {
+        setHovered(true);
+      } else {
+        setHovered(false);
+      }
+    }
+  }, [bbox, isMobile]);
+
+  return ref;
+}

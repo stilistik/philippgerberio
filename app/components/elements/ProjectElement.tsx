@@ -3,7 +3,11 @@ import { Project } from "@prisma/client";
 import { SubHeader } from "../layout/SubHeader";
 import { ImageIcon } from "~/icons/Image";
 import clx from "classnames";
-import { useIsMobile, useScrollPosition } from "~/utils/hooks";
+import {
+  useIsMobile,
+  useMobileAutoHoverOnScroll,
+  useScrollPosition,
+} from "~/utils/hooks";
 
 interface ProjectProps {
   project: Project;
@@ -17,21 +21,12 @@ export const ProjectElement: React.FC<ProjectProps> = ({
   onMouseLeave,
   children,
 }) => {
-  const [hovered, setHovered] = React.useState(false);
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
   const isMobile = useIsMobile();
-  const { ref, bbox } = useScrollPosition();
-
-  React.useEffect(() => {
-    if (bbox && isMobile) {
-      if (bbox.y > 0 && bbox.y < window.innerHeight / 2) {
-        setHovered(true);
-        setPosition({ x: 25, y: 25 });
-      } else {
-        setHovered(false);
-      }
-    }
-  }, [bbox, isMobile]);
+  const [hovered, setHovered] = React.useState(false);
+  const [position, setPosition] = React.useState(
+    isMobile ? { x: 25, y: 25 } : { x: 0, y: 0 }
+  );
+  const ref = useMobileAutoHoverOnScroll(setHovered);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const bbox = e.currentTarget.getBoundingClientRect();
@@ -52,10 +47,26 @@ export const ProjectElement: React.FC<ProjectProps> = ({
         onMouseLeave?.(e);
       }}
     >
-      <div className="project-border project-border-top" />
-      <div className="project-border project-border-left" />
-      <div className="project-border project-border-bottom" />
-      <div className="project-border project-border-right" />
+      <div
+        className={clx("project-border project-border-top", {
+          "scale-100": hovered,
+        })}
+      />
+      <div
+        className={clx("project-border project-border-left", {
+          "scale-100": hovered,
+        })}
+      />
+      <div
+        className={clx("project-border project-border-bottom", {
+          "scale-100": hovered,
+        })}
+      />
+      <div
+        className={clx("project-border project-border-right", {
+          "scale-100": hovered,
+        })}
+      />
       <div
         className="bg-black absolute rounded-full transition-transform origin-center duration-1000"
         style={{
