@@ -64,7 +64,7 @@ export const PostElement: React.FC<PostProps> = ({
         })}
       />
       <div
-        className="bg-black absolute rounded-full transition-transform origin-center duration-1000"
+        className="bg-black absolute rounded-full transform-gpu transition-transform origin-center duration-1000"
         style={{
           top: position?.y + "%",
           left: position?.x + "%",
@@ -78,7 +78,7 @@ export const PostElement: React.FC<PostProps> = ({
           <img
             src={post.thumbnail}
             className={clx(
-              "rounded-md mix-blend-exclusion border transition-all duration-1000",
+              "rounded-md mix-blend-exclusion border transition-all transform-gpu duration-1000",
               {
                 grayscale: !hovered,
               }

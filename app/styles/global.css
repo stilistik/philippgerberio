@@ -147,7 +147,7 @@
   }
 
   .project-border {
-    @apply absolute rounded-full bg-gray transform scale-0 transition-all duration-500;
+    @apply absolute rounded-full bg-gray transform-gpu scale-0 transition-all duration-500;
   }
 
   .project-element .project-border-top {

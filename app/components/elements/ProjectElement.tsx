@@ -68,7 +68,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
         })}
       />
       <div
-        className="bg-black absolute rounded-full transition-transform origin-center duration-1000"
+        className="bg-black absolute rounded-full transform-gpu transition-all origin-center duration-1000"
         style={{
           top: position?.y + "%",
           left: position?.x + "%",
@@ -82,7 +82,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
           <img
             src={project.thumbnail}
             className={clx(
-              "rounded-md mix-blend-exclusion border transition-all duration-1000",
+              "rounded-md mix-blend-exclusion border transition-all transform-gpu duration-1000",
               {
                 grayscale: !hovered,
               }
