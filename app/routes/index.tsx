@@ -1,7 +1,7 @@
 import clx from "classnames";
 import { Button } from "~/components/interaction/Button";
 import { Link } from "remix";
-import { useScrollPosition } from "~/utils/hooks";
+import { useIsMobile, useScrollPosition } from "~/utils/hooks";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -19,25 +19,101 @@ function getWidth() {
   }
 }
 
+function getHeight() {
+  if (typeof document !== "undefined") {
+    return window.innerHeight;
+  } else {
+    return 800; // default assumed window size for if js is disabled
+  }
+}
+
+interface Factors {
+  topOffset: number;
+  yBallScrollFactor: number;
+  ballTranslationFactor: number;
+  ballScaleMin: number;
+  ballScaleFactor: number;
+}
+
+type BreakPoint = "xs" | "sm" | "md" | "lg" | "xl";
+
+const FACTORS: Record<BreakPoint, Factors> = {
+  xs: {
+    topOffset: 120,
+    yBallScrollFactor: 6.5,
+    ballTranslationFactor: 3.5,
+    ballScaleMin: 5,
+    ballScaleFactor: 18,
+  },
+  sm: {
+    topOffset: 120,
+    yBallScrollFactor: 6.5,
+    ballTranslationFactor: 3.5,
+    ballScaleMin: 5,
+    ballScaleFactor: 18,
+  },
+  md: {
+    topOffset: 120,
+    yBallScrollFactor: 6.5,
+    ballTranslationFactor: 3.5,
+    ballScaleMin: 5,
+    ballScaleFactor: 18,
+  },
+  lg: {
+    topOffset: 0,
+    yBallScrollFactor: 3.5,
+    ballTranslationFactor: 0.2,
+    ballScaleMin: 10,
+    ballScaleFactor: 12,
+  },
+  xl: {
+    topOffset: 0,
+    yBallScrollFactor: 3.5,
+    ballTranslationFactor: 0.2,
+    ballScaleMin: 10,
+    ballScaleFactor: 12,
+  },
+};
+
 const TitleSection = () => {
   const { ref, percent, scrollY } = useScrollPosition();
+  const isMobile = useIsMobile();
+
+  const w = getWidth();
+  const breakPoint =
+    w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
+
+  const ballSize = 500;
+  const initialBallScrollY = 800;
+
+  const {
+    topOffset,
+    yBallScrollFactor,
+    ballTranslationFactor,
+    ballScaleMin,
+    ballScaleFactor,
+  } = FACTORS[breakPoint];
 
   const hasScrolled = scrollY > 0;
-  const yPercent = Math.max(0, 800 - scrollY * 3.5);
+  const yPercent = Math.max(
+    0,
+    initialBallScrollY - scrollY * yBallScrollFactor
+  );
 
-  const d = Math.max(0, percent - 0.5);
   return (
     <section ref={ref} className="w-full h-[300vh]">
-      <div className="sticky top-56 pt-10">
-        <div className="flex flex-col items-center bg-white">
+      <div className="sticky top-56 sm:pt-10">
+        <div className="flex flex-col items-center bg-white overflow-x-hidden">
           <div
             className="absolute top-0 rounded-full bg-black flex items-center justify-center"
             style={{
-              width: 500,
-              height: 500,
+              width: ballSize,
+              height: ballSize,
               transform: `translate(${
-                40 - percent * (500000 / getWidth())
-              }vw, ${-yPercent}px) scale(${0.1 + Math.min(10, percent * 12)})`,
+                40 - percent * getWidth() * ballTranslationFactor
+              }vw, ${-yPercent - topOffset}px) scale(${
+                0.1 + Math.min(ballScaleMin, percent * ballScaleFactor)
+              })`,
             }}
           >
             <div
@@ -50,15 +126,13 @@ const TitleSection = () => {
             />
           </div>
           <div
-            className="bg-white mix-blend-difference origin-bottom rounded-full"
+            className="bg-white mix-blend-difference origin-bottom rounded-full w-[90%] sm:w-[60%] h-[5px] sm:h-[8px]"
             style={{
               transform: `scale(${1 - percent})`,
-              width: 1000,
-              height: 8,
             }}
           />
           <h2
-            className="text-[3.5rem] text-white font-thin text-center mix-blend-screen origin-bottom"
+            className="text-2xl sm:text-[3.5rem] sm:py-6 text-white font-thin text-center mix-blend-screen origin-bottom"
             style={{
               transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
@@ -67,7 +141,7 @@ const TitleSection = () => {
             My name is Philipp
           </h2>
           <h1
-            className="relative text-[20rem] leading-[15rem] font-black text-white bg-black text-center mix-blend-difference origin-top"
+            className="relative text-8xl md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white bg-black text-center mix-blend-difference origin-top"
             style={{
               transform: `translateX(${lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
@@ -76,7 +150,7 @@ const TitleSection = () => {
             Hello
           </h1>
           <h2
-            className="text-[3.5rem] text-white font-thin text-center mix-blend-screen origin-bottom"
+            className="text-2xl sm:text-[3.5rem] sm:py-6 text-white font-thin text-center mix-blend-screen origin-bottom"
             style={{
               transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
               opacity: 1 - lerp(percent, 0.8, 1),
@@ -85,24 +159,24 @@ const TitleSection = () => {
             It's nice to meet you.
           </h2>
           <div
-            className="bg-white mix-blend-difference origin-bottom rounded-full"
+            className="bg-white mix-blend-difference origin-bottom rounded-full w-[90%] sm:w-[60%] h-[5px] sm:h-[8px]"
             style={{
               transform: `scale(${1 - percent})`,
-              width: 1000,
-              height: 8,
             }}
           />
-          <svg
-            width={50}
-            className={clx("mix-blend-difference text-white  mt-16", {
-              "animate-bounce": !hasScrolled,
-            })}
-            style={{
-              transform: `scale(${1 - percent})`,
-            }}
-          >
-            <path fill="currentColor" d={`M0,0 L50,0 L25,25, L0,0`} />
-          </svg>
+          <div className="mix-blend-difference text-white mt-12 sm:mt-16 scale-50 origin-center sm:scale-100">
+            <svg
+              width={50}
+              className={clx("", {
+                "animate-bounce": !hasScrolled,
+              })}
+              style={{
+                transform: `scale(${1 - percent})`,
+              }}
+            >
+              <path fill="currentColor" d={`M0,0 L50,0 L25,25, L0,0`} />
+            </svg>
+          </div>
         </div>
       </div>
     </section>
@@ -184,8 +258,8 @@ export default function Index() {
   return (
     <div className="bg-white">
       <TitleSection />
-      <PictureSection />
-      <FinalSection />
+      {/* <PictureSection /> */}
+      {/* <FinalSection /> */}
     </div>
   );
 }
