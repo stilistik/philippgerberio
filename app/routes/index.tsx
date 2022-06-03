@@ -61,8 +61,8 @@ const FACTORS: Record<BreakPoint, Factors> = {
   },
   lg: {
     topOffset: 0,
-    yBallScrollFactor: 3.5,
-    ballTranslationFactor: 0.2,
+    yBallScrollFactor: 6.5,
+    ballTranslationFactor: 0.6,
     ballScaleMin: 10,
     ballScaleFactor: 12,
   },
@@ -77,11 +77,11 @@ const FACTORS: Record<BreakPoint, Factors> = {
 
 const TitleSection = () => {
   const { ref, percent, scrollY } = useScrollPosition();
-  const isMobile = useIsMobile();
 
   const w = getWidth();
   const breakPoint =
     w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
+  console.log(breakPoint);
 
   const ballSize = 500;
   const initialBallScrollY = 800;
