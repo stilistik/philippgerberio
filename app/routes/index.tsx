@@ -81,8 +81,6 @@ const TitleSection = () => {
   const w = getWidth();
   const breakPoint =
     w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
-  console.log(breakPoint);
-
   const ballSize = 500;
   const initialBallScrollY = 800;
 
@@ -184,10 +182,73 @@ const TitleSection = () => {
 };
 
 const PictureSection = () => {
+  return (
+    <>
+      <DesktopPictureSection />
+      <MobilePictureSection />
+    </>
+  );
+};
+
+const MobilePictureSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[300vh]">
-      <div className="sticky top-0 px-60">
+      <div className="block sm:hidden sticky top-0 overflow-x-hidden">
+        <div
+          className=""
+          style={{
+            width: "100vw",
+            height: "60vh",
+            backgroundImage: `url(me.jpeg)`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 20%",
+            transform: `translate(${lerp(percent, 0.9, 1.0) * 100}vw, 0)`,
+          }}
+        />
+        <div
+          className="flex flex-col gap-10 items-center p-10 justify-center"
+          style={{
+            width: "100vw",
+            height: "40vh",
+            transform: `translate(${-lerp(percent, 0.9, 1.0) * 100}vw, 0)`,
+          }}
+        >
+          <h2
+            className="text-xl"
+            style={{
+              opacity: 0 + lerp(percent, 0, 0.3),
+            }}
+          >
+            That's me ↑
+          </h2>
+          <h2
+            className="text-xl"
+            style={{
+              opacity: 0 + lerp(percent, 0.3, 0.6),
+            }}
+          >
+            I like technology and art
+          </h2>
+          <h2
+            className="text-xl text-center"
+            style={{
+              opacity: 0 + lerp(percent, 0.6, 0.9),
+            }}
+          >
+            I am a software engineer by profession and passion
+          </h2>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const DesktopPictureSection = () => {
+  const { ref, percent } = useScrollPosition();
+  return (
+    <section ref={ref} className="hidden sm:block w-full h-[300vh]">
+      <div className="hidden sm:block sticky top-0 px-60">
         <div
           className="absolute top-0 left-0 flex flex-col gap-10 items-center p-10 justify-center"
           style={{
@@ -241,7 +302,7 @@ const FinalSection = () => {
   return (
     <section ref={ref} className="w-full h-[300vh]">
       <div className="sticky top-0 p-20 gap-10 bg-white">
-        <div className="flex gap-10">
+        <div className="flex flex-col sm:flex-row gap-10">
           <Link to="/projects">
             <Button size="large">See the projects</Button>
           </Link>
@@ -258,8 +319,8 @@ export default function Index() {
   return (
     <div className="bg-white">
       <TitleSection />
-      {/* <PictureSection /> */}
-      {/* <FinalSection /> */}
+      <PictureSection />
+      <FinalSection />
     </div>
   );
 }
