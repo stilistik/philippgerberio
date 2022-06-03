@@ -68,7 +68,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
         })}
       />
       <div
-        className="bg-black absolute rounded-full transform-gpu transition-all origin-center duration-1000"
+        className="bg-black absolute rounded-full transform-gpu transition-transform origin-center duration-1000"
         style={{
           top: position?.y + "%",
           left: position?.x + "%",
