@@ -3,8 +3,11 @@ import {
   ActionFunction,
   Form,
   Link,
+  Links,
   LoaderFunction,
+  Meta,
   redirect,
+  Scripts,
   useLoaderData,
 } from "remix";
 import { ProjectElement } from "~/components/elements/ProjectElement";
@@ -21,6 +24,22 @@ export const action: ActionFunction = async ({ request }) => {
 export const loader: LoaderFunction = async () => {
   return db.project.findMany();
 };
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
 export default function Projects() {
   const projects = useLoaderData<Project[]>();

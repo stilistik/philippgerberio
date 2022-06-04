@@ -1,4 +1,11 @@
-import { ActionFunction, Form, useSearchParams } from "remix";
+import {
+  ActionFunction,
+  Form,
+  Links,
+  Meta,
+  Scripts,
+  useSearchParams,
+} from "remix";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
 import { badRequest } from "~/utils/routing.server";
@@ -34,6 +41,22 @@ export const action: ActionFunction = async ({ request }) => {
 
   return createUserSession(user.id, redirectTo);
 };
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
+  return (
+    <html>
+      <head>
+        <title>Oh no!</title>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
 
 export default function Login() {
   const [searchParams] = useSearchParams();
