@@ -1,5 +1,5 @@
 import { NodeOnDiskFile } from "@remix-run/node";
-import { ActionFunction, redirect } from "remix";
+import { ActionFunction, redirect } from "@remix-run/node";
 import { db } from "~/utils/db.server";
 import { parseFormData } from "~/utils/file.server";
 import { badRequest } from "~/utils/routing.server";

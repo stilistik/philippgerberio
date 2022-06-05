@@ -1,6 +1,6 @@
 import clx from "classnames";
 import { Button } from "~/components/interaction/Button";
-import { Link } from "remix";
+import { Link } from "@remix-run/react";
 import { useIsMobile, useScrollPosition } from "~/utils/hooks";
 
 function lerp(percent: number, start: number, end: number) {

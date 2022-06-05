@@ -1,5 +1,5 @@
 import { Resource } from "@prisma/client";
-import { Form } from "remix";
+import { Form } from "@remix-run/react";
 import { CodeIcon } from "~/icons/Code";
 import { DeleteIcon } from "~/icons/Delete";
 import { LinksIcon } from "~/icons/Links";

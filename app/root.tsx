@@ -1,14 +1,6 @@
-import {
-  Links,
-  LiveReload,
-  LoaderFunction,
-  Meta,
-  Outlet,
-  Scripts,
-  ScrollRestoration,
-  useLoaderData,
-} from "remix";
-import type { MetaFunction } from "remix";
+import type { MetaFunction } from "@remix-run/node";
+import { LoaderFunction } from "@remix-run/node";
+import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
 import styles from "./tailwind.css";
 import highlights from "highlight.js/styles/rainbow.css";
 import { getUserId } from "./utils/session.server";

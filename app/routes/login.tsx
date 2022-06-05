@@ -1,11 +1,5 @@
-import {
-  ActionFunction,
-  Form,
-  Links,
-  Meta,
-  Scripts,
-  useSearchParams,
-} from "remix";
+import { ActionFunction } from "@remix-run/node";
+import { Form, Links, Meta, Scripts, useSearchParams } from "@remix-run/react";
 import { Button } from "~/components/interaction/Button";
 import { Input } from "~/components/interaction/Input";
 import { badRequest } from "~/utils/routing.server";

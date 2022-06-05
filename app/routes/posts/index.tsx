@@ -1,5 +1,6 @@
 import { Post } from "@prisma/client";
-import { Link, LoaderFunction, useLoaderData } from "remix";
+import { LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { PostElement } from "~/components/elements/PostElement";
 import { db } from "~/utils/db.server";
 

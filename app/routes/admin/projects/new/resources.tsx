@@ -1,13 +1,7 @@
 import { Resource } from "@prisma/client";
 import { NodeOnDiskFile } from "@remix-run/node";
-import {
-  ActionFunction,
-  Form,
-  Link,
-  LoaderFunction,
-  useLoaderData,
-  useSubmit,
-} from "remix";
+import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import { Button } from "~/components/interaction/Button";
 import { ResourceBrowser } from "~/components/interaction/ResourceBrowser";
 import { CloseIcon } from "~/icons/Close";

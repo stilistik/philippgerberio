@@ -1,4 +1,4 @@
-import { Link, useLocation } from "remix";
+import { Link, useLocation } from "@remix-run/react";
 import clx from "classnames";
 import React from "react";
 import { Button } from "../interaction/Button";

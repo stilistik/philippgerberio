@@ -1,12 +1,6 @@
 import { Post } from "@prisma/client";
-import {
-  ActionFunction,
-  Form,
-  Link,
-  LoaderFunction,
-  redirect,
-  useLoaderData,
-} from "remix";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { PostElement } from "~/components/elements/PostElement";
 import { Button } from "~/components/interaction/Button";
 import { db } from "~/utils/db.server";

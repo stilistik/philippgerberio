@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { createCookieSessionStorage, redirect } from "remix";
+import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { db } from "./db.server";
 

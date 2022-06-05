@@ -1,7 +1,4 @@
-import {
-  unstable_createFileUploadHandler,
-  unstable_parseMultipartFormData,
-} from "remix";
+import { unstable_createFileUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
 import fs from "fs";
 import path from "path";
 

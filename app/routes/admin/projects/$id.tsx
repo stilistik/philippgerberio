@@ -1,13 +1,6 @@
 import { Project } from "@prisma/client";
-import {
-  ActionFunction,
-  Form,
-  Link,
-  LoaderFunction,
-  Outlet,
-  redirect,
-  useLoaderData,
-} from "remix";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";

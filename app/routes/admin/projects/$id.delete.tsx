@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction, redirect } from "remix";
+import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { db } from "~/utils/db.server";
 import { deletefile } from "~/utils/file.server";

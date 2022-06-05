@@ -1,6 +1,7 @@
 import { Project } from "@prisma/client";
 import React from "react";
-import { Link, LoaderFunction, useLoaderData } from "remix";
+import { LoaderFunction } from "@remix-run/node";
+import { Link, useLoaderData } from "@remix-run/react";
 import { ProjectElement } from "~/components/elements/ProjectElement";
 import { PageLayout } from "~/components/main/PageLayout";
 import { db } from "~/utils/db.server";
