@@ -9,6 +9,11 @@ processes = []
 [env]
   PORT = "8080"
 
+[mounts]
+source="myapp_data"
+destination="/app/public/uploads"
+
+
 [experimental]
   allowed_public_ports = []
   auto_rollback = true
