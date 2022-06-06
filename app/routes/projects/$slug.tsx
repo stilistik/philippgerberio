@@ -5,8 +5,6 @@ import invariant from "tiny-invariant";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { parsemd } from "~/utils/md.server";
-import { MainHeader } from "~/components/layout/MainHeader";
-import { SubHeader } from "~/components/layout/SubHeader";
 
 interface LoaderData {
   project: Project;
@@ -26,20 +24,11 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Project() {
   const { project, html } = useLoaderData<LoaderData>();
   return (
-    <>
-      <MainHeader>{project.title}</MainHeader>
-
-      <img
-        src={project.thumbnail || ""}
-        className="w-full rounded-lg border shadow-lg mb-20"
-      />
-
-      <SubHeader>{project.description}</SubHeader>
-
-      <article
-        className="markdown"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    </>
+    <main>
+      <h1>{project.title}</h1>
+      <img src={project.thumbnail || ""} alt="the project thumbnail image" />
+      <h5>{project.description}</h5>
+      <article dangerouslySetInnerHTML={{ __html: html }} />
+    </main>
   );
 }

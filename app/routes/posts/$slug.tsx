@@ -3,19 +3,31 @@ import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import { db } from "~/utils/db.server";
+import { badRequest } from "~/utils/routing.server";
+import { parsemd } from "~/utils/md.server";
+
+interface LoaderData {
+  post: Post;
+  html: string;
+}
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.slug, "expected params.slug");
-  return db.post.findUnique({ where: { slug: params.slug } });
+  const post = await db.post.findUnique({ where: { slug: params.slug } });
+  if (!post) {
+    return badRequest({ slug: params.slug, error: "Post not found" });
+  }
+  const html = parsemd(post.fullText || "");
+  return { post, html };
 };
 
 export default function Post() {
-  const post = useLoaderData<Post>();
+  const { post, html } = useLoaderData<LoaderData>();
   return (
-    <>
-      <h1 className="font-black text-6xl text-red-400">{post.title}</h1>
-      <h3 className="font-black text-2xl text-gray-400">{post.description}</h3>
-      <article>{post.fullText}</article>
-    </>
+    <main>
+      <h1>{post.title}</h1>
+      <h5>{post.description}</h5>
+      <article dangerouslySetInnerHTML={{ __html: html }} />
+    </main>
   );
 }
