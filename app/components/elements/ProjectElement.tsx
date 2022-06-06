@@ -26,7 +26,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
   const [position, setPosition] = React.useState(
     isMobile ? { x: 25, y: 25 } : { x: 0, y: 0 }
   );
-  const ref = useMobileAutoHoverOnScroll(setHovered);
+  const ref = useMobileAutoHoverOnScroll(hovered, setHovered);
 
   function handleMouseMove(e: React.MouseEvent<HTMLDivElement>) {
     const bbox = e.currentTarget.getBoundingClientRect();

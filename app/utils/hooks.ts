@@ -79,6 +79,7 @@ export const useScrollPosition = () => {
 };
 
 export function useMobileAutoHoverOnScroll(
+  hovered: boolean,
   setHovered: React.Dispatch<React.SetStateAction<boolean>>
 ) {
   const isMobile = useIsMobile();
@@ -87,12 +88,12 @@ export function useMobileAutoHoverOnScroll(
   React.useEffect(() => {
     if (bbox && isMobile) {
       if (bbox.y > 0 && bbox.y < window.innerHeight / 2) {
-        setHovered(true);
+        if (!hovered) setHovered(true);
       } else {
-        setHovered(false);
+        if (hovered) setHovered(false);
       }
     }
-  }, [bbox, isMobile]);
+  }, [hovered, bbox, isMobile]);
 
   return ref;
 }
