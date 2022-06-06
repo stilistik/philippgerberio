@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect("/admin/projects/");
+  return redirect(`/admin/projects/${id}`);
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
