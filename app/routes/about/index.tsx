@@ -54,7 +54,7 @@ export default function About() {
           </p>
         </article>
         <img
-          className="rounded-lg shadow-lg col-span-4"
+          className="rounded-lg shadow-lg col-span-4 col-start-9"
           src="me.jpeg"
           alt="A picture of me"
         />

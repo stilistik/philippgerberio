@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Post() {
   const { post, html } = useLoaderData<LoaderData>();
   return (
-    <main className="main-content">
+    <main>
       <h1>{post.title}</h1>
       <h5>{post.description}</h5>
       <article dangerouslySetInnerHTML={{ __html: html }} />

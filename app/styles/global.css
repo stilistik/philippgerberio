@@ -18,63 +18,63 @@
   /*-----------------------------------END COLORS--------------------------------------*/
 
   /*-----------------------------------MARKDOWN--------------------------------------*/
-  .main-content {
+  main {
     @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl mb-12;
   }
 
-  .main-content h1 {
+  main h1 {
     @apply text-5xl text-gray-600 mb-5 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content h2 {
+  main h2 {
     @apply text-4xl text-gray-600 mb-4 col-span-full  lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content h3 {
+  main h3 {
     @apply text-3xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content h4 {
+  main h4 {
     @apply text-2xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content h5 {
+  main h5 {
     @apply text-xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content h6 {
+  main h6 {
     @apply text-base text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content p {
+  main p {
     @apply mb-3 col-span-full  lg:col-span-8 lg:col-start-3;
   }
 
-  .main-content pre {
+  main pre {
     @apply bg-gray-600 text-white p-5 rounded-2xl shadow-2xl my-5;
   }
 
-  .main-content img {
+  main img {
     @apply rounded-lg shadow-lg my-10 mx-auto col-span-full;
   }
 
-  .main-content video {
+  main video {
     @apply rounded-lg shadow-lg my-10 mx-auto max-w-3xl;
   }
 
-  .main-content a {
+  main a {
     @apply font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-black after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100;
   }
 
-  .main-content blockquote {
+  main blockquote {
     @apply bg-gray-100 rounded-lg py-4 px-8 col-span-full;
   }
 
-  .main-content ul {
+  main ul {
     @apply list-inside list-disc col-span-full;
   }
 
-  .main-content article {
+  main article {
     @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 

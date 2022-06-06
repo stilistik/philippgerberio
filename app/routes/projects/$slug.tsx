@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Project() {
   const { project, html } = useLoaderData<LoaderData>();
   return (
-    <main className="main-content">
+    <main>
       <h1>{project.title}</h1>
       <img src={project.thumbnail || ""} alt="the project thumbnail image" />
       <h5>{project.description}</h5>
