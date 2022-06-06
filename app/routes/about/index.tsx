@@ -49,7 +49,7 @@ export default function About() {
           <p>
             Professionally I am currently working as a senior software engineer
             at a medical startup company called{" "}
-            <a href="www.retinai.com">RetinAI</a> where I am leading and
+            <a href="https://retinai.com">RetinAI</a> where I am leading and
             building the frontend team.
           </p>
         </article>
