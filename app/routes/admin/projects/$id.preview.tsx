@@ -26,20 +26,11 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Project() {
   const { project, html } = useLoaderData<LoaderData>();
   return (
-    <>
-      <MainHeader>{project.title}</MainHeader>
-
-      <img
-        src={project.thumbnail || ""}
-        className="w-full rounded-2xl border shadow-2xl mb-20"
-      />
-
-      <SubHeader>{project.description}</SubHeader>
-
-      <article
-        className="markdown"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-    </>
+    <main className="main-content">
+      <h1>{project.title}</h1>
+      <img src={project.thumbnail || ""} />
+      <h5>{project.description}</h5>
+      <article dangerouslySetInnerHTML={{ __html: html }} />
+    </main>
   );
 }
