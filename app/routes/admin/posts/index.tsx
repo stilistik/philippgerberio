@@ -13,7 +13,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async () => {
-  return db.post.findMany();
+  return db.post.findMany({ orderBy: { createdAt: "desc" } });
 };
 
 export default function Posts() {

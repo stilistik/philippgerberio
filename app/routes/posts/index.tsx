@@ -5,7 +5,10 @@ import { PostElement } from "~/components/elements/PostElement";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
-  return db.post.findMany({ where: { published: true } });
+  return db.post.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "desc" },
+  });
 };
 
 export default function Posts() {

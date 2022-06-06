@@ -1,13 +1,14 @@
 import { Project } from "@prisma/client";
-import React from "react";
 import { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { ProjectElement } from "~/components/elements/ProjectElement";
-import { PageLayout } from "~/components/main/PageLayout";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
-  return db.project.findMany({ where: { published: true } });
+  return db.project.findMany({
+    where: { published: true },
+    orderBy: { createdAt: "desc" },
+  });
 };
 
 export default function Projects() {

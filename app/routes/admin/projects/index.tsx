@@ -1,6 +1,13 @@
 import { Project } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, Link, Links, Meta, Scripts, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  Links,
+  Meta,
+  Scripts,
+  useLoaderData,
+} from "@remix-run/react";
 import { ProjectElement } from "~/components/elements/ProjectElement";
 import { Button } from "~/components/interaction/Button";
 import { db } from "~/utils/db.server";
@@ -13,7 +20,7 @@ export const action: ActionFunction = async ({ request }) => {
 };
 
 export const loader: LoaderFunction = async () => {
-  return db.project.findMany();
+  return db.project.findMany({ orderBy: { createdAt: "desc" } });
 };
 
 export function ErrorBoundary({ error }: { error: Error }) {
