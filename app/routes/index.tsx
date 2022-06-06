@@ -2,6 +2,7 @@ import clx from "classnames";
 import { Button } from "~/components/interaction/Button";
 import { Link } from "@remix-run/react";
 import { useIsMobile, useScrollPosition } from "~/utils/hooks";
+import React from "react";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -33,6 +34,7 @@ interface Factors {
   ballTranslationFactor: number;
   ballScaleMin: number;
   ballScaleFactor: number;
+  leftMarginFactor: number;
 }
 
 type BreakPoint = "xs" | "sm" | "md" | "lg" | "xl";
@@ -44,6 +46,7 @@ const FACTORS: Record<BreakPoint, Factors> = {
     ballTranslationFactor: 3.5,
     ballScaleMin: 5,
     ballScaleFactor: 18,
+    leftMarginFactor: 0.5,
   },
   sm: {
     topOffset: 120,
@@ -51,6 +54,7 @@ const FACTORS: Record<BreakPoint, Factors> = {
     ballTranslationFactor: 3.5,
     ballScaleMin: 5,
     ballScaleFactor: 18,
+    leftMarginFactor: 0,
   },
   md: {
     topOffset: 120,
@@ -58,6 +62,7 @@ const FACTORS: Record<BreakPoint, Factors> = {
     ballTranslationFactor: 3.5,
     ballScaleMin: 5,
     ballScaleFactor: 18,
+    leftMarginFactor: 0,
   },
   lg: {
     topOffset: 0,
@@ -65,6 +70,7 @@ const FACTORS: Record<BreakPoint, Factors> = {
     ballTranslationFactor: 0.6,
     ballScaleMin: 10,
     ballScaleFactor: 12,
+    leftMarginFactor: 0,
   },
   xl: {
     topOffset: 0,
@@ -72,15 +78,25 @@ const FACTORS: Record<BreakPoint, Factors> = {
     ballTranslationFactor: 0.2,
     ballScaleMin: 10,
     ballScaleFactor: 12,
+    leftMarginFactor: 0,
   },
 };
 
+function useBreakPoint() {
+  const [bp, setBp] = React.useState<BreakPoint>("xs");
+
+  React.useEffect(() => {
+    const w = getWidth();
+    const breakPoint =
+      w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
+    setBp(breakPoint);
+  }, []);
+  return bp;
+}
+
 const TitleSection = () => {
   const { ref, percent, scrollY } = useScrollPosition();
-
-  const w = getWidth();
-  const breakPoint =
-    w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
+  const breakPoint = useBreakPoint();
   const ballSize = 500;
   const initialBallScrollY = 800;
 
@@ -193,10 +209,9 @@ const PictureSection = () => {
 const MobilePictureSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
-    <section ref={ref} className="w-full h-[300vh]">
-      <div className="block sm:hidden sticky top-0 overflow-x-hidden">
+    <section ref={ref} className="block sm:hidden w-full h-[300vh]">
+      <div className="sticky top-0 overflow-x-hidden">
         <div
-          className=""
           style={{
             width: "100vw",
             height: "60vh",
@@ -248,7 +263,7 @@ const DesktopPictureSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
     <section ref={ref} className="hidden sm:block w-full h-[300vh]">
-      <div className="hidden sm:block sticky top-0 px-60">
+      <div className="sticky top-0 px-60">
         <div
           className="absolute top-0 left-0 flex flex-col gap-10 items-center p-10 justify-center"
           style={{
@@ -299,16 +314,77 @@ const DesktopPictureSection = () => {
 
 const FinalSection = () => {
   const { ref, percent } = useScrollPosition();
+  const breakPoint = useBreakPoint();
+
+  const { ballScaleFactor, leftMarginFactor } = FACTORS[breakPoint];
+
+  const ballSize = 500;
+
   return (
     <section ref={ref} className="w-full h-[300vh]">
-      <div className="sticky top-0 p-20 gap-10 bg-white">
-        <div className="flex flex-col sm:flex-row gap-10">
-          <Link to="/projects">
-            <Button size="large">See the projects</Button>
-          </Link>
-          <Link to="/posts">
-            <Button size="large">Read the blog</Button>
-          </Link>
+      <div className="sticky top-0 gap-10 bg-white w-screen h-screen overflow-hidden">
+        <div
+          className="absolute top-0 rounded-full bg-black flex items-center justify-center"
+          style={{
+            marginTop: ballSize / 3 + "px",
+            marginLeft: -ballSize * leftMarginFactor + "px",
+            width: ballSize,
+            height: ballSize,
+            transform: `translate(0px, 0px) scale(${
+              0.1 + Math.min(8, percent * ballScaleFactor)
+            })`,
+          }}
+        >
+          <div
+            style={{
+              width: "80%",
+              height: "80%",
+              transform: `scale(${Math.max(0.5, 1 - percent)})`,
+            }}
+            className="absolute bg-white rounded-full origin-right"
+          />
+          <div
+            style={{
+              width: "60%",
+              height: "60%",
+              transform: `scale(${Math.max(0.5, 1 - percent)})`,
+            }}
+            className="absolute bg-black rounded-full origin-right"
+          />
+          <div
+            style={{
+              width: "40%",
+              height: "40%",
+              transform: `scale(${Math.max(0.5, 1 - percent)})`,
+            }}
+            className="absolute bg-white rounded-full origin-right"
+          />
+          <div
+            style={{
+              width: "20%",
+              height: "20%",
+              transform: `scale(${Math.max(0.5, 1 - percent)})`,
+            }}
+            className="absolute bg-black rounded-full origin-right text-white"
+          >
+            <div
+              className="text-white w-full h-full flex flex-col gap-10 items-center"
+              style={{
+                width: 300,
+                marginLeft: -100,
+                marginTop: -10,
+                opacity: 0 + lerp(percent, 0.6, 0.8) * 1,
+                transform: "scale(0.2)",
+              }}
+            >
+              <Link to="/projects">
+                <Button size="large">See the projects</Button>
+              </Link>
+              <Link to="/posts">
+                <Button size="large">Read the blog</Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>
