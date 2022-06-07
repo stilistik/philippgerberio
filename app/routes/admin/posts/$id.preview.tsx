@@ -26,8 +26,8 @@ export default function Project() {
   return (
     <main>
       <h1>{post.title}</h1>
-      <img src={post.thumbnail || ""} />
       <h5>{post.description}</h5>
+      <img src={post.thumbnail || ""} />
       <article dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
