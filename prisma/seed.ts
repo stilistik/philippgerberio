@@ -20,6 +20,15 @@ async function seed() {
       passwordHash: await bcryptjs.hash(ROOT_USER_PASSWORD, 10),
     },
   });
+
+  console.log("Database has been seeded.");
 }
 
-seed();
+seed()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await client.$disconnect();
+  });
