@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect("/admin/posts/");
+  return redirect(`/admin/posts/${id}/preview`);
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -146,7 +146,7 @@ export default function EditProject() {
           defaultChecked={post.published}
         />
         <div>
-          <Button type="submit">Update Post</Button>
+          <Button type="submit">Save & View</Button>
         </div>
       </Form>
       <Outlet />

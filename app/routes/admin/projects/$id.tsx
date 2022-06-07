@@ -1,6 +1,6 @@
 import { Project } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Form, Link, Outlet, useLoaderData, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
@@ -54,7 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect(`/admin/projects/${id}`);
+  return redirect(`/admin/projects/${id}/preview`);
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -146,7 +146,7 @@ export default function EditProject() {
           defaultChecked={project.published}
         />
         <div>
-          <Button type="submit">Update Project</Button>
+          <Button type="submit">Save & View</Button>
         </div>
       </Form>
       <Outlet />
