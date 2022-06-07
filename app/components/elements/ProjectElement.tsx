@@ -74,9 +74,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
           left: position?.x + "%",
           width: "100%",
           height: "100%",
-          transform: `translate3d(-50%, -50%, 0) scale3d(${hovered ? 1.6 : 0},${
-            hovered ? 1.6 : 0
-          },1)`,
+          transform: `translate(-50%, -50%) scale(${hovered ? 1.6 : 0})`,
         }}
       />
       {project.thumbnail ? (
@@ -84,7 +82,7 @@ export const ProjectElement: React.FC<ProjectProps> = ({
           <img
             src={project.thumbnail}
             className={clx(
-              "rounded-md mix-blend-exclusion border transition-all transform-gpu duration-1000",
+              "rounded-md mix-blend-exclusion border transition-all duration-1000",
               {
                 grayscale: !hovered,
               }

@@ -70,9 +70,7 @@ export const PostElement: React.FC<PostProps> = ({
           left: position?.x + "%",
           width: "100%",
           height: "100%",
-          transform: `translate3d(-50%, -50%, 0) scale3d(${hovered ? 1.6 : 0},${
-            hovered ? 1.6 : 0
-          },1)`,
+          transform: `translate(-50%, -50%) scale(${hovered ? 1.6 : 0})`,
         }}
       />
       {post.thumbnail ? (
