@@ -50,6 +50,10 @@ const ResourceDisplay = ({ resource }: ResourceDisplayProps) => {
   }
 };
 
+function truncate(str: string, n: number) {
+  return str.length > n ? str.substr(0, n - 1) + "..." : str;
+}
+
 interface ResourceElementProps {
   resource: Resource;
   onDelete: (e: any) => void;
@@ -68,7 +72,7 @@ const ResourceElement = ({ resource, onDelete }: ResourceElementProps) => {
     <div className="flex mb-2">
       <ResourceDisplay resource={resource} />
       <div>
-        <p>{resource.name}</p>
+        <p>{truncate(resource.name, 25)}</p>
         <div className="flex gap-5 mt-2">
           <IconButton onClick={copyUrl}>
             <LinksIcon />
