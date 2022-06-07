@@ -91,7 +91,7 @@
   }
 
   main blockquote {
-    @apply bg-gray-100 rounded-lg py-4 px-8 col-span-full;
+    @apply bg-gray-100 rounded-lg py-4 px-8 mb-8 col-span-full;
   }
 
   main ul {
