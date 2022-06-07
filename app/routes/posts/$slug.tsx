@@ -26,7 +26,7 @@ export default function Post() {
   return (
     <main>
       <h1>{post.title}</h1>
-      <h5>{post.description}</h5>
+      <h3>{post.description}</h3>
       <article dangerouslySetInnerHTML={{ __html: html }} />
     </main>
   );
