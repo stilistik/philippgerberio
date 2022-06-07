@@ -1,4 +1,4 @@
-import { Link, useLocation } from "@remix-run/react";
+import { Link, useLocation, useNavigate } from "@remix-run/react";
 import clx from "classnames";
 import React from "react";
 import { Button } from "../interaction/Button";
@@ -41,10 +41,27 @@ interface MainNavProps {
 }
 
 export const MainNav = ({ showLogout = false }: MainNavProps) => {
+  const [count, setCount] = React.useState(0);
+  const navigate = useNavigate();
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
+
+  function handleClick(e: React.MouseEvent) {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => setCount(0), 500);
+
+    setCount(count + 1);
+    if (count >= 3) {
+      e.preventDefault();
+      navigate("/admin/projects");
+    }
+  }
+
   return (
     <div className="w-screen overflow-hidden px-3 flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20">
       <div className="flex items-center gap-5 sm:gap-10">
-        <Link to="/" className="mr-5 sm:mr-10">
+        <Link to="/" className="mr-5 sm:mr-10" onClick={handleClick}>
           <Button
             variant="round"
             className="text-4xl font-medium shadow-md"
