@@ -16,6 +16,7 @@ export default function Projects() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      {projects.length === 0 && <h3>No projects yet</h3>}
       {projects.map((project) => {
         return (
           <Link to={`/projects/${project.slug}`} key={project.id}>

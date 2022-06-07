@@ -18,32 +18,56 @@
   /*-----------------------------------END COLORS--------------------------------------*/
 
   /*-----------------------------------MARKDOWN--------------------------------------*/
+  h1 {
+    @apply text-5xl text-gray-600 mb-5;
+  }
+
+  h2 {
+    @apply text-4xl text-gray-600 mb-4;
+  }
+
+  h3 {
+    @apply text-3xl text-gray-600 mb-3;
+  }
+
+  h4 {
+    @apply text-2xl text-gray-600 mb-3;
+  }
+
+  h5 {
+    @apply text-xl text-gray-600 mb-3;
+  }
+
+  h6 {
+    @apply text-base text-gray-600 mb-3;
+  }
+
   main {
     @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl mb-12;
   }
 
   main h1 {
-    @apply text-5xl text-gray-600 mb-5 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main h2 {
-    @apply text-4xl text-gray-600 mb-4 col-span-full  lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main h3 {
-    @apply text-3xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main h4 {
-    @apply text-2xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main h5 {
-    @apply text-xl text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main h6 {
-    @apply text-base text-gray-600 mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main p {
