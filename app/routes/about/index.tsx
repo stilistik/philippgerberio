@@ -19,11 +19,12 @@ export default function About() {
           <p>
             My name is Philipp Gerber, I am{" "}
             {computeAge(new Date("13. April 1991"))} years old and was born and
-            still live in Bern, Switzerland. I have a small family with a{" "}
+            still live in Bern, Switzerland. I have a small family with my
+            wonderful girlfriend Patricia and our{" "}
             {computeAge(new Date("7. May 2021"))} year old daughter who has
-            become the main focus of my attention since she set foot in this
+            become the main focus of our attention since she set foot in this
             world. Besides being a father, I have a profound interest in all
-            things technology as well as art, specifically music.
+            things related to technology as well as art, specially music.
           </p>
 
           <p>
