@@ -10,9 +10,13 @@ export default function About() {
   return (
     <PageLayout>
       <main>
-        <article className="col-span-8 px-4">
-          <h1>About</h1>
-
+        <h1 className="col-start-1">About</h1>
+        <img
+          className="rounded-lg shadow-lg col-span-12 sm:col-span-4 sm:col-start-9 sm:row-start-2 mt-0 mb-5 sm:m-0"
+          src="me.jpeg"
+          alt="A picture of me"
+        />
+        <article className="col-span-12 sm:col-span-8 sm:col-start-1 sm:col-end-8 sm:row-start-2">
           <p>
             My name is Philipp Gerber, I am{" "}
             {computeAge(new Date("13. April 1991"))} years old and was born and
@@ -53,11 +57,6 @@ export default function About() {
             building the frontend team.
           </p>
         </article>
-        <img
-          className="rounded-lg shadow-lg col-span-4 col-start-9"
-          src="me.jpeg"
-          alt="A picture of me"
-        />
       </main>
     </PageLayout>
   );
