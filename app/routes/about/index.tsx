@@ -10,7 +10,6 @@ export default function About() {
   return (
     <PageLayout>
       <main>
-        <h1 className="col-start-1">About</h1>
         <img
           className="rounded-lg shadow-lg col-span-12 sm:col-span-4 sm:col-start-9 sm:row-start-2 mt-0 mb-5 sm:m-0"
           src="me.jpeg"
