@@ -24,11 +24,13 @@ export const loader: LoaderFunction = async ({ params }) => {
 export default function Post() {
   const { post, html } = useLoaderData<LoaderData>();
   return (
-    <main>
-      <h1>{post.title}</h1>
-      <h3>{post.description}</h3>
-      <img src={post.thumbnail || ""} />
-      <article dangerouslySetInnerHTML={{ __html: html }} />
-    </main>
+    <>
+      <header>
+        <h1>{post.title}</h1>
+        <h3>{post.description}</h3>
+        <img src={post.thumbnail || ""} />
+      </header>
+      <main dangerouslySetInnerHTML={{ __html: html }} />
+    </>
   );
 }

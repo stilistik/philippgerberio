@@ -19,27 +19,43 @@
 
   /*-----------------------------------MARKDOWN--------------------------------------*/
   h1 {
-    @apply text-5xl text-gray-600 mb-5;
+    @apply text-5xl text-gray-600;
   }
 
   h2 {
-    @apply text-4xl text-gray-600 mb-4;
+    @apply text-4xl text-gray-600;
   }
 
   h3 {
-    @apply text-3xl text-gray-600 mb-3;
+    @apply text-3xl text-gray-600;
   }
 
   h4 {
-    @apply text-2xl text-gray-600 mb-3;
+    @apply text-2xl text-gray-600;
   }
 
   h5 {
-    @apply text-xl text-gray-600 mb-3;
+    @apply text-xl text-gray-600;
   }
 
   h6 {
-    @apply text-base text-gray-600 mb-3;
+    @apply text-base text-gray-600;
+  }
+
+  header {
+    @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl;
+  }
+
+  header h1 {
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5;
+  }
+
+  header h3 {
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5;
+  }
+
+  header img {
+    @apply rounded-lg shadow-lg mx-auto col-span-full;
   }
 
   main {
@@ -47,27 +63,27 @@
   }
 
   main h1 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
   }
 
   main h2 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
   }
 
   main h3 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
   }
 
   main h4 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
   }
 
   main h5 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
   }
 
   main h6 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3;
+    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
   }
 
   main p {
@@ -91,7 +107,7 @@
   }
 
   main blockquote {
-    @apply bg-gray-100 rounded-lg py-4 px-8 mb-8 col-span-full;
+    @apply bg-gray-100 rounded-lg py-4 px-8 mb-8 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main ul {

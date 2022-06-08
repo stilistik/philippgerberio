@@ -1,4 +1,7 @@
-import { unstable_createFileUploadHandler, unstable_parseMultipartFormData } from "@remix-run/node";
+import {
+  unstable_createFileUploadHandler,
+  unstable_parseMultipartFormData,
+} from "@remix-run/node";
 import fs from "fs";
 import path from "path";
 
@@ -6,7 +9,6 @@ const UPLOAD_DIR = "public/uploads";
 
 export const uploadHandler = unstable_createFileUploadHandler({
   directory: UPLOAD_DIR,
-  maxFileSize: 5_000_000,
   file: ({ filename }) => filename,
 });
 
