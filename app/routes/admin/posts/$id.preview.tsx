@@ -13,12 +13,12 @@ interface LoaderData {
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.id, "expected params.id");
-  const project = await db.project.findUnique({ where: { id: params.id } });
-  if (!project) {
+  const post = await db.post.findUnique({ where: { id: params.id } });
+  if (!post) {
     return badRequest({ id: params.id, error: "Post not found" });
   }
-  const html = parsemd(project.fullText || "");
-  return { project, html };
+  const html = parsemd(post.fullText || "");
+  return { post, html };
 };
 
 export default function Project() {

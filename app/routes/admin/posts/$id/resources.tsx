@@ -2,14 +2,16 @@ import { Resource } from "@prisma/client";
 import { NodeOnDiskFile } from "@remix-run/node";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { ResourceBrowser } from "~/components/interaction/ResourceBrowser";
 import { CloseIcon } from "~/icons/Close";
+import { UploadIcon } from "~/icons/Upload";
 import { db } from "~/utils/db.server";
 import { deletefile, parseFormData } from "~/utils/file.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
-async function handlePostRequest(request: Request) {
+async function handlePostRequest(request: Request, postId: string) {
   const data = await parseFormData(request);
   const file = data.get("file") as NodeOnDiskFile;
 
@@ -18,6 +20,7 @@ async function handlePostRequest(request: Request) {
       name: file.name,
       url: `/uploads/${file.name}`,
       mimetype: file.type,
+      postId,
     },
   });
 }
@@ -34,11 +37,14 @@ async function handleDeleteRequest(request: Request) {
   return deleted;
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   await requireLoggedInUser(request);
+
+  invariant(params.id, "Expected params.id");
+
   switch (request.method) {
     case "POST":
-      return handlePostRequest(request);
+      return handlePostRequest(request, params.id);
     case "DELETE":
       return handleDeleteRequest(request);
     default:
@@ -46,8 +52,9 @@ export const action: ActionFunction = async ({ request }) => {
   }
 };
 
-export const loader: LoaderFunction = () => {
-  return db.resource.findMany();
+export const loader: LoaderFunction = ({ params }) => {
+  invariant(params.id, "Expected params.id");
+  return db.resource.findMany({ where: { postId: params.id } });
 };
 
 export default function Resources() {
@@ -58,32 +65,36 @@ export default function Resources() {
     submit(e.currentTarget, { replace: true });
   };
   return (
-    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen">
-      <div className="flex justify-between">
+    <div className="fixed top-0 right-0 bg-white shadow-2xl h-screen w-96 flex flex-col">
+      <div className="flex justify-between p-3 bg-gray-100">
         <Form
           method="post"
           encType="multipart/form-data"
           onChange={handleChange}
         >
           <input
-            accept="image/*"
+            accept="*"
             style={{ display: "none" }}
             id="upload-input"
             type="file"
             name="file"
           />
-          <br />
           <label htmlFor="upload-input">
-            <span>Upload</span>
+            <div
+              role="button"
+              className="button-base button-small button-variant-default cursor-pointer"
+            >
+              <UploadIcon />
+            </div>
           </label>
         </Form>
         <Link to="../">
-          <Button>
+          <Button size="small">
             <CloseIcon />
           </Button>
         </Link>
       </div>
-      <ResourceBrowser resources={resources} onDelete={handleChange} />;
+      <ResourceBrowser resources={resources} onDelete={handleChange} />
     </div>
   );
 }
