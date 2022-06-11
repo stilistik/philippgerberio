@@ -90,8 +90,12 @@
     @apply mb-3 col-span-full  lg:col-span-8 lg:col-start-3;
   }
 
+  main div {
+    @apply mb-3 col-span-full  lg:col-span-8 lg:col-start-3;
+  }
+
   main pre {
-    @apply bg-gray-600 text-white p-5 rounded-2xl shadow-2xl my-5;
+    @apply bg-gray-600 text-white p-5 rounded-2xl shadow-2xl my-5 col-span-full;
   }
 
   main img {

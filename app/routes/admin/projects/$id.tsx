@@ -4,19 +4,15 @@ import {
   Form,
   Link,
   Outlet,
-  useActionData,
   useLoaderData,
   useSearchParams,
-  useSubmit,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
 import { ContentEditableField } from "~/components/interaction/ContentEditableField";
 import { ImageInput } from "~/components/interaction/ImageInput";
-import { Input } from "~/components/interaction/Input";
-import { MarkdownField } from "~/components/interaction/MarkdownField";
-import { TextArea } from "~/components/interaction/TextArea";
+import { Editor } from "~/components/wysiwyg/Editor";
 import { AirplayIcon } from "~/icons/Airplay";
 import { DeleteIcon } from "~/icons/Delete";
 import { FolderOpenIcon } from "~/icons/FolderOpen";
@@ -118,16 +114,8 @@ export default function EditProject() {
           />
           <ImageInput name="thumbnail" value={thumbnail} />
         </header>
-        <div>
-          <label htmlFor="fullText">Full Text</label>
-          <MarkdownField
-            id="fullText"
-            rows={10}
-            name="fullText"
-            className="w-full"
-            defaultValue={project.fullText || ""}
-          />
-        </div>
+
+        <Editor name="fullText" defaultValue={project.fullText ?? ""} />
         <Checkbox
           label="Published"
           name="published"
