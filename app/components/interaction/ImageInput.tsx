@@ -1,15 +1,14 @@
 import React from "react";
 import { Link } from "@remix-run/react";
 import { ImageIcon } from "~/icons/Image";
-import { Input, InputProps } from "./Input";
 
-export const ImageInput = (props: InputProps) => {
-  const [url, setUrl] = React.useState(props.defaultValue);
+interface ImageInputProps {
+  name: string;
+  value: string;
+}
+
+export const ImageInput = ({ name, value }: ImageInputProps) => {
   const inputRef = React.useRef<HTMLInputElement | null>(null);
-
-  function handleChange(e: any) {
-    setUrl(e.target.value);
-  }
 
   function handleClick() {
     if (!inputRef.current) return;
@@ -18,23 +17,21 @@ export const ImageInput = (props: InputProps) => {
   }
 
   return (
-    <div className="flex gap-3">
-      <Link to="resources">
+    <div className="flex gap-3 col-span-full">
+      <Link to="resources?q=thumbnail" className="w-full">
         <button
           onClick={handleClick}
-          className="w-40 h-40 border rounded-xl cursor-pointer flex items-center justify-center"
+          className="w-full h-[500px] border rounded-xl cursor-pointer flex items-center justify-center"
           style={{
             backgroundPosition: "center center",
-            backgroundImage: `url(${url})`,
+            backgroundImage: `url(${value})`,
             backgroundSize: "cover",
           }}
         >
-          {url ? null : <ImageIcon />}
+          {value ? null : <ImageIcon />}
         </button>
       </Link>
-      <div className="w-full">
-        <Input ref={inputRef} {...props} onChange={handleChange} />
-      </div>
+      <input type="hidden" value={value} name={name} />
     </div>
   );
 };

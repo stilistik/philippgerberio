@@ -1,5 +1,5 @@
 import { Resource } from "@prisma/client";
-import { NodeOnDiskFile } from "@remix-run/node";
+import { NodeOnDiskFile, redirect } from "@remix-run/node";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
 import invariant from "tiny-invariant";

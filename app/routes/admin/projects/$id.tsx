@@ -1,9 +1,18 @@
 import { Project } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, Link, Outlet, useLoaderData, useSubmit } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  Outlet,
+  useActionData,
+  useLoaderData,
+  useSearchParams,
+  useSubmit,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
+import { ContentEditableField } from "~/components/interaction/ContentEditableField";
 import { ImageInput } from "~/components/interaction/ImageInput";
 import { Input } from "~/components/interaction/Input";
 import { MarkdownField } from "~/components/interaction/MarkdownField";
@@ -21,7 +30,6 @@ export const action: ActionFunction = async ({ request }) => {
 
   const id = formData.get("id");
   const title = formData.get("title");
-  const slug = formData.get("slug");
   const fullText = formData.get("fullText");
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
@@ -30,7 +38,6 @@ export const action: ActionFunction = async ({ request }) => {
   if (
     typeof id !== "string" ||
     typeof title !== "string" ||
-    typeof slug !== "string" ||
     typeof fullText !== "string" ||
     typeof description !== "string" ||
     typeof thumbnail !== "string" ||
@@ -40,6 +47,8 @@ export const action: ActionFunction = async ({ request }) => {
       formError: `Form not submitted correctly.`,
     });
   }
+
+  const slug = title.replace(" ", "-").toLowerCase();
 
   await db.project.update({
     where: { id: id },
@@ -64,6 +73,10 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export default function EditProject() {
   const project = useLoaderData<Project>();
+  const searchParams = useSearchParams();
+
+  const thumbnail = searchParams[0].get("thumbnail") ?? "";
+
   return (
     <>
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
@@ -88,47 +101,23 @@ export default function EditProject() {
           </Button>
         </Link>
       </div>
-      <Form method="post" className="flex flex-col gap-5 w-full">
-        <input type="hidden" name="id" value={project.id} />
-        <div>
-          <label htmlFor="title">Project Title</label>
-          <Input
-            type="text"
-            id="title"
+      <Form method="post">
+        <header>
+          <input type="hidden" name="id" value={project.id} />
+          <ContentEditableField
+            element="h1"
             name="title"
-            className="w-full"
-            defaultValue={project.title || ""}
+            placeholder="Project title"
+            defaultValue={project.title ?? ""}
           />
-        </div>
-        <div>
-          <label htmlFor="slug">Project Slug</label>
-          <Input
-            type="text"
-            id="slug"
-            name="slug"
-            className="w-full"
-            defaultValue={project.slug || ""}
-          />
-        </div>
-        <div>
-          <label htmlFor="thumbnail">Thumbnail</label>
-          <ImageInput
-            id="thumbnail"
-            name="thumbnail"
-            className="w-full"
-            defaultValue={project.thumbnail || ""}
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <TextArea
-            id="description"
-            rows={5}
+          <ContentEditableField
+            element="h3"
             name="description"
-            className="w-full"
-            defaultValue={project.description || ""}
+            placeholder="Project description"
+            defaultValue={project.description ?? ""}
           />
-        </div>
+          <ImageInput name="thumbnail" value={thumbnail} />
+        </header>
         <div>
           <label htmlFor="fullText">Full Text</label>
           <MarkdownField
