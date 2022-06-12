@@ -75,7 +75,7 @@
   }
 
   main pre {
-    @apply bg-gray-600 text-white p-5 rounded-2xl shadow-2xl my-5 col-span-full;
+    @apply bg-gray-600 text-white p-5 rounded-lg shadow-2xl my-5 col-span-full;
   }
 
   main img {
@@ -91,7 +91,7 @@
   }
 
   main blockquote {
-    @apply bg-gray-100 rounded-lg py-4 pb-8 px-8 mb-8 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply bg-gray-100 rounded-lg py-4 pb-8 px-8 mb-8 my-10 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main blockquote :is(h1, h2, h3, h4, h5, h6) {
@@ -100,6 +100,10 @@
 
   main ul {
     @apply list-inside list-disc col-span-full;
+  }
+
+  main ol {
+    @apply list-inside list-decimal col-span-full;
   }
 
   main article {

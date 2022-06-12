@@ -13,6 +13,8 @@ import { CodeIcon } from "~/icons/Code";
 import { ImageIcon } from "~/icons/Image";
 import { QuoteIcon } from "~/icons/Quote";
 import { TextIcon } from "~/icons/Text";
+import { OrderedListIcon } from "~/icons/OrderedList";
+import { UnorderedListIcon } from "~/icons/UnorderedList";
 
 export const EditorTools = () => {
   return (
@@ -26,6 +28,8 @@ export const EditorTools = () => {
       <H1 />
       <H2 />
       <H3 />
+      <OrderedList />
+      <UnorderedList />
       <Code />
       <Quote />
       <Image />
@@ -39,13 +43,18 @@ interface CreateToolArgs {
   args?: string;
 }
 
-function createTool({ command, icon, args }: CreateToolArgs) {
+function createTool(
+  icon: React.ReactNode,
+  commands: { command: string; args?: string }[]
+) {
   return function Tool() {
     const [_, forceUpdate] = React.useReducer(() => ({}), {});
 
     function handleClick(e: any) {
       e.preventDefault();
-      document.execCommand(command, false, args);
+      commands.forEach(({ command, args }) => {
+        document.execCommand(command, false, args);
+      });
       forceUpdate();
     }
 
@@ -53,32 +62,29 @@ function createTool({ command, icon, args }: CreateToolArgs) {
   };
 }
 
-const Undo = createTool({ command: "undo", icon: <UndoIcon /> });
-const Redo = createTool({ command: "redo", icon: <RedoIcon /> });
-const Bold = createTool({ command: "bold", icon: <BoldIcon /> });
-const Italic = createTool({ command: "italic", icon: <ItalicIcon /> });
-const Underline = createTool({ command: "underline", icon: <UnderlineIcon /> });
+const Undo = createTool(<UndoIcon />, [{ command: "undo" }]);
+const Redo = createTool(<RedoIcon />, [{ command: "redo" }]);
+const Bold = createTool(<BoldIcon />, [{ command: "bold" }]);
+const Italic = createTool(<ItalicIcon />, [{ command: "italic" }]);
+const Underline = createTool(<UnderlineIcon />, [{ command: "underline" }]);
 
-const H1 = createTool({ command: "formatBlock", icon: <H1Icon />, args: "H1" });
-const H2 = createTool({ command: "formatBlock", icon: <H2Icon />, args: "H2" });
-const H3 = createTool({ command: "formatBlock", icon: <H3Icon />, args: "H3" });
-const Text = createTool({
-  command: "formatBlock",
-  icon: <TextIcon />,
-  args: "P",
-});
+const H1 = createTool(<H1Icon />, [{ command: "formatBlock", args: "h1" }]);
+const H2 = createTool(<H2Icon />, [{ command: "formatBlock", args: "h2" }]);
+const H3 = createTool(<H3Icon />, [{ command: "formatBlock", args: "h3" }]);
+const Text = createTool(<TextIcon />, [{ command: "formatBlock", args: "p" }]);
+const Code = createTool(<CodeIcon />, [
+  { command: "formatBlock", args: "pre" },
+]);
+const Quote = createTool(<QuoteIcon />, [
+  { command: "formatBlock", args: "blockquote" },
+]);
 
-const Code = createTool({
-  command: "formatBlock",
-  icon: <CodeIcon />,
-  args: "PRE",
-});
-
-const Quote = createTool({
-  command: "formatBlock",
-  icon: <QuoteIcon />,
-  args: "blockquote",
-});
+const OrderedList = createTool(<OrderedListIcon />, [
+  { command: "insertOrderedList" },
+]);
+const UnorderedList = createTool(<UnorderedListIcon />, [
+  { command: "insertUnorderedList" },
+]);
 
 const Image = () => {
   return (
