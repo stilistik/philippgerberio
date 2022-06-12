@@ -7,10 +7,10 @@ import {
   Outlet,
   useLoaderData,
   useNavigate,
+  useSubmit,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
-import { Checkbox } from "~/components/interaction/Checkbox";
 import {
   ContentEditableField,
   ContentEditableFieldRef,
@@ -23,6 +23,9 @@ import { FolderOpenIcon } from "~/icons/FolderOpen";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
+import { SaveIcon } from "~/icons/Save";
+import { CheckCircleIcon } from "~/icons/CheckCircle";
+import { CheckCircleBlankIcon } from "~/icons/CheckCircleBlank";
 
 export const action: ActionFunction = async ({ request }) => {
   const userId = await requireLoggedInUser(request, "/admin/login");
@@ -33,7 +36,7 @@ export const action: ActionFunction = async ({ request }) => {
   const fullText = formData.get("fullText");
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
-  const published = Boolean(formData.get("published"));
+  const published = formData.get("published") === "true" ? true : false;
 
   if (
     typeof id !== "string" ||
@@ -63,7 +66,7 @@ export const action: ActionFunction = async ({ request }) => {
     },
   });
 
-  return redirect(`/admin/projects/${id}/preview`);
+  return redirect(`/admin/projects/${id}`);
 };
 
 export const loader: LoaderFunction = async ({ params }) => {
@@ -76,7 +79,10 @@ type ResourcePasteTarget = "text" | "thumbnail";
 export default function EditProject() {
   const project = useLoaderData<Project>();
   const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const publishRef = React.useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const submit = useSubmit();
   const [thumbnail, setThumbnail] = React.useState("");
   const [resourceTarget, setResourceTarget] =
     React.useState<ResourcePasteTarget>("text");
@@ -96,8 +102,62 @@ export default function EditProject() {
     }
   }
 
+  function handleClickThumbnail(e: React.MouseEvent) {
+    e.preventDefault();
+    navigate("resources");
+    setResourceTarget("thumbnail");
+  }
+
+  function handlePublish(e: React.MouseEvent) {
+    e.preventDefault();
+
+    if (publishRef.current) {
+      publishRef.current.value = String(!project.published);
+      console.log(publishRef.current.checked);
+      submit(formRef.current);
+    }
+  }
+
+  function handleSubmit() {
+    submit(formRef.current);
+  }
+
   return (
     <>
+      <Form ref={formRef} method="post">
+        <header>
+          <input type="hidden" name="id" value={project.id} />
+          <input
+            ref={publishRef}
+            type="hidden"
+            name="published"
+            defaultValue={String(project.published)}
+          />
+          <ContentEditableField
+            element="h1"
+            name="title"
+            placeholder="Project title"
+            defaultValue={project.title ?? ""}
+          />
+          <ContentEditableField
+            element="h3"
+            name="description"
+            placeholder="Project description"
+            defaultValue={project.description ?? ""}
+          />
+          <ImageInput
+            name="thumbnail"
+            value={thumbnail || project.thumbnail || ""}
+            onClick={handleClickThumbnail}
+          />
+        </header>
+
+        <Editor
+          ref={editorRef}
+          name="fullText"
+          defaultValue={project.fullText ?? ""}
+        />
+      </Form>
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
         <Form action="delete" method="post">
           <input type="hidden" name="id" value={project.id} />
@@ -119,48 +179,13 @@ export default function EditProject() {
             <FolderOpenIcon />
           </Button>
         </Link>
+        <Button onClick={handlePublish} variant="round">
+          {project.published ? <CheckCircleIcon /> : <CheckCircleBlankIcon />}
+        </Button>
+        <Button onClick={handleSubmit} variant="round">
+          <SaveIcon />
+        </Button>
       </div>
-      <Form method="post">
-        <header>
-          <input type="hidden" name="id" value={project.id} />
-          <ContentEditableField
-            element="h1"
-            name="title"
-            placeholder="Project title"
-            defaultValue={project.title ?? ""}
-          />
-          <ContentEditableField
-            element="h3"
-            name="description"
-            placeholder="Project description"
-            defaultValue={project.description ?? ""}
-          />
-          <ImageInput
-            name="thumbnail"
-            value={thumbnail || project.thumbnail || ""}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("resources");
-              setResourceTarget("thumbnail");
-            }}
-          />
-        </header>
-
-        <Editor
-          ref={editorRef}
-          name="fullText"
-          defaultValue={project.fullText ?? ""}
-        />
-        <Checkbox
-          label="Published"
-          name="published"
-          id="published"
-          defaultChecked={project.published}
-        />
-        <div>
-          <Button type="submit">Save & View</Button>
-        </div>
-      </Form>
       <div className="fixed z-20">
         <Outlet context={{ onImageSelected: handleImageSelected }} />
       </div>

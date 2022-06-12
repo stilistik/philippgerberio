@@ -79,11 +79,11 @@
   }
 
   main img {
-    @apply rounded-lg shadow-lg my-10 mx-auto col-span-full;
+    @apply rounded-lg my-10 mx-auto col-span-full;
   }
 
   main video {
-    @apply rounded-lg shadow-lg my-10 mx-auto max-w-3xl;
+    @apply rounded-lg my-10 mx-auto max-w-3xl;
   }
 
   main a {

@@ -6,6 +6,7 @@ import {
   Outlet,
   useLoaderData,
   useNavigate,
+  useSubmit,
 } from "@remix-run/react";
 import React from "react";
 import invariant from "tiny-invariant";
@@ -18,8 +19,11 @@ import {
 import { ImageInput } from "~/components/interaction/ImageInput";
 import { Editor } from "~/components/wysiwyg/Editor";
 import { AirplayIcon } from "~/icons/Airplay";
+import { CheckCircleIcon } from "~/icons/CheckCircle";
+import { CheckCircleBlankIcon } from "~/icons/CheckCircleBlank";
 import { DeleteIcon } from "~/icons/Delete";
 import { FolderOpenIcon } from "~/icons/FolderOpen";
+import { SaveIcon } from "~/icons/Save";
 import { db } from "~/utils/db.server";
 import { badRequest } from "~/utils/routing.server";
 import { requireLoggedInUser } from "~/utils/session.server";
@@ -33,7 +37,7 @@ export const action: ActionFunction = async ({ request }) => {
   const fullText = formData.get("fullText");
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
-  const published = Boolean(formData.get("published"));
+  const published = formData.get("published") === "true" ? true : false;
 
   if (
     typeof id !== "string" ||
@@ -75,9 +79,11 @@ type ResourcePasteTarget = "text" | "thumbnail";
 
 export default function EditPost() {
   const post = useLoaderData<Post>();
-
   const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const publishRef = React.useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+  const submit = useSubmit();
   const [thumbnail, setThumbnail] = React.useState("");
   const [resourceTarget, setResourceTarget] =
     React.useState<ResourcePasteTarget>("text");
@@ -95,6 +101,26 @@ export default function EditPost() {
         setResourceTarget("text");
       }
     }
+  }
+
+  function handleClickThumbnail(e: React.MouseEvent) {
+    e.preventDefault();
+    navigate("resources");
+    setResourceTarget("thumbnail");
+  }
+
+  function handlePublish(e: React.MouseEvent) {
+    e.preventDefault();
+
+    if (publishRef.current) {
+      publishRef.current.value = String(!post.published);
+      console.log(publishRef.current.checked);
+      submit(formRef.current);
+    }
+  }
+
+  function handleSubmit() {
+    submit(formRef.current);
   }
 
   return (
@@ -121,9 +147,15 @@ export default function EditPost() {
           </Button>
         </Link>
       </div>
-      <Form method="post">
+      <Form method="post" ref={formRef}>
         <header>
           <input type="hidden" name="id" value={post.id} />
+          <input
+            ref={publishRef}
+            type="hidden"
+            name="published"
+            defaultValue={String(post.published)}
+          />
           <ContentEditableField
             element="h1"
             name="title"
@@ -139,11 +171,7 @@ export default function EditPost() {
           <ImageInput
             name="thumbnail"
             value={thumbnail || post.thumbnail || ""}
-            onClick={(e) => {
-              e.preventDefault();
-              navigate("resources");
-              setResourceTarget("thumbnail");
-            }}
+            onClick={handleClickThumbnail}
           />
         </header>
         <Editor
@@ -151,16 +179,35 @@ export default function EditPost() {
           name="fullText"
           defaultValue={post.fullText ?? ""}
         />
-        <Checkbox
-          label="Published"
-          name="published"
-          id="published"
-          defaultChecked={post.published}
-        />
-        <div>
-          <Button type="submit">Save & View</Button>
-        </div>
       </Form>
+      <div className="fixed bottom-10 right-10 flex flex-col gap-5">
+        <Form action="delete" method="post">
+          <input type="hidden" name="id" value={post.id} />
+          <Button
+            type="submit"
+            variant="round"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <DeleteIcon />
+          </Button>
+        </Form>
+        <Link to="preview">
+          <Button variant="round">
+            <AirplayIcon />
+          </Button>
+        </Link>
+        <Link to="resources">
+          <Button variant="round">
+            <FolderOpenIcon />
+          </Button>
+        </Link>
+        <Button onClick={handlePublish} variant="round">
+          {post.published ? <CheckCircleIcon /> : <CheckCircleBlankIcon />}
+        </Button>
+        <Button onClick={handleSubmit} variant="round">
+          <SaveIcon />
+        </Button>
+      </div>
       <div className="fixed z-20">
         <Outlet context={{ onImageSelected: handleImageSelected }} />
       </div>
