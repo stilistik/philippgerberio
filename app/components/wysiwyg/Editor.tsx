@@ -4,6 +4,7 @@ import {
   ContentEditableFieldRef,
 } from "../interaction/ContentEditableField";
 import { EditorTools } from "./EditorTools";
+import hljs from "highlight.js";
 
 interface EditorProps {
   name: string;
@@ -12,11 +13,22 @@ interface EditorProps {
 
 export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
   ({ name, defaultValue }, ref) => {
+    const editorRef = React.useRef<ContentEditableFieldRef>(null);
+
+    React.useImperativeHandle(ref, () => editorRef.current as any);
+
+    React.useEffect(() => {
+      document.querySelectorAll("pre").forEach((el: any) => {
+        console.log(el);
+        hljs.highlightElement(el);
+      });
+    }, []);
+
     return (
       <>
         <EditorTools />
         <ContentEditableField
-          ref={ref}
+          ref={editorRef}
           element="main"
           name={name}
           defaultValue={defaultValue}
