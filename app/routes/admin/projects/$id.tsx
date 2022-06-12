@@ -65,13 +65,26 @@ export const loader: LoaderFunction = async ({ params }) => {
   return db.project.findUnique({ where: { id: params.id } });
 };
 
+type ResourcePasteTarget = "text" | "thumbnail";
+
 export default function EditProject() {
   const project = useLoaderData<Project>();
   const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const [thumbnail, setThumbnail] = React.useState("");
+  const [resourceTarget, setResourceTarget] =
+    React.useState<ResourcePasteTarget>("text");
 
   function handleImageSelected(url: string) {
-    if (editorRef.current) {
-      editorRef.current.appendContent(`<img src=${url} />`);
+    switch (resourceTarget) {
+      case "text": {
+        if (editorRef.current) {
+          editorRef.current.appendContent(`<img src=${url} />`);
+        }
+        break;
+      }
+      case "thumbnail": {
+        setThumbnail(url);
+      }
     }
   }
 
@@ -114,7 +127,14 @@ export default function EditProject() {
             placeholder="Project description"
             defaultValue={project.description ?? ""}
           />
-          <ImageInput name="thumbnail" value={""} />
+          <ImageInput
+            name="thumbnail"
+            value={thumbnail || project.thumbnail || ""}
+            onClick={(e) => {
+              e.preventDefault();
+              setResourceTarget("thumbnail");
+            }}
+          />
         </header>
 
         <Editor
@@ -132,7 +152,9 @@ export default function EditProject() {
           <Button type="submit">Save & View</Button>
         </div>
       </Form>
-      <Outlet context={{ onImageSelected: handleImageSelected }} />
+      <div className="fixed z-20">
+        <Outlet context={{ onImageSelected: handleImageSelected }} />
+      </div>
     </>
   );
 }

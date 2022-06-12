@@ -1,10 +1,21 @@
-import { redirect } from "@remix-run/node";
-import { Link } from "@remix-run/react";
 import React from "react";
+import { Link } from "@remix-run/react";
+import { BoldIcon } from "~/icons/Bold";
+import { ItalicIcon } from "~/icons/Italic";
+import { RedoIcon } from "~/icons/Redo";
+import { UnderlineIcon } from "~/icons/Underline";
+import { UndoIcon } from "~/icons/Undo";
+import { IconButton } from "../interaction/IconButton";
+import { H1Icon } from "~/icons/H1";
+import { H2Icon } from "~/icons/H2";
+import { H3Icon } from "~/icons/H3";
+import { CodeIcon } from "~/icons/Code";
+import { ImageIcon } from "~/icons/Image";
+import { QuoteIcon } from "~/icons/Quote";
 
-export const EditorTools: React.FC = ({ children }) => {
+export const EditorTools = () => {
   return (
-    <div className="flex gap-10 border-b border-gray-400">
+    <div className="sticky top-0 flex gap-10 border-b bg-white p-3 px-6 z-10">
       <Undo />
       <Redo />
       <Bold />
@@ -14,83 +25,60 @@ export const EditorTools: React.FC = ({ children }) => {
       <H2 />
       <H3 />
       <Code />
+      <Quote />
       <Image />
     </div>
   );
 };
 
-const Undo = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("undo");
-  }
-  return <button onClick={handleClick}>Undo</button>;
-};
+interface CreateToolArgs {
+  command: string;
+  icon: React.ReactNode;
+  args?: string;
+}
 
-const Redo = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("redo");
-  }
-  return <button onClick={handleClick}>Redo</button>;
-};
+function createTool({ command, icon, args }: CreateToolArgs) {
+  return function Tool() {
+    const [_, forceUpdate] = React.useReducer(() => ({}), {});
 
-const Bold = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("bold");
-  }
-  return <button onClick={handleClick}>B</button>;
-};
+    function handleClick(e: any) {
+      e.preventDefault();
+      document.execCommand(command, false, args);
+      forceUpdate();
+    }
 
-const Italic = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("italic");
-  }
-  return <button onClick={handleClick}>I</button>;
-};
+    return <IconButton onClick={handleClick}>{icon}</IconButton>;
+  };
+}
 
-const Underline = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("underline");
-  }
-  return <button onClick={handleClick}>U</button>;
-};
+const Undo = createTool({ command: "undo", icon: <UndoIcon /> });
+const Redo = createTool({ command: "redo", icon: <RedoIcon /> });
+const Bold = createTool({ command: "bold", icon: <BoldIcon /> });
+const Italic = createTool({ command: "italic", icon: <ItalicIcon /> });
+const Underline = createTool({ command: "underline", icon: <UnderlineIcon /> });
 
-const H1 = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("formatBlock", false, "H1");
-  }
-  return <button onClick={handleClick}>h1</button>;
-};
+const H1 = createTool({ command: "formatBlock", icon: <H1Icon />, args: "H1" });
+const H2 = createTool({ command: "formatBlock", icon: <H2Icon />, args: "H2" });
+const H3 = createTool({ command: "formatBlock", icon: <H3Icon />, args: "H3" });
 
-const H2 = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("formatBlock", false, "H2");
-  }
-  return <button onClick={handleClick}>h2</button>;
-};
+const Code = createTool({
+  command: "formatBlock",
+  icon: <CodeIcon />,
+  args: "PRE",
+});
 
-const H3 = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("formatBlock", false, "H3");
-  }
-  return <button onClick={handleClick}>h3</button>;
-};
-
-const Code = () => {
-  function handleClick(e: any) {
-    e.preventDefault();
-    document.execCommand("formatBlock", false, "PRE");
-  }
-  return <button onClick={handleClick}>Code</button>;
-};
+const Quote = createTool({
+  command: "formatBlock",
+  icon: <QuoteIcon />,
+  args: "blockquote",
+});
 
 const Image = () => {
-  return <Link to="resources?q=image">Image</Link>;
+  return (
+    <Link to="resources?q=image">
+      <IconButton>
+        <ImageIcon />
+      </IconButton>
+    </Link>
+  );
 };
