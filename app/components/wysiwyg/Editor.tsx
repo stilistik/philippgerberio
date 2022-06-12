@@ -6,6 +6,18 @@ import {
 import { EditorTools } from "./EditorTools";
 import hljs from "highlight.js";
 
+interface EditorContextValue {
+  focus: () => void;
+}
+
+const EditorContext = React.createContext<EditorContextValue | undefined>(
+  undefined
+);
+
+export const useEditorContext = () => {
+  return React.useContext(EditorContext);
+};
+
 interface EditorProps {
   name: string;
   defaultValue: string;
@@ -24,8 +36,14 @@ export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
       });
     }, []);
 
+    function focus() {
+      if (editorRef.current?.editor) {
+        editorRef.current?.editor.focus();
+      }
+    }
+
     return (
-      <>
+      <EditorContext.Provider value={{ focus }}>
         <EditorTools />
         <ContentEditableField
           ref={editorRef}
@@ -34,7 +52,7 @@ export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
           defaultValue={defaultValue}
           placeholder="<h1>Enter Text</h1><div><p>This is a paragraph</p></div>"
         />
-      </>
+      </EditorContext.Provider>
     );
   }
 );

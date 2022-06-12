@@ -15,6 +15,7 @@ import { QuoteIcon } from "~/icons/Quote";
 import { TextIcon } from "~/icons/Text";
 import { OrderedListIcon } from "~/icons/OrderedList";
 import { UnorderedListIcon } from "~/icons/UnorderedList";
+import { useEditorContext } from "./Editor";
 
 export const EditorTools = () => {
   return (
@@ -49,6 +50,7 @@ function createTool(
 ) {
   return function Tool() {
     const [_, forceUpdate] = React.useReducer(() => ({}), {});
+    const editor = useEditorContext();
 
     function handleClick(e: any) {
       e.preventDefault();
@@ -56,6 +58,7 @@ function createTool(
         document.execCommand(command, false, args);
       });
       forceUpdate();
+      editor?.focus();
     }
 
     return <IconButton onClick={handleClick}>{icon}</IconButton>;

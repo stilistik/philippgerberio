@@ -92,7 +92,9 @@ export default function EditPost() {
     switch (resourceTarget) {
       case "text": {
         if (editorRef.current) {
-          editorRef.current.appendContent(`<img src=${url} />`);
+          editorRef.current.insertContent(
+            `<img class="prose-image" src=${url} />`
+          );
         }
         break;
       }

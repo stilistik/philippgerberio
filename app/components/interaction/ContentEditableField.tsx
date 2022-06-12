@@ -3,7 +3,8 @@ import React from "react";
 export interface ContentEditableFieldRef {
   editor: HTMLHeadingElement | HTMLParagraphElement | HTMLSpanElement | null;
   setContent: (html: string) => void;
-  appendContent: (html: string) => void;
+  insertContent: (html: string) => void;
+  update: () => void;
 }
 
 interface EditableTextFieldProps {
@@ -27,7 +28,8 @@ export const ContentEditableField = React.forwardRef<
   React.useImperativeHandle(ref, () => ({
     editor: editorRef.current,
     setContent,
-    appendContent,
+    insertContent,
+    update,
   }));
 
   React.useEffect(() => {
@@ -40,19 +42,23 @@ export const ContentEditableField = React.forwardRef<
     }
   }, [defaultValue, placeholder]);
 
-  const appendContent = React.useCallback((html: string) => {
-    if (editorRef.current) {
-      editorRef.current.innerHTML += html;
-      inputRef.current.value = editorRef.current.innerHTML;
-    }
+  const insertContent = React.useCallback((html: string) => {
+    document.execCommand("insertHTML", false, html);
+    update();
   }, []);
 
   const setContent = React.useCallback((html: string) => {
     if (editorRef.current) {
       editorRef.current.innerHTML = html;
-      inputRef.current.value = html;
+      update();
     }
   }, []);
+
+  function update() {
+    if (inputRef.current && editorRef.current) {
+      inputRef.current.value = editorRef.current.innerHTML;
+    }
+  }
 
   function handleChange(e: React.FormEvent) {
     const value = e.currentTarget.innerHTML ?? placeholder;
