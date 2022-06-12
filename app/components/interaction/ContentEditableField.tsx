@@ -37,6 +37,7 @@ export const ContentEditableField = React.forwardRef<
   function handleChange(e: React.FormEvent) {
     const value = e.currentTarget.innerHTML ?? placeholder;
     inputRef.current.value = value;
+    console.log(value);
   }
 
   function handleBlur(e: React.FormEvent) {

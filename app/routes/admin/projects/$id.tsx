@@ -1,12 +1,7 @@
+import React from "react";
 import { Project } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import {
-  Form,
-  Link,
-  Outlet,
-  useLoaderData,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
@@ -69,9 +64,13 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export default function EditProject() {
   const project = useLoaderData<Project>();
-  const searchParams = useSearchParams();
+  const editorRef = React.useRef<any>(null);
 
-  const thumbnail = searchParams[0].get("thumbnail") ?? "";
+  function handleImageSelected(url: string) {
+    if (editorRef.current) {
+      editorRef.current.appendContent(`<img src=${url} />`);
+    }
+  }
 
   return (
     <>
@@ -112,10 +111,14 @@ export default function EditProject() {
             placeholder="Project description"
             defaultValue={project.description ?? ""}
           />
-          <ImageInput name="thumbnail" value={thumbnail} />
+          <ImageInput name="thumbnail" value={""} />
         </header>
 
-        <Editor name="fullText" defaultValue={project.fullText ?? ""} />
+        <Editor
+          ref={editorRef}
+          name="fullText"
+          defaultValue={project.fullText ?? ""}
+        />
         <Checkbox
           label="Published"
           name="published"
@@ -126,7 +129,7 @@ export default function EditProject() {
           <Button type="submit">Save & View</Button>
         </div>
       </Form>
-      <Outlet />
+      <Outlet context={{ onImageSelected: handleImageSelected }} />
     </>
   );
 }

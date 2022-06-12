@@ -1,5 +1,10 @@
 import { Resource } from "@prisma/client";
-import { Form, Link, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  useOutletContext,
+  useSearchParams,
+} from "@remix-run/react";
 import { CodeIcon } from "~/icons/Code";
 import { DeleteIcon } from "~/icons/Delete";
 import { LinksIcon } from "~/icons/Links";
@@ -60,7 +65,13 @@ interface ResourceElementProps {
 }
 
 const ResourceElement = ({ resource, onDelete }: ResourceElementProps) => {
-  const q = useSearchParams()[0].get("q");
+  const ctx = useOutletContext<any>();
+
+  function handleClick() {
+    if (ctx?.onImageSelected) {
+      ctx.onImageSelected(resource.url);
+    }
+  }
 
   function copyUrl() {
     navigator.clipboard.writeText(resource.url);
@@ -72,9 +83,9 @@ const ResourceElement = ({ resource, onDelete }: ResourceElementProps) => {
 
   return (
     <div className="flex mb-2">
-      <Link to={`..?${q}=${resource.url}`}>
+      <button onClick={handleClick}>
         <ResourceDisplay resource={resource} />
-      </Link>
+      </button>
       <div>
         <p>{truncate(resource.name, 25)}</p>
         <div className="flex gap-5 mt-2">
