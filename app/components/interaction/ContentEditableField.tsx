@@ -1,5 +1,11 @@
 import React from "react";
 
+export interface ContentEditableFieldRef {
+  editor: HTMLHeadingElement | HTMLParagraphElement | HTMLSpanElement | null;
+  setContent: (html: string) => void;
+  appendContent: (html: string) => void;
+}
+
 interface EditableTextFieldProps {
   name: string;
   placeholder: string;
@@ -8,10 +14,12 @@ interface EditableTextFieldProps {
 }
 
 export const ContentEditableField = React.forwardRef<
-  any,
+  ContentEditableFieldRef,
   EditableTextFieldProps
 >(({ name, placeholder, element: Element, defaultValue }, ref) => {
-  const editorRef = React.useRef<any>(null);
+  const editorRef = React.useRef<
+    HTMLHeadElement & HTMLParagraphElement & HTMLSpanElement
+  >(null);
   const inputRef = React.useRef<any>(null);
 
   React.useImperativeHandle(ref, () => ({
@@ -25,13 +33,17 @@ export const ContentEditableField = React.forwardRef<
   }, [defaultValue]);
 
   const appendContent = React.useCallback((html: string) => {
-    editorRef.current.innerHTML += html;
-    inputRef.current.value = editorRef.current.innerHTML;
+    if (editorRef.current) {
+      editorRef.current.innerHTML += html;
+      inputRef.current.value = editorRef.current.innerHTML;
+    }
   }, []);
 
   const setContent = React.useCallback((html: string) => {
-    editorRef.current.innerHTML = html;
-    inputRef.current.value = html;
+    if (editorRef.current) {
+      editorRef.current.innerHTML = html;
+      inputRef.current.value = html;
+    }
   }, []);
 
   function handleChange(e: React.FormEvent) {
@@ -41,7 +53,7 @@ export const ContentEditableField = React.forwardRef<
   }
 
   function handleBlur(e: React.FormEvent) {
-    if (!e.currentTarget.innerHTML) {
+    if (!e.currentTarget.innerHTML && editorRef.current) {
       editorRef.current.innerHTML = placeholder;
     }
   }

@@ -5,7 +5,10 @@ import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
-import { ContentEditableField } from "~/components/interaction/ContentEditableField";
+import {
+  ContentEditableField,
+  ContentEditableFieldRef,
+} from "~/components/interaction/ContentEditableField";
 import { ImageInput } from "~/components/interaction/ImageInput";
 import { Editor } from "~/components/wysiwyg/Editor";
 import { AirplayIcon } from "~/icons/Airplay";
@@ -64,7 +67,7 @@ export const loader: LoaderFunction = async ({ params }) => {
 
 export default function EditProject() {
   const project = useLoaderData<Project>();
-  const editorRef = React.useRef<any>(null);
+  const editorRef = React.useRef<ContentEditableFieldRef>(null);
 
   function handleImageSelected(url: string) {
     if (editorRef.current) {

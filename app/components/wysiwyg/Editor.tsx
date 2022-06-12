@@ -1,5 +1,8 @@
 import React from "react";
-import { ContentEditableField } from "../interaction/ContentEditableField";
+import {
+  ContentEditableField,
+  ContentEditableFieldRef,
+} from "../interaction/ContentEditableField";
 import { EditorTools } from "./EditorTools";
 
 interface EditorProps {
@@ -7,7 +10,7 @@ interface EditorProps {
   defaultValue: string;
 }
 
-export const Editor = React.forwardRef<any, EditorProps>(
+export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
   ({ name, defaultValue }, ref) => {
     return (
       <>
