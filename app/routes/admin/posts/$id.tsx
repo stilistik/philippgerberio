@@ -1,13 +1,22 @@
-import { Post, Project } from "@prisma/client";
+import { Post } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  Outlet,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
+import React from "react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
+import {
+  ContentEditableField,
+  ContentEditableFieldRef,
+} from "~/components/interaction/ContentEditableField";
 import { ImageInput } from "~/components/interaction/ImageInput";
-import { Input } from "~/components/interaction/Input";
-import { MarkdownField } from "~/components/interaction/MarkdownField";
-import { TextArea } from "~/components/interaction/TextArea";
+import { Editor } from "~/components/wysiwyg/Editor";
 import { AirplayIcon } from "~/icons/Airplay";
 import { DeleteIcon } from "~/icons/Delete";
 import { FolderOpenIcon } from "~/icons/FolderOpen";
@@ -21,7 +30,6 @@ export const action: ActionFunction = async ({ request }) => {
 
   const id = formData.get("id");
   const title = formData.get("title");
-  const slug = formData.get("slug");
   const fullText = formData.get("fullText");
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
@@ -30,7 +38,6 @@ export const action: ActionFunction = async ({ request }) => {
   if (
     typeof id !== "string" ||
     typeof title !== "string" ||
-    typeof slug !== "string" ||
     typeof fullText !== "string" ||
     typeof description !== "string" ||
     typeof thumbnail !== "string" ||
@@ -40,6 +47,8 @@ export const action: ActionFunction = async ({ request }) => {
       formError: `Form not submitted correctly.`,
     });
   }
+
+  const slug = title.replace(" ", "-").toLowerCase();
 
   await db.post.update({
     where: { id: id },
@@ -62,8 +71,32 @@ export const loader: LoaderFunction = async ({ params }) => {
   return db.post.findUnique({ where: { id: params.id } });
 };
 
-export default function EditProject() {
+type ResourcePasteTarget = "text" | "thumbnail";
+
+export default function EditPost() {
   const post = useLoaderData<Post>();
+
+  const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const navigate = useNavigate();
+  const [thumbnail, setThumbnail] = React.useState("");
+  const [resourceTarget, setResourceTarget] =
+    React.useState<ResourcePasteTarget>("text");
+
+  function handleImageSelected(url: string) {
+    switch (resourceTarget) {
+      case "text": {
+        if (editorRef.current) {
+          editorRef.current.appendContent(`<img src=${url} />`);
+        }
+        break;
+      }
+      case "thumbnail": {
+        setThumbnail(url);
+        setResourceTarget("text");
+      }
+    }
+  }
+
   return (
     <>
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
@@ -88,57 +121,36 @@ export default function EditProject() {
           </Button>
         </Link>
       </div>
-      <Form method="post" className="flex flex-col gap-5 w-full">
-        <input type="hidden" name="id" value={post.id} />
-        <div>
-          <label htmlFor="title">Post Title</label>
-          <Input
-            type="text"
-            id="title"
+      <Form method="post">
+        <header>
+          <input type="hidden" name="id" value={post.id} />
+          <ContentEditableField
+            element="h1"
             name="title"
-            className="w-full"
-            defaultValue={post.title || ""}
+            placeholder="Post title"
+            defaultValue={post.title ?? ""}
           />
-        </div>
-        <div>
-          <label htmlFor="slug">Post Slug</label>
-          <Input
-            type="text"
-            id="slug"
-            name="slug"
-            className="w-full"
-            defaultValue={post.slug || ""}
-          />
-        </div>
-        <div>
-          <label htmlFor="thumbnail">Thumbnail</label>
-          <ImageInput
-            id="thumbnail"
-            name="thumbnail"
-            className="w-full"
-            defaultValue={post.thumbnail || ""}
-          />
-        </div>
-        <div>
-          <label htmlFor="description">Description</label>
-          <TextArea
-            id="description"
-            rows={5}
+          <ContentEditableField
+            element="h3"
             name="description"
-            className="w-full"
-            defaultValue={post.description || ""}
+            placeholder="Post description"
+            defaultValue={post.description ?? ""}
           />
-        </div>
-        <div>
-          <label htmlFor="fullText">Full Text</label>
-          <MarkdownField
-            id="fullText"
-            rows={10}
-            name="fullText"
-            className="w-full"
-            defaultValue={post.fullText || ""}
+          <ImageInput
+            name="thumbnail"
+            value={thumbnail || post.thumbnail || ""}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate("resources");
+              setResourceTarget("thumbnail");
+            }}
           />
-        </div>
+        </header>
+        <Editor
+          ref={editorRef}
+          name="fullText"
+          defaultValue={post.fullText ?? ""}
+        />
         <Checkbox
           label="Published"
           name="published"
@@ -149,7 +161,9 @@ export default function EditProject() {
           <Button type="submit">Save & View</Button>
         </div>
       </Form>
-      <Outlet />
+      <div className="fixed z-20">
+        <Outlet context={{ onImageSelected: handleImageSelected }} />
+      </div>
     </>
   );
 }
