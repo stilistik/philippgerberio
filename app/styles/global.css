@@ -46,11 +46,7 @@
     @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl;
   }
 
-  header h1 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5;
-  }
-
-  header h3 {
+  header :is(h1, h2, h3, h4, h5, h6) {
     @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5;
   }
 
@@ -62,27 +58,11 @@
     @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl mb-12;
   }
 
-  main h1 {
+  main :is(h1, h2, h3) {
     @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
   }
 
-  main h2 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
-  }
-
-  main h3 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
-  }
-
-  main h4 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
-  }
-
-  main h5 {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
-  }
-
-  main h6 {
+  main :is(h4, h5, h6) {
     @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
   }
 
@@ -111,7 +91,11 @@
   }
 
   main blockquote {
-    @apply bg-gray-100 rounded-lg py-4 px-8 mb-8 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply bg-gray-100 rounded-lg py-4 pb-8 px-8 mb-8 col-span-full lg:col-span-8 lg:col-start-3;
+  }
+
+  main blockquote :is(h1, h2, h3, h4, h5, h6) {
+    @apply mt-3 mb-5;
   }
 
   main ul {

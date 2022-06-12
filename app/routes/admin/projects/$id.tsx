@@ -1,7 +1,13 @@
 import React from "react";
 import { Project } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
-import { Form, Link, Outlet, useLoaderData } from "@remix-run/react";
+import {
+  Form,
+  Link,
+  Outlet,
+  useLoaderData,
+  useNavigate,
+} from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { Checkbox } from "~/components/interaction/Checkbox";
@@ -70,6 +76,7 @@ type ResourcePasteTarget = "text" | "thumbnail";
 export default function EditProject() {
   const project = useLoaderData<Project>();
   const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const navigate = useNavigate();
   const [thumbnail, setThumbnail] = React.useState("");
   const [resourceTarget, setResourceTarget] =
     React.useState<ResourcePasteTarget>("text");
@@ -84,6 +91,7 @@ export default function EditProject() {
       }
       case "thumbnail": {
         setThumbnail(url);
+        setResourceTarget("text");
       }
     }
   }
@@ -132,6 +140,7 @@ export default function EditProject() {
             value={thumbnail || project.thumbnail || ""}
             onClick={(e) => {
               e.preventDefault();
+              navigate("resources");
               setResourceTarget("thumbnail");
             }}
           />

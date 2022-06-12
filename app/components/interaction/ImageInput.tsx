@@ -1,5 +1,6 @@
 import React from "react";
 import { ImageIcon } from "~/icons/Image";
+import clx from "classnames";
 
 interface ImageInputProps {
   name: string;
@@ -12,14 +13,12 @@ export const ImageInput = ({ name, value, onClick }: ImageInputProps) => {
     <div className="flex gap-3 col-span-full">
       <button
         onClick={onClick}
-        className="w-full h-[500px] border rounded-xl cursor-pointer flex items-center justify-center"
-        style={{
-          backgroundPosition: "center center",
-          backgroundImage: `url(${value})`,
-          backgroundSize: "cover",
-        }}
+        className={clx(
+          "w-full border rounded-xl cursor-pointer flex items-center justify-center",
+          { "h-[500px]": !value }
+        )}
       >
-        {value ? null : <ImageIcon />}
+        {value ? <img src={value} /> : <ImageIcon />}
       </button>
       <input type="hidden" value={value} name={name} />
     </div>

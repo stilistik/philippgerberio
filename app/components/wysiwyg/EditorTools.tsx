@@ -12,6 +12,7 @@ import { H3Icon } from "~/icons/H3";
 import { CodeIcon } from "~/icons/Code";
 import { ImageIcon } from "~/icons/Image";
 import { QuoteIcon } from "~/icons/Quote";
+import { TextIcon } from "~/icons/Text";
 
 export const EditorTools = () => {
   return (
@@ -21,6 +22,7 @@ export const EditorTools = () => {
       <Bold />
       <Italic />
       <Underline />
+      <Text />
       <H1 />
       <H2 />
       <H3 />
@@ -60,6 +62,11 @@ const Underline = createTool({ command: "underline", icon: <UnderlineIcon /> });
 const H1 = createTool({ command: "formatBlock", icon: <H1Icon />, args: "H1" });
 const H2 = createTool({ command: "formatBlock", icon: <H2Icon />, args: "H2" });
 const H3 = createTool({ command: "formatBlock", icon: <H3Icon />, args: "H3" });
+const Text = createTool({
+  command: "formatBlock",
+  icon: <TextIcon />,
+  args: "P",
+});
 
 const Code = createTool({
   command: "formatBlock",

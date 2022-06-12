@@ -11,16 +11,18 @@ interface EditableTextFieldProps {
   placeholder: string;
   element: "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "p" | "span" | "main";
   defaultValue: string;
+  className?: string;
 }
 
 export const ContentEditableField = React.forwardRef<
   ContentEditableFieldRef,
   EditableTextFieldProps
->(({ name, placeholder, element: Element, defaultValue }, ref) => {
+>(({ name, placeholder, element: Element, defaultValue, className }, ref) => {
   const editorRef = React.useRef<
     HTMLHeadElement & HTMLParagraphElement & HTMLSpanElement
   >(null);
   const inputRef = React.useRef<any>(null);
+  const touchedRef = React.useRef(false);
 
   React.useImperativeHandle(ref, () => ({
     editor: editorRef.current,
@@ -29,8 +31,14 @@ export const ContentEditableField = React.forwardRef<
   }));
 
   React.useEffect(() => {
-    setContent(defaultValue);
-  }, [defaultValue]);
+    if (!touchedRef.current) {
+      if (defaultValue) {
+        setContent(defaultValue);
+      } else if (placeholder) {
+        setContent(placeholder);
+      }
+    }
+  }, [defaultValue, placeholder]);
 
   const appendContent = React.useCallback((html: string) => {
     if (editorRef.current) {
@@ -49,7 +57,7 @@ export const ContentEditableField = React.forwardRef<
   function handleChange(e: React.FormEvent) {
     const value = e.currentTarget.innerHTML ?? placeholder;
     inputRef.current.value = value;
-    console.log(value);
+    touchedRef.current = true;
   }
 
   function handleBlur(e: React.FormEvent) {
@@ -65,6 +73,7 @@ export const ContentEditableField = React.forwardRef<
         contentEditable
         onInput={handleChange}
         onBlur={handleBlur}
+        className={className}
       />
       <input ref={inputRef} type="hidden" name={name} />
     </>

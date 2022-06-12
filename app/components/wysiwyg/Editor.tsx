@@ -20,7 +20,7 @@ export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
           element="main"
           name={name}
           defaultValue={defaultValue}
-          placeholder=""
+          placeholder="<h1>Enter Text</h1><div><p>This is a paragraph</p></div>"
         />
       </>
     );
