@@ -91,7 +91,9 @@ export default function EditProject() {
     switch (resourceTarget) {
       case "text": {
         if (editorRef.current) {
-          editorRef.current.insertContent(`<img src=${url} />`);
+          editorRef.current.insertContent(
+            `<img src=${url} class="prose-image" />`
+          );
         }
         break;
       }
