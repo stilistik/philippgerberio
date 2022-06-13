@@ -97,3 +97,29 @@ export function useMobileAutoHoverOnScroll(
 
   return ref;
 }
+
+type KeyEvents = "keydown" | "keyup" | "keypressed";
+type MouseEvents = "click" | "mousedown" | "mouseup" | "mousemove";
+type WheelEvents = "wheel";
+type Events = KeyEvents | MouseEvents | WheelEvents;
+
+export function useEventListener<K extends Events>(
+  target: HTMLElement | Document,
+  eventName: K,
+  callback: (
+    e: K extends MouseEvents
+      ? MouseEvent
+      : K extends KeyEvents
+      ? KeyboardEvent
+      : K extends WheelEvents
+      ? WheelEvent
+      : never
+  ) => void
+) {
+  React.useEffect(() => {
+    target.addEventListener(eventName, callback as any);
+    return () => {
+      target.removeEventListener(eventName, callback as any);
+    };
+  }, [callback]);
+}

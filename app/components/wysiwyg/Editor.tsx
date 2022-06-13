@@ -5,6 +5,7 @@ import {
 } from "../interaction/ContentEditableField";
 import { EditorTools } from "./EditorTools";
 import hljs from "highlight.js";
+import { useEventListener } from "~/utils/hooks";
 
 interface EditorContextValue {
   focus: () => void;
@@ -18,6 +19,49 @@ export const useEditorContext = () => {
   return React.useContext(EditorContext);
 };
 
+function useHighlight() {
+  if (typeof document !== "undefined") {
+    function highlight() {
+      document.querySelectorAll("pre").forEach((el: any) => {
+        console.log(el);
+        hljs.highlightElement(el);
+      });
+    }
+
+    React.useEffect(() => highlight(), []);
+
+    useEventListener(document, "keydown", (e) => {
+      if (e.key === "v" && (e.metaKey || e.ctrlKey)) {
+        highlight();
+      }
+    });
+  }
+}
+
+function useChangeImageWidthOnClick(
+  editorRef: React.RefObject<ContentEditableFieldRef>
+) {
+  if (typeof document !== "undefined") {
+    useEventListener(document, "mousedown", (e) => {
+      const el = e.target as HTMLElement;
+      if (el.className !== "prose-image") return;
+      const img = e.target as HTMLImageElement;
+      if (
+        img?.parentElement &&
+        ["P", "DIV"].includes(img.parentElement?.tagName ?? "")
+      ) {
+        img.parentElement.replaceWith(img);
+      } else {
+        const div = document.createElement("div");
+        img.replaceWith(div);
+        div.appendChild(img);
+      }
+
+      editorRef.current?.update();
+    });
+  }
+}
+
 interface EditorProps {
   name: string;
   defaultValue: string;
@@ -29,12 +73,8 @@ export const Editor = React.forwardRef<ContentEditableFieldRef, EditorProps>(
 
     React.useImperativeHandle(ref, () => editorRef.current as any);
 
-    React.useEffect(() => {
-      document.querySelectorAll("pre").forEach((el: any) => {
-        console.log(el);
-        hljs.highlightElement(el);
-      });
-    }, []);
+    useHighlight();
+    useChangeImageWidthOnClick(editorRef);
 
     function focus() {
       if (editorRef.current?.editor) {
