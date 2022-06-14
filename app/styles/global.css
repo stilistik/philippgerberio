@@ -75,7 +75,7 @@
   }
 
   main pre {
-    @apply bg-gray-600 text-white p-5 rounded-lg shadow-2xl my-5 col-span-full;
+    @apply bg-gray-600 text-white p-5 rounded-lg shadow-2xl my-5 col-span-full overflow-x-auto;
   }
 
   main img {
