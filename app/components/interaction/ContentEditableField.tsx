@@ -80,7 +80,7 @@ export const ContentEditableField = React.forwardRef<
         contentEditable
         onInput={handleChange}
         onBlur={handleBlur}
-        className={className}
+        className={"content-editable " + className}
       />
       <input ref={inputRef} type="hidden" name={name} />
     </>

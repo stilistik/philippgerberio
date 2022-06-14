@@ -67,11 +67,11 @@
   }
 
   main p {
-    @apply mb-3 col-span-full  lg:col-span-8 lg:col-start-3;
+    @apply mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main div {
-    @apply mb-3 col-span-full  lg:col-span-8 lg:col-start-3;
+    @apply mb-3 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main pre {
@@ -82,7 +82,7 @@
     @apply rounded-lg my-10 mx-auto col-span-full;
   }
 
-  img.prose-image {
+  .content-editable img.prose-image {
     @apply cursor-pointer relative border border-transparent hover:border-gray-400;
   }
 
