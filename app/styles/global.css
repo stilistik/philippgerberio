@@ -82,6 +82,10 @@
     @apply rounded-lg my-10 mx-auto col-span-full;
   }
 
+  img.prose-image {
+    @apply cursor-pointer relative border border-transparent hover:border-gray-400;
+  }
+
   main video {
     @apply rounded-lg my-10 mx-auto max-w-3xl;
   }

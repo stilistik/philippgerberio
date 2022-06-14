@@ -42,21 +42,23 @@ function useChangeImageWidthOnClick(
   editorRef: React.RefObject<ContentEditableFieldRef>
 ) {
   if (typeof document !== "undefined") {
+    const classes = [
+      "",
+      "col-span-full",
+      "col-span-full lg:col-span-6 lg:col-start-1",
+      "col-span-full lg:col-span-6 lg:col-start-7",
+    ];
+
     useEventListener(document, "mousedown", (e) => {
       const el = e.target as HTMLElement;
-      if (el.className !== "prose-image") return;
+      if (!el.classList.contains("prose-image")) return;
       const img = e.target as HTMLImageElement;
-      if (
-        img?.parentElement &&
-        ["P", "DIV"].includes(img.parentElement?.tagName ?? "")
-      ) {
-        img.parentElement.replaceWith(img);
-      } else {
-        const div = document.createElement("div");
-        img.replaceWith(div);
-        div.appendChild(img);
+      const parent = img.parentElement;
+      if (["P", "DIV"].includes(parent?.tagName ?? "")) {
+        const index = classes.indexOf(parent?.className ?? "");
+        const newIndex = (index + 1) % classes.length;
+        if (parent) parent.className = classes[newIndex];
       }
-
       editorRef.current?.update();
     });
   }
