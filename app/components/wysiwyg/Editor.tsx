@@ -27,14 +27,7 @@ function useHighlight() {
         hljs.highlightElement(el);
       });
     }
-
     React.useEffect(() => highlight(), []);
-
-    useEventListener(document, "keydown", (e) => {
-      if (e.key === "v" && (e.metaKey || e.ctrlKey)) {
-        highlight();
-      }
-    });
   }
 }
 
