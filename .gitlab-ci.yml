@@ -11,9 +11,3 @@ deploy-production:
     - flyctl deploy
   only:
     - master
-
-deploy-staging:
-  script:
-    - flyctl deploy --app philippgerberio-staging
-  only:
-    - dev
