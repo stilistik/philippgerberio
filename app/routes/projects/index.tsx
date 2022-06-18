@@ -1,7 +1,7 @@
 import { Project } from "@prisma/client";
 import { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { ProjectElement } from "~/components/elements/ProjectElement";
+import { ContentThumbnail } from "~/components/content/ContentThumbnail";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
@@ -20,7 +20,7 @@ export default function Projects() {
       {projects.map((project) => {
         return (
           <Link to={`/projects/${project.slug}`} key={project.id}>
-            <ProjectElement project={project} />
+            <ContentThumbnail content={project} />
           </Link>
         );
       })}

@@ -8,7 +8,7 @@ import {
   Scripts,
   useLoaderData,
 } from "@remix-run/react";
-import { ProjectElement } from "~/components/elements/ProjectElement";
+import { ContentThumbnail } from "~/components/content/ContentThumbnail";
 import { Button } from "~/components/interaction/Button";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
@@ -51,7 +51,7 @@ export default function Projects() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {projects.map((project) => (
           <Link to={project.id} key={project.id}>
-            <ProjectElement project={project} />
+            <ContentThumbnail content={project} />
           </Link>
         ))}
       </div>

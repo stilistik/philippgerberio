@@ -1,7 +1,7 @@
 import { Post } from "@prisma/client";
 import { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
-import { PostElement } from "~/components/elements/PostElement";
+import { ContentThumbnail } from "~/components/content/ContentThumbnail";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
@@ -20,7 +20,7 @@ export default function Posts() {
       {posts.map((post) => {
         return (
           <Link to={`/posts/${post.slug}`} key={post.id}>
-            <PostElement post={post} />
+            <ContentThumbnail content={post} />
           </Link>
         );
       })}

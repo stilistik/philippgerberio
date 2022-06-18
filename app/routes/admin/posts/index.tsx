@@ -1,7 +1,7 @@
 import { Post } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { Form, Link, useLoaderData } from "@remix-run/react";
-import { PostElement } from "~/components/elements/PostElement";
+import { ContentDisplay } from "~/components/content/ContentDisplay";
 import { Button } from "~/components/interaction/Button";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
@@ -28,7 +28,7 @@ export default function Posts() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         {posts.map((post) => (
           <Link to={post.id} key={post.id}>
-            <PostElement post={post} />
+            <ContentDisplay content={post} />
           </Link>
         ))}
       </div>

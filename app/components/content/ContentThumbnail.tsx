@@ -1,22 +1,21 @@
 import React from "react";
-import { Post } from "@prisma/client";
+import { Post, Project } from "@prisma/client";
 import { SubHeader } from "../layout/SubHeader";
 import { ImageIcon } from "~/icons/Image";
-import clx from "classnames";
 import { useIsMobile, useMobileAutoHoverOnScroll } from "~/utils/hooks";
+import clx from "classnames";
 
-interface PostProps {
-  post: Post;
+interface ContentThumbnailProps {
+  content: Post | Project;
   onMouseEnter?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseLeave?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
-export const PostElement: React.FC<PostProps> = ({
-  post,
+export const ContentThumbnail = ({
+  content,
   onMouseEnter,
   onMouseLeave,
-  children,
-}) => {
+}: ContentThumbnailProps) => {
   const isMobile = useIsMobile();
   const [hovered, setHovered] = React.useState(false);
   const [position, setPosition] = React.useState(
@@ -73,12 +72,12 @@ export const PostElement: React.FC<PostProps> = ({
           transform: `translate(-50%, -50%) scale(${hovered ? 1.6 : 0})`,
         }}
       />
-      {post.thumbnail ? (
+      {content.thumbnail ? (
         <div className="rounded-md" style={{ background: "#333" }}>
           <img
-            src={post.thumbnail}
+            src={content.thumbnail}
             className={clx(
-              "rounded-md mix-blend-exclusion border transition-all transform-gpu duration-1000",
+              "rounded-md mix-blend-exclusion border transition-all duration-1000",
               {
                 grayscale: !hovered,
               }
@@ -91,11 +90,10 @@ export const PostElement: React.FC<PostProps> = ({
         </div>
       )}
       <div className="mt-5">
-        <SubHeader>{post.title}</SubHeader>
+        <SubHeader>{content.title}</SubHeader>
         <p className="text-2xl mix-blend-difference text-gray-200">
-          {post.description}
+          {content.description}
         </p>
-        {children}
       </div>
     </div>
   );
