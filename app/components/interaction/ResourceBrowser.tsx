@@ -1,14 +1,8 @@
 import { Resource } from "@prisma/client";
-import {
-  Form,
-  Link,
-  useOutletContext,
-  useSearchParams,
-} from "@remix-run/react";
+import { Form, useOutletContext } from "@remix-run/react";
 import { CodeIcon } from "~/icons/Code";
 import { DeleteIcon } from "~/icons/Delete";
 import { LinksIcon } from "~/icons/Links";
-import { Button } from "./Button";
 import { IconButton } from "./IconButton";
 
 function getMd(resource: Resource): string {
@@ -68,8 +62,8 @@ const ResourceElement = ({ resource, onDelete }: ResourceElementProps) => {
   const ctx = useOutletContext<any>();
 
   function handleClick() {
-    if (ctx?.onImageSelected) {
-      ctx.onImageSelected(resource.url);
+    if (ctx?.onResourceSelected) {
+      ctx.onResourceSelected(resource);
     }
   }
 

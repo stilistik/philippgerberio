@@ -1,5 +1,5 @@
 import React from "react";
-import { Project } from "@prisma/client";
+import { Project, Resource } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import {
   Form,
@@ -87,18 +87,24 @@ export default function EditProject() {
   const [resourceTarget, setResourceTarget] =
     React.useState<ResourcePasteTarget>("text");
 
-  function handleImageSelected(url: string) {
+  function handleResourceSelected(resource: Resource) {
     switch (resourceTarget) {
       case "text": {
         if (editorRef.current) {
-          editorRef.current.insertContent(
-            `<img src=${url} class="prose-image" />`
-          );
+          if (resource.mimetype.includes("image")) {
+            editorRef.current.insertContent(
+              `<img src=${resource.url} class="prose-image" />`
+            );
+          } else if (resource.mimetype.includes("video")) {
+            editorRef.current.insertContent(
+              `<video autoplay controls><source src="${resource.url}" type="${resource.mimetype}"></video>`
+            );
+          }
         }
         break;
       }
       case "thumbnail": {
-        setThumbnail(url);
+        setThumbnail(resource.url);
         setResourceTarget("text");
       }
     }
@@ -189,7 +195,7 @@ export default function EditProject() {
         </Button>
       </div>
       <div className="fixed z-20">
-        <Outlet context={{ onImageSelected: handleImageSelected }} />
+        <Outlet context={{ onResourceSelected: handleResourceSelected }} />
       </div>
     </>
   );
