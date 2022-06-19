@@ -1,7 +1,7 @@
 import clx from "classnames";
 import { Button } from "~/components/interaction/Button";
 import { Link } from "@remix-run/react";
-import { useIsMobile, useScrollPosition } from "~/utils/hooks";
+import { useIsMobile, useOnResize, useScrollPosition } from "~/utils/hooks";
 import React from "react";
 
 function lerp(percent: number, start: number, end: number) {
@@ -85,12 +85,12 @@ const FACTORS: Record<BreakPoint, Factors> = {
 function useBreakPoint() {
   const [bp, setBp] = React.useState<BreakPoint>("xs");
 
-  React.useEffect(() => {
+  useOnResize(() => {
     const w = getWidth();
     const breakPoint =
       w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
     setBp(breakPoint);
-  }, []);
+  });
   return bp;
 }
 
@@ -371,13 +371,14 @@ const FinalSection = () => {
   const { ref, percent } = useScrollPosition();
   const [center, setCenter] = React.useState<[number, number]>([0, 0]);
   const [width, setWidth] = React.useState(0);
-  React.useEffect(() => {
+
+  useOnResize(() => {
     const width = getWidth();
     const height = getHeight();
     const center: [number, number] = [width / 2, height / 2];
     setCenter(center);
     setWidth(width);
-  }, []);
+  });
 
   const planetRadius = Math.min((width / 3) * 2, 400) / 2;
 

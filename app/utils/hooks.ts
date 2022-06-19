@@ -123,3 +123,11 @@ export function useEventListener<K extends Events>(
     };
   }, [callback]);
 }
+
+export function useOnResize(fn: () => void) {
+  React.useEffect(() => fn(), []);
+  React.useEffect(() => {
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, [fn]);
+}
