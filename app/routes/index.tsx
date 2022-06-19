@@ -289,7 +289,7 @@ const DesktopPictureSection = () => {
             I like technology and art
           </h2>
           <h2
-            className="text-[3rem] text-center"
+            className="text-[3rem] text-center sm:leading-normal"
             style={{
               opacity: 0 + lerp(percent, 0.6, 0.9),
             }}
@@ -317,25 +317,29 @@ function clamp(value: number, min: number, max: number) {
 }
 
 const COUNT = 50;
-const randoms = Array(COUNT)
-  .fill(undefined)
-  .map(() => (Math.random() - 0.5) * 2);
 
 interface BeamsProps {
   center: [number, number];
   percent: number;
   start: number;
   end: number;
+  count?: number;
 }
 
-const Beams = ({ center, percent, start, end }: BeamsProps) => {
+const Beams = ({ center, percent, start, end, count = 50 }: BeamsProps) => {
+  const randoms = React.useRef(
+    Array(count)
+      .fill(undefined)
+      .map(() => (Math.random() - 0.5) * 2)
+  );
+
   return (
     <g>
-      {Array(COUNT)
+      {Array(count)
         .fill(undefined)
         .map((_, i) => {
           const p = lerp(percent, start, end);
-          const rf = randoms[i];
+          const rf = randoms.current[i];
           const angle = rf * Math.PI * 2;
 
           const crf = clamp(Math.abs(rf) * 3, 1, 3);
@@ -366,43 +370,76 @@ const Beams = ({ center, percent, start, end }: BeamsProps) => {
 const FinalSection = () => {
   const { ref, percent } = useScrollPosition();
   const [center, setCenter] = React.useState<[number, number]>([0, 0]);
-
+  const [width, setWidth] = React.useState(0);
   React.useEffect(() => {
     const width = getWidth();
     const height = getHeight();
     const center: [number, number] = [width / 2, height / 2];
     setCenter(center);
+    setWidth(width);
   }, []);
+
+  const planetRadius = Math.min((width / 3) * 2, 400) / 2;
 
   return (
     <section ref={ref} className="w-full h-[400vh]">
       <div className="sticky top-0 gap-10 bg-white w-screen h-screen overflow-hidden">
         <svg width="100vw" height="100vh">
-          <Beams percent={percent} center={center} start={0} end={0.4} />
-          <Beams percent={percent} center={center} start={0.2} end={0.6} />
-          <Beams percent={percent} center={center} start={0.4} end={0.8} />
+          <filter id="blur">
+            <feGaussianBlur stdDeviation="1" />
+          </filter>
+          <Beams percent={percent} center={center} start={0} end={0.6} />
+          <Beams percent={percent} center={center} start={0.15} end={0.8} />
+          <Beams percent={percent} center={center} start={0.3} end={1} />
           <circle
             cx="50%"
             cy="50%"
-            r={clamp(percent * 200, 3, 200)}
+            r={clamp(percent * planetRadius, 3, planetRadius)}
             fill="black"
-          ></circle>
+          />
         </svg>
         <div
-          className="absolute top-1/2 left-1/2 flex flex-col items-center gap-10 origin-center"
+          className="absolute top-1/2 left-1/2 flex justify-center gap-10 origin-center text-[10rem] sm:text-[12rem] -mt-5 text-white font-medium"
+          style={{
+            opacity: lerp(percent, 0, 0.1),
+            transform: `translate(-50%, -50%) rotateZ(${lerp(
+              percent,
+              0.8,
+              1
+            )})`,
+          }}
+        >
+          pg
+        </div>
+        <div
+          className="absolute top-[15vh] sm:top-1/2 left-1/2 sm:ml-[30vw]"
           style={{
             opacity: lerp(percent, 0.8, 1),
             transform: `translate(-50%, -50%) scale(${lerp(percent, 0.8, 1)})`,
           }}
         >
           <Link to="/projects">
-            <Button size="large" className="bg-black border-white">
-              See the projects
+            <Button
+              size="large"
+              className="bg-black border-black min-w-[200px]"
+            >
+              Projects
             </Button>
           </Link>
+        </div>
+        <div
+          className="absolute top-[85vh] sm:top-1/2 left-1/2 sm:-ml-[30vw]"
+          style={{
+            opacity: lerp(percent, 0.8, 1),
+            transform: `translate(-50%, -50%) scale(${lerp(percent, 0.8, 1)})`,
+          }}
+        >
           <Link to="/posts">
-            <Button size="large" className="bg-black border-white">
-              Read the blog
+            <Button
+              size="large"
+              className="bg-black border-black min-w-[200px]"
+            >
+              Blog
             </Button>
           </Link>
         </div>
