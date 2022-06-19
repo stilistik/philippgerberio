@@ -312,79 +312,99 @@ const DesktopPictureSection = () => {
   );
 };
 
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
+}
+
+const COUNT = 50;
+const randoms = Array(COUNT)
+  .fill(undefined)
+  .map(() => (Math.random() - 0.5) * 2);
+
+interface BeamsProps {
+  center: [number, number];
+  percent: number;
+  start: number;
+  end: number;
+}
+
+const Beams = ({ center, percent, start, end }: BeamsProps) => {
+  return (
+    <g>
+      {Array(COUNT)
+        .fill(undefined)
+        .map((_, i) => {
+          const p = lerp(percent, start, end);
+          const rf = randoms[i];
+          const angle = rf * Math.PI * 2;
+
+          const crf = clamp(Math.abs(rf) * 3, 1, 3);
+          const d = crf * 8000 * p;
+
+          const x1 = center[0] + crf * 2000 * p * Math.cos(angle);
+          const y1 = center[1] + crf * 2000 * p * Math.sin(angle);
+          const x2 = center[0] + Math.cos(angle) * d;
+          const y2 = center[1] + Math.sin(angle) * d;
+
+          return (
+            <line
+              key={i}
+              x1={x1}
+              x2={x2}
+              y1={y1}
+              y2={y2}
+              strokeWidth={10 * p}
+              stroke="black"
+              strokeLinecap="round"
+            />
+          );
+        })}
+    </g>
+  );
+};
+
 const FinalSection = () => {
   const { ref, percent } = useScrollPosition();
-  const breakPoint = useBreakPoint();
+  const [center, setCenter] = React.useState<[number, number]>([0, 0]);
 
-  const { ballScaleFactor, leftMarginFactor } = FACTORS[breakPoint];
-
-  const ballSize = 500;
+  React.useEffect(() => {
+    const width = getWidth();
+    const height = getHeight();
+    const center: [number, number] = [width / 2, height / 2];
+    setCenter(center);
+  }, []);
 
   return (
-    <section ref={ref} className="w-full h-[300vh]">
+    <section ref={ref} className="w-full h-[400vh]">
       <div className="sticky top-0 gap-10 bg-white w-screen h-screen overflow-hidden">
+        <svg width="100vw" height="100vh">
+          <Beams percent={percent} center={center} start={0} end={0.4} />
+          <Beams percent={percent} center={center} start={0.2} end={0.6} />
+          <Beams percent={percent} center={center} start={0.4} end={0.8} />
+          <circle
+            cx="50%"
+            cy="50%"
+            r={clamp(percent * 200, 3, 200)}
+            fill="black"
+          ></circle>
+        </svg>
         <div
-          className="absolute top-0 rounded-full bg-black flex items-center justify-center"
+          className="absolute top-1/2 left-1/2 flex flex-col items-center gap-10 origin-center"
           style={{
-            marginTop: ballSize / 3 + "px",
-            marginLeft: -ballSize * leftMarginFactor + "px",
-            width: ballSize,
-            height: ballSize,
-            transform: `translate(0px, 0px) scale(${
-              0.1 + Math.min(8, percent * ballScaleFactor)
-            })`,
+            opacity: lerp(percent, 0.8, 1),
+            transform: `translate(-50%, -50%) scale(${lerp(percent, 0.8, 1)})`,
           }}
         >
-          <div
-            style={{
-              width: "80%",
-              height: "80%",
-              transform: `scale(${Math.max(0.5, 1 - percent)})`,
-            }}
-            className="absolute bg-white rounded-full origin-right"
-          />
-          <div
-            style={{
-              width: "60%",
-              height: "60%",
-              transform: `scale(${Math.max(0.5, 1 - percent)})`,
-            }}
-            className="absolute bg-black rounded-full origin-right"
-          />
-          <div
-            style={{
-              width: "40%",
-              height: "40%",
-              transform: `scale(${Math.max(0.5, 1 - percent)})`,
-            }}
-            className="absolute bg-white rounded-full origin-right"
-          />
-          <div
-            style={{
-              width: "20%",
-              height: "20%",
-              transform: `scale(${Math.max(0.5, 1 - percent)})`,
-            }}
-            className="absolute bg-black rounded-full origin-right text-white"
-          >
-            <div
-              className="text-white w-full h-full flex flex-col gap-10 items-center"
-              style={{
-                width: 300,
-                marginLeft: -100,
-                marginTop: -10,
-                opacity: 0 + lerp(percent, 0.6, 0.8) * 1,
-                transform: "scale(0.2)",
-              }}
-            >
-              <Link to="/projects">
-                <Button size="large">See the projects</Button>
-              </Link>
-              <Link to="/posts">
-                <Button size="large">Read the blog</Button>
-              </Link>
-            </div>
-          </div>
+          <Link to="/projects">
+            <Button size="large" className="bg-black border-white">
+              See the projects
+            </Button>
+          </Link>
+          <Link to="/posts">
+            <Button size="large" className="bg-black border-white">
+              Read the blog
+            </Button>
+          </Link>
         </div>
       </div>
     </section>
