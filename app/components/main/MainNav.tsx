@@ -25,7 +25,7 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
       {children}
       <span
         className={clx(
-          "absolute bottom-0 left-0 border-b-4 w-full transform rounded-full border-gray-600 transition-all origin-left ease-in-out duration-300",
+          "absolute bottom-0 left-0 border-b-4 w-full transform rounded-full border-black transition-all origin-left ease-in-out duration-300",
           {
             "scale-x-100": showUnderline,
             "scale-x-0": !showUnderline,
@@ -59,7 +59,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
   }
 
   return (
-    <div className="w-screen overflow-hidden px-3 flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20">
+    <div className="absolute top-0 w-screen overflow-hidden px-3 flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20 z-10">
       <div className="flex items-center gap-5 sm:gap-10">
         <Link to="/" className="mr-5 sm:mr-10" onClick={handleClick}>
           <Button

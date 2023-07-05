@@ -1,7 +1,5 @@
-import clx from "classnames";
-import { Button } from "~/components/interaction/Button";
-import { Link } from "@remix-run/react";
-import { useIsMobile, useOnResize, useScrollPosition } from "~/utils/hooks";
+import { useOnResize, useScrollPosition } from "~/utils/hooks";
+import { PaperScope, Path, Point, Color } from "paper";
 import React from "react";
 
 function lerp(percent: number, start: number, end: number) {
@@ -94,6 +92,169 @@ function useBreakPoint() {
   return bp;
 }
 
+class Blob {
+  private x: number;
+  private y: number;
+  private radius: number;
+  private path: paper.Path;
+  private originalPos: paper.Point;
+  private translateDirectionX: number;
+  private translateDirectionY: number;
+  private translationSpeed: number;
+
+  constructor(
+    x: number,
+    y: number,
+    radius: number,
+    color1: string,
+    color2: string
+  ) {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.path = new Path({ segments: this.generatePoints() });
+    this.path.fillColor = {
+      gradient: {
+        stops: [color1, color2],
+      },
+      origin: this.path.bounds.topLeft,
+      destination: this.path.bounds.bottomRight,
+    };
+    this.path.shadowBlur = 100;
+    const shadowColor = new Color("white");
+    shadowColor.alpha = 0.5;
+    this.path.shadowColor = shadowColor;
+    this.path.closed = true;
+    this.path.smooth();
+    this.originalPos = this.path.position.clone();
+
+    this.translateDirectionX = (Math.random() - 0.5) * 2;
+    this.translateDirectionY = (Math.random() - 0.5) * 2;
+    this.translationSpeed = 3000 + Math.random() * 5000;
+  }
+
+  generatePoints() {
+    const numPoints = 8;
+    const angleStep = (Math.PI * 2) / numPoints;
+    const points = [];
+    for (let i = 0; i < numPoints; i++) {
+      const angle = i * angleStep;
+      const point = {
+        angle: angle,
+        x: this.x + this.radius * Math.cos(angle),
+        y: this.y + this.radius * Math.sin(angle),
+      };
+      points.push(point);
+    }
+    return points;
+  }
+
+  wobble(t: number) {
+    const wobbleSpeed = 0.4;
+    const wobbleIntensity = 0.4;
+    const rnd = Math.random();
+    this.path.segments.forEach((segment, i) => {
+      const dx = rnd * wobbleIntensity * Math.cos(i + t * wobbleSpeed);
+      const dy = rnd * wobbleIntensity * Math.cos(-i + t * wobbleSpeed);
+      segment.point.x += dx;
+      segment.point.y += dy;
+    });
+  }
+
+  animate(percent: number) {
+    this.path.position.x =
+      this.originalPos.x +
+      this.translateDirectionX * percent * this.translationSpeed;
+    this.path.position.y =
+      this.originalPos.y +
+      this.translateDirectionY * percent * this.translationSpeed;
+
+    const scaling = Math.max(1 - lerp(percent, 0.6, 1), 0.01);
+    this.path.scaling = new Point(scaling, scaling);
+    this.path.opacity = 1 - lerp(percent, 0.6, 1);
+  }
+
+  update(t: number) {
+    this.wobble(t);
+  }
+}
+
+const colors = [
+  "#0077b6",
+  "#0096c7",
+  "#00b4d8",
+  "#48cae4",
+  "#90e0ef",
+  "#a8c6d9",
+  "#c0abc3",
+  "#d891ad",
+  "#e484a2",
+  "#f07596",
+];
+
+const Canvas = ({ percent }: { percent: number }) => {
+  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const blobRef = React.useRef<Blob[]>([]);
+
+  console.log(percent);
+
+  React.useEffect(() => {
+    blobRef.current.forEach((b) => {
+      b.animate(percent);
+    });
+  }, [percent]);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const paper = new PaperScope();
+    paper.setup(ref.current);
+    paper.settings.applyMatrix = false;
+    const canvas = ref.current;
+
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const numBlobs = 40;
+    for (let i = 0; i < numBlobs; i++) {
+      const x = Math.random() * 2 * canvas.width;
+      const y = Math.random() * 2 * canvas.height;
+      const radius = 200 + Math.random() * 400;
+      const colorIdx = Math.floor((i / numBlobs) * colors.length);
+      const color1 = colors[colorIdx];
+      const color2 = colors[(colorIdx + 1) % colors.length];
+      const blob = new Blob(x, y, radius, color1, color2);
+      blobRef.current.push(blob);
+    }
+
+    paper.view.onFrame = function (e) {
+      for (let blob of blobRef.current) {
+        blob.update(e.time);
+      }
+    };
+  }, []);
+
+  return (
+    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+  );
+};
+
+const Hello = ({ percent }: { percent: number }) => {
+  return (
+    <div className="absolute w-full">
+      <h1
+        className="relative text-8xl md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        style={{
+          opacity: 1 - lerp(percent, 0.8, 1),
+        }}
+      >
+        Hello
+      </h1>
+    </div>
+  );
+};
+
 const TitleSection = () => {
   const { ref, percent, scrollY } = useScrollPosition();
   const breakPoint = useBreakPoint();
@@ -117,344 +278,16 @@ const TitleSection = () => {
   return (
     <section ref={ref} className="w-full h-[300vh]">
       <div className="sticky top-56 sm:pt-10">
-        <div className="flex flex-col items-center bg-white overflow-x-hidden">
-          <div
-            className="absolute top-0 rounded-full bg-black flex items-center justify-center"
-            style={{
-              width: ballSize,
-              height: ballSize,
-              transform: `translate(${
-                40 - percent * getWidth() * ballTranslationFactor
-              }vw, ${-yPercent - topOffset}px) scale(${
-                0.1 + Math.min(ballScaleMin, percent * ballScaleFactor)
-              })`,
-            }}
-          >
-            <div
-              style={{
-                width: "80%",
-                height: "80%",
-                transform: `scale(${Math.max(0, 1 - percent * 8)})`,
-              }}
-              className="bg-white rounded-full origin-right"
-            />
-          </div>
-          <div
-            className="bg-white mix-blend-difference origin-bottom rounded-full w-[90%] sm:w-[60%] h-[5px] sm:h-[8px]"
-            style={{
-              transform: `scale(${1 - percent})`,
-            }}
-          />
-          <h2
-            className="text-2xl sm:text-[3.5rem] sm:py-6 text-white font-thin text-center mix-blend-screen origin-bottom"
-            style={{
-              transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
-              opacity: 1 - lerp(percent, 0.8, 1),
-            }}
-          >
-            My name is Philipp
-          </h2>
-          <h1
-            className="relative text-8xl md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white bg-black text-center mix-blend-difference origin-top"
-            style={{
-              transform: `translateX(${lerp(percent, 0.7, 1) * 50}vw)`,
-              opacity: 1 - lerp(percent, 0.8, 1),
-            }}
-          >
-            Hello
-          </h1>
-          <h2
-            className="text-2xl sm:text-[3.5rem] sm:py-6 text-white font-thin text-center mix-blend-screen origin-bottom"
-            style={{
-              transform: `translateX(${-lerp(percent, 0.7, 1) * 50}vw)`,
-              opacity: 1 - lerp(percent, 0.8, 1),
-            }}
-          >
-            It's nice to meet you.
-          </h2>
-          <div
-            className="bg-white mix-blend-difference origin-bottom rounded-full w-[90%] sm:w-[60%] h-[5px] sm:h-[8px]"
-            style={{
-              transform: `scale(${1 - percent})`,
-            }}
-          />
-          <div className="mix-blend-difference text-white mt-12 sm:mt-16 scale-50 origin-center sm:scale-100">
-            <svg
-              width={50}
-              className={clx("", {
-                "animate-bounce": !hasScrolled,
-              })}
-              style={{
-                transform: `scale(${1 - percent})`,
-              }}
-            >
-              <path fill="currentColor" d={`M0,0 L50,0 L25,25, L0,0`} />
-            </svg>
-          </div>
-        </div>
+        <Canvas percent={percent} />
+        <Hello percent={percent} />
       </div>
     </section>
   );
 };
-
-const PictureSection = () => {
-  return (
-    <>
-      <DesktopPictureSection />
-      <MobilePictureSection />
-    </>
-  );
-};
-
-const MobilePictureSection = () => {
-  const { ref, percent } = useScrollPosition();
-  return (
-    <section ref={ref} className="block sm:hidden w-full h-[300vh]">
-      <div className="sticky top-0 overflow-x-hidden">
-        <div
-          style={{
-            width: "100vw",
-            height: "60vh",
-            backgroundImage: `url(me.jpeg)`,
-            backgroundSize: "cover",
-            backgroundPosition: "center 20%",
-            transform: `translate(${lerp(percent, 0.9, 1.0) * 100}vw, 0)`,
-          }}
-        />
-        <div
-          className="flex flex-col gap-10 items-center p-10 justify-center"
-          style={{
-            width: "100vw",
-            height: "40vh",
-            transform: `translate(${-lerp(percent, 0.9, 1.0) * 100}vw, 0)`,
-          }}
-        >
-          <h2
-            className="text-xl"
-            style={{
-              opacity: 0 + lerp(percent, 0, 0.3),
-            }}
-          >
-            That's me ↑
-          </h2>
-          <h2
-            className="text-xl"
-            style={{
-              opacity: 0 + lerp(percent, 0.3, 0.6),
-            }}
-          >
-            I like technology and art
-          </h2>
-          <h2
-            className="text-xl text-center"
-            style={{
-              opacity: 0 + lerp(percent, 0.6, 0.9),
-            }}
-          >
-            I am a software engineer by profession and passion
-          </h2>
-        </div>
-      </div>
-    </section>
-  );
-};
-
-const DesktopPictureSection = () => {
-  const { ref, percent } = useScrollPosition();
-  return (
-    <section ref={ref} className="hidden sm:block w-full h-[300vh]">
-      <div className="sticky top-0 px-60">
-        <div
-          className="absolute top-0 left-0 flex flex-col gap-10 items-center p-10 justify-center"
-          style={{
-            width: "50vw",
-            height: "100vh",
-            transform: `translate(${-lerp(percent, 0.9, 1.0) * 50}vw, 0)`,
-          }}
-        >
-          <h2
-            className="text-[3rem]"
-            style={{
-              opacity: 0 + lerp(percent, 0, 0.3),
-            }}
-          >
-            That's me {"->"}
-          </h2>
-          <h2
-            className="text-[3rem]"
-            style={{
-              opacity: 0 + lerp(percent, 0.3, 0.6),
-            }}
-          >
-            I like technology and art
-          </h2>
-          <h2
-            className="text-[3rem] text-center sm:leading-normal"
-            style={{
-              opacity: 0 + lerp(percent, 0.6, 0.9),
-            }}
-          >
-            I am a software engineer by profession and passion
-          </h2>
-        </div>
-        <div
-          className="absolute top-0 right-0 h-screen"
-          style={{
-            width: "50vw",
-            backgroundImage: `url(me.jpeg)`,
-            backgroundSize: "cover",
-            backgroundPosition: "center 20%",
-            transform: `translate(${lerp(percent, 0.9, 1.0) * 50}vw, 0)`,
-          }}
-        />
-      </div>
-    </section>
-  );
-};
-
-function clamp(value: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, value));
-}
-
-const COUNT = 50;
-
-interface BeamsProps {
-  center: [number, number];
-  percent: number;
-  start: number;
-  end: number;
-  count?: number;
-}
-
-const Beams = ({ center, percent, start, end, count = 50 }: BeamsProps) => {
-  const randoms = React.useRef(
-    Array(count)
-      .fill(undefined)
-      .map(() => (Math.random() - 0.5) * 2)
-  );
-
-  return (
-    <g>
-      {Array(count)
-        .fill(undefined)
-        .map((_, i) => {
-          const p = lerp(percent, start, end);
-          const rf = randoms.current[i];
-          const angle = rf * Math.PI * 2;
-
-          const crf = clamp(Math.abs(rf) * 3, 1, 3);
-          const d = crf * 8000 * p;
-
-          const x1 = center[0] + crf * 2000 * p * Math.cos(angle);
-          const y1 = center[1] + crf * 2000 * p * Math.sin(angle);
-          const x2 = center[0] + Math.cos(angle) * d;
-          const y2 = center[1] + Math.sin(angle) * d;
-
-          return (
-            <line
-              key={i}
-              x1={x1}
-              x2={x2}
-              y1={y1}
-              y2={y2}
-              strokeWidth={10 * p}
-              stroke="black"
-              strokeLinecap="round"
-            />
-          );
-        })}
-    </g>
-  );
-};
-
-const FinalSection = () => {
-  const { ref, percent } = useScrollPosition();
-  const [center, setCenter] = React.useState<[number, number]>([0, 0]);
-  const [width, setWidth] = React.useState(0);
-
-  useOnResize(() => {
-    const width = getWidth();
-    const height = getHeight();
-    const center: [number, number] = [width / 2, height / 2];
-    setCenter(center);
-    setWidth(width);
-  });
-
-  const planetRadius = Math.min((width / 3) * 2, 400) / 2;
-
-  return (
-    <section ref={ref} className="w-full h-[400vh]">
-      <div className="sticky top-0 gap-10 bg-white w-screen h-screen overflow-hidden">
-        <svg width="100vw" height="100vh">
-          <filter id="blur">
-            <feGaussianBlur stdDeviation="1" />
-          </filter>
-          <Beams percent={percent} center={center} start={0} end={0.6} />
-          <Beams percent={percent} center={center} start={0.15} end={0.8} />
-          <Beams percent={percent} center={center} start={0.3} end={1} />
-          <circle
-            cx="50%"
-            cy="50%"
-            r={clamp(percent * planetRadius, 3, planetRadius)}
-            fill="black"
-          />
-        </svg>
-        <div
-          className="absolute top-1/2 left-1/2 flex justify-center gap-10 origin-center text-[10rem] sm:text-[12rem] -mt-5 text-white font-medium"
-          style={{
-            opacity: lerp(percent, 0, 0.1),
-            transform: `translate(-50%, -50%) rotateZ(${lerp(
-              percent,
-              0.8,
-              1
-            )})`,
-          }}
-        >
-          pg
-        </div>
-        <div
-          className="absolute top-[15vh] sm:top-1/2 left-1/2 sm:ml-[30vw]"
-          style={{
-            opacity: lerp(percent, 0.8, 1),
-            transform: `translate(-50%, -50%) scale(${lerp(percent, 0.8, 1)})`,
-          }}
-        >
-          <Link to="/projects">
-            <Button
-              size="large"
-              className="bg-black border-black min-w-[200px]"
-            >
-              Projects
-            </Button>
-          </Link>
-        </div>
-        <div
-          className="absolute top-[85vh] sm:top-1/2 left-1/2 sm:-ml-[30vw]"
-          style={{
-            opacity: lerp(percent, 0.8, 1),
-            transform: `translate(-50%, -50%) scale(${lerp(percent, 0.8, 1)})`,
-          }}
-        >
-          <Link to="/posts">
-            <Button
-              size="large"
-              className="bg-black border-black min-w-[200px]"
-            >
-              Blog
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-};
-
 export default function Index() {
   return (
-    <div className="bg-white">
+    <div className="">
       <TitleSection />
-      <PictureSection />
-      <FinalSection />
     </div>
   );
 }
