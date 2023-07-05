@@ -59,7 +59,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
   }
 
   return (
-    <div className="absolute top-0 w-screen overflow-hidden px-3 flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20 z-10">
+    <div className="relative w-full overflow-hidden px-3 flex justify-between items-center container mx-auto lg:px-60 py-5 lg:py-20 z-10">
       <div className="flex items-center gap-5 sm:gap-10">
         <Link to="/" className="mr-5 sm:mr-10" onClick={handleClick}>
           <Button

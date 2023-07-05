@@ -233,26 +233,24 @@ const Blobs = ({ percent }: { percent: number }) => {
     };
   }, []);
 
-  return (
-    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
-  );
+  return <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0" />;
 };
 
 const Hello = ({ percent }: { percent: number }) => {
   return (
     <>
       <h1
-        className="absolute w-full md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translateX(${lerp(percent, 0, 0.1) * 100}vw)`,
+          transform: `translateX(${-lerp(percent, 0, 0.1) * 100}vw)`,
         }}
       >
         Hello
       </h1>
       <h3
-        className="absolute w-full md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translateX(${-100 + lerp(percent, 0.1, 0.3) * 200}vw)`,
+          transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
         }}
       >
         I'm Philipp
@@ -260,7 +258,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h3
         className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translate(${-200 + lerp(percent, 0.3, 0.6) * 400}vw)`,
+          transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
         }}
       >
         Nice to meet you
