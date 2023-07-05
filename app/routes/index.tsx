@@ -1,5 +1,5 @@
 import { useOnResize, useScrollPosition } from "~/utils/hooks";
-import { PaperScope, Path, Point, Color } from "paper";
+import { PaperScope, Path, Point, Size, Raster, Color } from "paper";
 import React from "react";
 
 function lerp(percent: number, start: number, end: number) {
@@ -192,11 +192,9 @@ const colors = [
   "#f07596",
 ];
 
-const Canvas = ({ percent }: { percent: number }) => {
+const Blobs = ({ percent }: { percent: number }) => {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   const blobRef = React.useRef<Blob[]>([]);
-
-  console.log(percent);
 
   React.useEffect(() => {
     blobRef.current.forEach((b) => {
@@ -216,7 +214,7 @@ const Canvas = ({ percent }: { percent: number }) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const numBlobs = 40;
+    const numBlobs = 80;
     for (let i = 0; i < numBlobs; i++) {
       const x = Math.random() * 2 * canvas.width;
       const y = Math.random() * 2 * canvas.height;
@@ -242,16 +240,32 @@ const Canvas = ({ percent }: { percent: number }) => {
 
 const Hello = ({ percent }: { percent: number }) => {
   return (
-    <div className="absolute w-full">
+    <>
       <h1
-        className="relative text-8xl md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          opacity: 1 - lerp(percent, 0.8, 1),
+          transform: `translateX(${lerp(percent, 0, 0.1) * 100}vw)`,
         }}
       >
         Hello
       </h1>
-    </div>
+      <h3
+        className="absolute w-full md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        style={{
+          transform: `translateX(${-100 + lerp(percent, 0.1, 0.3) * 200}vw)`,
+        }}
+      >
+        I'm Philipp
+      </h3>
+      <h3
+        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        style={{
+          transform: `translate(${-200 + lerp(percent, 0.3, 0.6) * 400}vw)`,
+        }}
+      >
+        Nice to meet you
+      </h3>
+    </>
   );
 };
 
@@ -278,16 +292,142 @@ const TitleSection = () => {
   return (
     <section ref={ref} className="w-full h-[300vh]">
       <div className="sticky top-56 sm:pt-10">
-        <Canvas percent={percent} />
+        <Blobs percent={percent} />
         <Hello percent={percent} />
       </div>
     </section>
   );
 };
+
+const Picture = ({ percent }: { percent: number }) => {
+  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const stateRef = React.useRef<{
+    path: paper.Path | null;
+    points: paper.Point[];
+  }>({
+    path: null,
+    points: [],
+  });
+
+  React.useEffect(() => {
+    const { path, points } = stateRef.current;
+    if (path && points) {
+      path.segments = [];
+      const stepCount = points.length / 2;
+      const visibleSteps = Math.floor(percent * stepCount);
+      for (let i = 0; i < visibleSteps; i++) {
+        path.add(points[i * 2]);
+        path.insert(0, points[i * 2 + 1]);
+      }
+    }
+  }, [percent]);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const paper = new PaperScope();
+    paper.setup(ref.current);
+    paper.settings.applyMatrix = false;
+    const canvas = ref.current;
+
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // As the web is asynchronous, we need to wait for the raster to
+    // load before we can perform any operation on its pixels.
+    const raster = new Raster({
+      source: "me-square.png",
+    });
+    raster.visible = false;
+    raster.fitBounds(paper.view.bounds);
+    raster.on("load", resetSpiral);
+
+    let position: paper.Point;
+    let path: paper.Path;
+    let count = 0;
+    let grow = false;
+
+    const points: paper.Point[] = [];
+
+    function growSpiral() {
+      count++;
+      const vector = new Point({
+        angle: count * 5,
+        length: count / 100,
+      });
+      const rot = vector.rotate(90);
+      const color = raster.getAverageColor(position.add(vector));
+
+      let value = color ? (1 - color.gray) * 3.7 : 0;
+      if (color?.gray > 0.7) {
+        value = 0;
+      }
+      rot.length = Math.max(value, 0.2);
+
+      points.push(position.add(vector).subtract(rot));
+      points.push(position.add(vector).add(rot));
+
+      position = position.add(vector);
+    }
+
+    function resetSpiral() {
+      grow = true;
+
+      // Transform the raster, so it fills the view:
+      if (path) {
+        path.remove();
+      }
+
+      position = paper.view.center;
+      count = 0;
+      path = new Path({
+        fillColor: "black",
+        closed: true,
+      });
+
+      const max = Math.max(raster.bounds.width, raster.bounds.height);
+
+      while (grow) {
+        if (
+          raster.loaded &&
+          paper.view.center.subtract(position).length < max
+        ) {
+          for (let i = 0, l = 100; i < l; i++) {
+            growSpiral();
+          }
+          // path.smooth();
+        } else {
+          grow = false;
+        }
+      }
+
+      stateRef.current = { path, points };
+    }
+  }, []);
+
+  return (
+    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+  );
+};
+
+const PictureSection = () => {
+  const { ref, percent, scrollY } = useScrollPosition();
+
+  return (
+    <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
+      <div className="sticky">
+        <Picture percent={percent} />
+      </div>
+    </section>
+  );
+};
+
 export default function Index() {
   return (
     <div className="">
       <TitleSection />
+      <PictureSection />
     </div>
   );
 }
