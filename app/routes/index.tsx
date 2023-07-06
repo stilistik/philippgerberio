@@ -268,25 +268,7 @@ const Hello = ({ percent }: { percent: number }) => {
 };
 
 const TitleSection = () => {
-  const { ref, percent, scrollY } = useScrollPosition();
-  const breakPoint = useBreakPoint();
-  const ballSize = 500;
-  const initialBallScrollY = 800;
-
-  const {
-    topOffset,
-    yBallScrollFactor,
-    ballTranslationFactor,
-    ballScaleMin,
-    ballScaleFactor,
-  } = FACTORS[breakPoint];
-
-  const hasScrolled = scrollY > 0;
-  const yPercent = Math.max(
-    0,
-    initialBallScrollY - scrollY * yBallScrollFactor
-  );
-
+  const { ref, percent } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[600vh]">
       <div className="sticky top-56 sm:pt-10">
@@ -359,7 +341,7 @@ const Picture = ({ percent }: { percent: number }) => {
         angle: count * 5,
         length: count / 100,
       });
-      const rot = vector.rotate(90);
+      const rot = vector.rotate(90, [0, 0]);
       const color = raster.getAverageColor(position.add(vector));
 
       let value = color ? (1 - color.gray) * 3.7 : 0;
