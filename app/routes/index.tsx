@@ -179,7 +179,33 @@ class Blob {
   }
 }
 
-const colors = [
+const GREEN_BLUE = [
+  "#007a3d",
+  "#02894e",
+  "#04975f",
+  "#08a67a",
+  "#0bb494",
+  "#0fafaa",
+  "#12a9c0",
+  "#119ec6",
+  "#0f94c3",
+  "#0c8ac0",
+];
+
+const ORANGE_VIOLET = [
+  "#e46205",
+  "#d94d16",
+  "#cd3726",
+  "#c12136",
+  "#b50b46",
+  "#ac1870",
+  "#a3259a",
+  "#9a32c4",
+  "#9539d9",
+  "#903fee",
+];
+
+const BLUE_PINK = [
   "#0077b6",
   "#0096c7",
   "#00b4d8",
@@ -191,6 +217,11 @@ const colors = [
   "#e484a2",
   "#f07596",
 ];
+
+const PALETTES = [GREEN_BLUE, BLUE_PINK, ORANGE_VIOLET];
+
+const colors =
+  PALETTES[Math.floor(Math.random() * PALETTES.length) % PALETTES.length];
 
 const Blobs = ({ percent }: { percent: number }) => {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
@@ -247,22 +278,22 @@ const Hello = ({ percent }: { percent: number }) => {
       >
         Hello
       </h1>
-      <h3
+      <h1
         className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
         }}
       >
         I'm Philipp
-      </h3>
-      <h3
+      </h1>
+      <h1
         className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
         }}
       >
         Nice to meet you
-      </h3>
+      </h1>
     </>
   );
 };
@@ -284,13 +315,18 @@ const Picture = ({ percent }: { percent: number }) => {
   const stateRef = React.useRef<{
     path: paper.Path | null;
     points: paper.Point[];
+    pointsNoImage: paper.Point[];
   }>({
     path: null,
     points: [],
+    pointsNoImage: [],
   });
 
+  const MIN_DRAW_WIDTH = 0.5;
+
   React.useEffect(() => {
-    const { path, points } = stateRef.current;
+    const { path, points, pointsNoImage } = stateRef.current;
+    const w = getWidth();
     if (path && points) {
       if (percent === 0) {
         path.visible = false;
@@ -298,11 +334,36 @@ const Picture = ({ percent }: { percent: number }) => {
         path.visible = true;
         path.segments = [];
         const stepCount = points.length / 2;
-        const visibleSteps = Math.floor(percent * stepCount);
+        const relevantPercent = lerp(percent, 0, 0.5);
+        const visibleSteps = Math.floor(relevantPercent * stepCount);
+
         for (let i = 0; i < visibleSteps; i++) {
-          path.add(points[i * 2]);
-          path.insert(0, points[i * 2 + 1]);
+          if (percent < 0.8) {
+            path.add(points[i * 2]);
+            path.insert(0, points[i * 2 + 1]);
+          } else {
+            // we are collapsing the image in the spiral
+            const d1 = points[i * 2].subtract(pointsNoImage[i * 2]);
+            d1.length = d1.length * (1 - lerp(percent, 0.8, 0.95));
+            const p1 = pointsNoImage[i * 2].add(d1);
+
+            const d2 = points[i * 2 + 1].subtract(pointsNoImage[i * 2 + 1]);
+            d2.length = d2.length * (1 - lerp(percent, 0.8, 0.95));
+            const p2 = pointsNoImage[i * 2 + 1].add(d2);
+            path.add(p1);
+            path.insert(0, p2);
+          }
         }
+      }
+      if (percent > 0.5) {
+        const d = w - path.bounds.width / 2 - path.view.center.x;
+        path.position.x = path.view.center.x + lerp(percent, 0.5, 0.7) * d;
+      }
+
+      if (percent > 0.95) {
+        path.opacity = 1 - lerp(percent, 0.95, 1);
+      } else {
+        path.opacity = 1;
       }
     }
   }, [percent]);
@@ -334,6 +395,7 @@ const Picture = ({ percent }: { percent: number }) => {
     let grow = false;
 
     const points: paper.Point[] = [];
+    const pointsNoImage: paper.Point[] = [];
 
     function growSpiral() {
       count++;
@@ -348,10 +410,13 @@ const Picture = ({ percent }: { percent: number }) => {
       if (color?.gray > 0.7) {
         value = 0;
       }
-      rot.length = Math.max(value, 0.2);
-
+      rot.length = Math.max(value, MIN_DRAW_WIDTH);
       points.push(position.add(vector).subtract(rot));
       points.push(position.add(vector).add(rot));
+
+      rot.length = MIN_DRAW_WIDTH;
+      pointsNoImage.push(position.add(vector).subtract(rot));
+      pointsNoImage.push(position.add(vector).add(rot));
 
       position = position.add(vector);
     }
@@ -381,13 +446,12 @@ const Picture = ({ percent }: { percent: number }) => {
           for (let i = 0, l = 100; i < l; i++) {
             growSpiral();
           }
-          // path.smooth();
         } else {
           grow = false;
         }
       }
 
-      stateRef.current = { path, points };
+      stateRef.current = { path, points, pointsNoImage };
     }
   }, []);
 
@@ -396,23 +460,144 @@ const Picture = ({ percent }: { percent: number }) => {
   );
 };
 
+const AnimatedSpan = ({
+  children,
+  percent,
+  blur,
+  start,
+  end,
+  color,
+}: {
+  children: React.ReactNode;
+  percent: number;
+  blur: number;
+  start: number;
+  end: number;
+  color: string;
+}) => {
+  const value = lerp(percent, start, end);
+  const initialScale = 1.2;
+  return (
+    <span
+      className="text_shadows mr-[3rem]"
+      style={{
+        display: "inline-block",
+        transform: `scale(${
+          initialScale - value * Math.abs(1 - initialScale)
+        }) translateX(${-100 * lerp(percent, 0.8, 1)}vw)`,
+        filter: `blur(${blur - value * blur}px)`,
+        opacity: value,
+        color: value === 1 ? color : "black",
+        transition: `color 1.5s ease-in-out`,
+      }}
+    >
+      {children}
+    </span>
+  );
+};
+
+const Presentation = ({ percent }: { percent: number }) => {
+  const blur = 10;
+  return (
+    <div className="sticky top-0 w-screen h-screen flex items-center">
+      <h1 className="w-1/2 md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-black text-center">
+        <AnimatedSpan
+          blur={blur}
+          percent={percent}
+          start={0.5}
+          end={0.55}
+          color={colors[0]}
+        >
+          I
+        </AnimatedSpan>
+        <AnimatedSpan
+          blur={blur}
+          percent={percent}
+          start={0.55}
+          end={0.6}
+          color={colors[2]}
+        >
+          like
+        </AnimatedSpan>
+        <AnimatedSpan
+          blur={blur}
+          percent={percent}
+          start={0.6}
+          end={0.65}
+          color={colors[4]}
+        >
+          art
+        </AnimatedSpan>
+        <AnimatedSpan
+          blur={blur}
+          percent={percent}
+          start={0.65}
+          end={0.7}
+          color={colors[6]}
+        >
+          &
+        </AnimatedSpan>
+        <AnimatedSpan
+          blur={blur}
+          percent={percent}
+          start={0.7}
+          end={0.75}
+          color={colors[8]}
+        >
+          tech
+        </AnimatedSpan>
+      </h1>
+    </div>
+  );
+};
+
 const PictureSection = () => {
-  const { ref, percent, scrollY } = useScrollPosition();
+  const { ref, percent } = useScrollPosition();
 
   return (
-    <section ref={ref} className="w-full h-[600vh] -mt-[250vh]">
-      <div className="sticky">
-        <Picture percent={percent} />
-      </div>
+    <section ref={ref} className="w-full h-[600vh] -mt-[200vh]">
+      <Picture percent={percent} />
+      <Presentation percent={percent} />
+    </section>
+  );
+};
+
+const CubeWall = ({ percent }: { percent: number }) => {
+  const ref = React.useRef<HTMLCanvasElement | null>(null);
+
+  React.useEffect(() => {
+    if (!ref.current) return;
+    const paper = new PaperScope();
+    paper.setup(ref.current);
+    paper.settings.applyMatrix = false;
+    const canvas = ref.current;
+
+    if (!canvas) return;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }, []);
+
+  return (
+    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+  );
+};
+
+const KnowledgeSection = () => {
+  const { ref, percent } = useScrollPosition();
+  return (
+    <section ref={ref} className="w-full h-[600vh] -mt-[200vh]">
+      <CubeWall percent={percent} />
     </section>
   );
 };
 
 export default function Index() {
   return (
-    <div className="">
+    <>
       <TitleSection />
       <PictureSection />
-    </div>
+      <KnowledgeSection />
+    </>
   );
 }
