@@ -389,7 +389,7 @@ const Picture = ({ percent }: { percent: number }) => {
         closed: true,
       });
 
-      const max = Math.max(raster.bounds.width, raster.bounds.height);
+      const max = Math.max(raster.bounds.width, raster.bounds.height) / 2;
 
       while (grow) {
         if (
