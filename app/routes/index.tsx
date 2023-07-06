@@ -151,7 +151,7 @@ class Blob {
 
   wobble(t: number) {
     const wobbleSpeed = 0.4;
-    const wobbleIntensity = 0.4;
+    const wobbleIntensity = 0.6;
     const rnd = Math.random();
     this.path.segments.forEach((segment, i) => {
       const dx = rnd * wobbleIntensity * Math.cos(i + t * wobbleSpeed);
@@ -171,7 +171,7 @@ class Blob {
 
     const scaling = Math.max(1 - lerp(percent, 0.6, 1), 0.01);
     this.path.scaling = new Point(scaling, scaling);
-    this.path.opacity = 1 - lerp(percent, 0.6, 1);
+    this.path.opacity = 1 - lerp(percent, 0.9, 1);
   }
 
   update(t: number) {
@@ -240,7 +240,7 @@ const Hello = ({ percent }: { percent: number }) => {
   return (
     <>
       <h1
-        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${-lerp(percent, 0, 0.1) * 100}vw)`,
         }}
@@ -248,7 +248,7 @@ const Hello = ({ percent }: { percent: number }) => {
         Hello
       </h1>
       <h3
-        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
         }}
@@ -256,7 +256,7 @@ const Hello = ({ percent }: { percent: number }) => {
         I'm Philipp
       </h3>
       <h3
-        className="absolute w-full whitespace-nowrap md:text-[15rem] lg:text-[20rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
         }}
@@ -288,7 +288,7 @@ const TitleSection = () => {
   );
 
   return (
-    <section ref={ref} className="w-full h-[300vh]">
+    <section ref={ref} className="w-full h-[600vh]">
       <div className="sticky top-56 sm:pt-10">
         <Blobs percent={percent} />
         <Hello percent={percent} />
@@ -310,12 +310,17 @@ const Picture = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     const { path, points } = stateRef.current;
     if (path && points) {
-      path.segments = [];
-      const stepCount = points.length / 2;
-      const visibleSteps = Math.floor(percent * stepCount);
-      for (let i = 0; i < visibleSteps; i++) {
-        path.add(points[i * 2]);
-        path.insert(0, points[i * 2 + 1]);
+      if (percent === 0) {
+        path.visible = false;
+      } else {
+        path.visible = true;
+        path.segments = [];
+        const stepCount = points.length / 2;
+        const visibleSteps = Math.floor(percent * stepCount);
+        for (let i = 0; i < visibleSteps; i++) {
+          path.add(points[i * 2]);
+          path.insert(0, points[i * 2 + 1]);
+        }
       }
     }
   }, [percent]);
@@ -413,7 +418,7 @@ const PictureSection = () => {
   const { ref, percent, scrollY } = useScrollPosition();
 
   return (
-    <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
+    <section ref={ref} className="w-full h-[600vh] -mt-[250vh]">
       <div className="sticky">
         <Picture percent={percent} />
       </div>
