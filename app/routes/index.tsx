@@ -40,6 +40,34 @@ function toRadians(angleInDeg: number) {
   return (Math.PI / 180) * angleInDeg;
 }
 
+function usePaper(
+  { resolution }: { resolution: "full" | "half" | "quarter" } = {
+    resolution: "half",
+  }
+) {
+  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const [paper, setPaper] = React.useState<paper.PaperScope | null>(null);
+  React.useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const paper = new PaperScope();
+    paper.setup(canvas);
+
+    if (resolution === "half") {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    } else if (resolution === "quarter") {
+      canvas.width = window.innerWidth * 0.5;
+      canvas.height = window.innerHeight * 0.5;
+    }
+
+    paper.settings.applyMatrix = false;
+    setPaper(paper);
+  }, []);
+
+  return { ref, paper };
+}
+
 interface Factors {
   topOffset: number;
   yBallScrollFactor: number;
@@ -266,7 +294,7 @@ const colors =
   PALETTES[Math.floor(Math.random() * PALETTES.length) % PALETTES.length];
 
 const Blobs = ({ percent }: { percent: number }) => {
-  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const { ref, paper } = usePaper();
   const blobRef = React.useRef<Blob[]>([]);
   const isMobile = useIsMobile();
 
@@ -277,21 +305,12 @@ const Blobs = ({ percent }: { percent: number }) => {
   }, [percent]);
 
   React.useEffect(() => {
-    if (!ref.current) return;
-    const paper = new PaperScope();
-    paper.setup(ref.current);
-    paper.settings.applyMatrix = false;
-    const canvas = ref.current;
-
-    if (!canvas) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
+    if (!paper) return;
+    paper.activate();
     const numBlobs = isMobile ? 30 : 80;
     for (let i = 0; i < numBlobs; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
+      const x = Math.random() * paper.view.bounds.width;
+      const y = Math.random() * paper.view.bounds.height;
       const radius = getHeight() / 6 + (Math.random() * getHeight()) / 6;
       const colorIdx = Math.floor((i / numBlobs) * colors.length);
       const color1 = colors[colorIdx];
@@ -305,7 +324,7 @@ const Blobs = ({ percent }: { percent: number }) => {
         blob.update(e.time);
       }
     };
-  }, []);
+  }, [paper]);
 
   return <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0" />;
 };
@@ -354,7 +373,8 @@ const TitleSection = () => {
 };
 
 const Picture = ({ percent }: { percent: number }) => {
-  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const { ref, paper } = usePaper({ highres: true });
+  const isMobile = useIsMobile();
   const stateRef = React.useRef<{
     path: paper.Path | null;
     points: paper.Point[];
@@ -366,6 +386,7 @@ const Picture = ({ percent }: { percent: number }) => {
   });
 
   const MIN_DRAW_WIDTH = 0.5;
+  const MAX_DRAW_WIDTH = isMobile ? 2.4 : 3.7;
 
   React.useEffect(() => {
     const { path, points, pointsNoImage } = stateRef.current;
@@ -412,16 +433,8 @@ const Picture = ({ percent }: { percent: number }) => {
   }, [percent]);
 
   React.useEffect(() => {
-    if (!ref.current) return;
-    const paper = new PaperScope();
-    paper.setup(ref.current);
-    paper.settings.applyMatrix = false;
-    const canvas = ref.current;
-
-    if (!canvas) return;
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (!paper) return;
+    paper.activate();
 
     // As the web is asynchronous, we need to wait for the raster to
     // load before we can perform any operation on its pixels.
@@ -429,7 +442,6 @@ const Picture = ({ percent }: { percent: number }) => {
       source: "me-square.png",
     });
     raster.visible = false;
-    raster.fitBounds(paper.view.bounds);
     raster.on("load", resetSpiral);
 
     let position: paper.Point;
@@ -443,13 +455,13 @@ const Picture = ({ percent }: { percent: number }) => {
     function growSpiral() {
       count++;
       const vector = new Point({
-        angle: count * 5,
+        angle: count * (isMobile ? 6.5 : 5),
         length: count / 100,
       });
       const rot = vector.rotate(90, [0, 0]);
       const color = raster.getAverageColor(position.add(vector));
 
-      let value = color ? (1 - color.gray) * 3.7 : 0;
+      let value = color ? (1 - color.gray) * MAX_DRAW_WIDTH : 0;
       if (color?.gray > 0.7) {
         value = 0;
       }
@@ -465,6 +477,9 @@ const Picture = ({ percent }: { percent: number }) => {
     }
 
     function resetSpiral() {
+      if (!paper) return;
+      raster.fitBounds(paper.view.bounds);
+
       grow = true;
 
       // Transform the raster, so it fills the view:
@@ -496,7 +511,7 @@ const Picture = ({ percent }: { percent: number }) => {
 
       stateRef.current = { path, points, pointsNoImage };
     }
-  }, []);
+  }, [paper]);
 
   return (
     <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
@@ -606,7 +621,7 @@ const PictureSection = () => {
 };
 
 const CubeWall = ({ percent }: { percent: number }) => {
-  const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const { ref, paper } = usePaper();
   const stateRef = React.useRef<{
     boxes: paper.Item[];
     circle: paper.Path | null;
@@ -640,17 +655,11 @@ const CubeWall = ({ percent }: { percent: number }) => {
   }, [percent]);
 
   React.useEffect(() => {
-    if (!ref.current) return;
-    const paper = new PaperScope();
-    paper.setup(ref.current);
-    paper.settings.applyMatrix = false;
-    const canvas = ref.current;
-
-    if (!canvas) return;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    if (!paper) return;
+    paper.activate();
 
     function createPiece(t: string) {
+      if (!paper) return;
       const color1 = colors[Math.floor(Math.random() * colors.length)];
       const color2 = colors[Math.floor(Math.random() * colors.length)];
       const piece = new Group();
@@ -665,7 +674,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
         },
         origin: hexagon.bounds.topLeft,
         destination: hexagon.bounds.bottomRight,
-      };
+      } as any;
       piece.addChild(hexagon);
       const text = new PointText({
         content: t,
@@ -679,28 +688,6 @@ const CubeWall = ({ percent }: { percent: number }) => {
 
       return piece;
     }
-
-    // const tech = [
-    //   "TypeScript",
-    //   "JavaScript",
-    //   "React",
-    //   "Node",
-    //   "Postgres",
-    //   "Docker",
-    //   "Nginx",
-    //   "GraphQL",
-    //   "C++",
-    //   "Java",
-    //   "C",
-    //   "Vue",
-    //   "Remix",
-    //   "NextJS",
-    //   "Arduino",
-    //   "C#",
-    //   "Python",
-    //   "CSS",
-    //   "SQL",
-    // ];
 
     const tech = Array(180).fill("");
     const group = new Group();
@@ -767,7 +754,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
     circle.sendToBack();
 
     stateRef.current = { boxes, circle };
-  }, []);
+  }, [paper]);
 
   return (
     <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
