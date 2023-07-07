@@ -152,7 +152,7 @@ class Blob {
 
     this.translateDirectionX = (Math.random() - 0.5) * 2;
     this.translateDirectionY = (Math.random() - 0.5) * 2;
-    this.translationSpeed = 3000 + Math.random() * 5000;
+    this.translationSpeed = 1000 + Math.random() * 3000;
   }
 
   generatePoints() {
@@ -204,9 +204,9 @@ class Blob {
   }
 
   animate(percent: number) {
-    this.path.position.x =
+    const SPEED = (this.path.position.x =
       this.originalPos.x +
-      this.translateDirectionX * percent * this.translationSpeed;
+      this.translateDirectionX * percent * this.translationSpeed);
     this.path.position.y =
       this.originalPos.y +
       this.translateDirectionY * percent * this.translationSpeed;
@@ -312,9 +312,9 @@ const Blobs = ({ percent }: { percent: number }) => {
 
 const Hello = ({ percent }: { percent: number }) => {
   return (
-    <div className="w-screen h-screen overflow-hidden">
+    <>
       <h1
-        className="whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${-lerp(percent, 0, 0.1) * 100}vw)`,
         }}
@@ -322,7 +322,7 @@ const Hello = ({ percent }: { percent: number }) => {
         Hello
       </h1>
       <h1
-        className="whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
         }}
@@ -330,14 +330,14 @@ const Hello = ({ percent }: { percent: number }) => {
         I'm Philipp
       </h1>
       <h1
-        className="whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
         }}
       >
         Nice to meet you
       </h1>
-    </div>
+    </>
   );
 };
 
