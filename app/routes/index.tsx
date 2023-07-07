@@ -548,7 +548,7 @@ const AnimatedSpan = ({
         filter: `blur(${blur - value * blur}px)`,
         opacity: value,
         color: value === 1 ? color : "black",
-        transition: `color 1.5s ease-in-out`,
+        transition: `color 0.7s ease-in-out`,
       }}
     >
       {children}
@@ -638,7 +638,6 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
     const p = lerp(percent, 0, 0.5);
     const childCount = boxes.length;
     const visibleCount = Math.floor(p * childCount);
-    const step = 1 / childCount;
 
     boxes.forEach((box, i) => {
       box.visible = i < visibleCount;
@@ -826,7 +825,6 @@ const MorphText = ({ percent }: { percent: number }) => {
     let time = new Date();
     let morph = 0;
     let cooldown = cooldownTime;
-    let switching = false;
 
     function doMorph() {
       morph -= cooldown;
@@ -877,24 +875,22 @@ const MorphText = ({ percent }: { percent: number }) => {
       time = newTime;
 
       cooldown -= dt;
+      const { running } = stateRef.current;
+
+      if (!running) {
+        textIndex = 0;
+        text1.textContent = TEXTS[0];
+        text2.textContent = TEXTS[0];
+      }
 
       if (cooldown <= 0) {
         if (shouldIncrementIndex) {
-          const { running } = stateRef.current;
           if (running) {
             const i1 = textIndex % TEXTS.length;
             const i2 = (textIndex + 1) % TEXTS.length;
             text1.textContent = TEXTS[i1];
             text2.textContent = TEXTS[i2];
             textIndex++;
-          } else {
-            textIndex = 0;
-            if (text2.textContent !== TEXTS[0]) {
-              text1.textContent = text2.textContent;
-              text2.textContent = TEXTS[0];
-            } else {
-              text1.textContent = TEXTS[0];
-            }
           }
         }
 
