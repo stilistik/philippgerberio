@@ -373,7 +373,7 @@ const TitleSection = () => {
 };
 
 const Picture = ({ percent }: { percent: number }) => {
-  const { ref, paper } = usePaper({ highres: true });
+  const { ref, paper } = usePaper({ resolution: "full" });
   const isMobile = useIsMobile();
   const stateRef = React.useRef<{
     path: paper.Path | null;
@@ -659,12 +659,11 @@ const CubeWall = ({ percent }: { percent: number }) => {
     paper.activate();
 
     function createPiece(t: string) {
-      if (!paper) return;
       const color1 = colors[Math.floor(Math.random() * colors.length)];
       const color2 = colors[Math.floor(Math.random() * colors.length)];
       const piece = new Group();
       const hexagon = new Path.RegularPolygon({
-        center: paper.view.center,
+        center: paper?.view?.center,
         sides: 6,
         radius: RADIUS,
       });
