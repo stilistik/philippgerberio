@@ -1,5 +1,15 @@
 import { useOnResize, useScrollPosition } from "~/utils/hooks";
-import { PaperScope, Path, Point, Size, Raster, Color } from "paper";
+import {
+  PaperScope,
+  Path,
+  Point,
+  Group,
+  Raster,
+  Color,
+  Size,
+  PointText,
+  Matrix,
+} from "paper";
 import React from "react";
 
 function lerp(percent: number, start: number, end: number) {
@@ -24,6 +34,10 @@ function getHeight() {
   } else {
     return 800; // default assumed window size for if js is disabled
   }
+}
+
+function toRadians(angleInDeg: number) {
+  return (Math.PI / 180) * angleInDeg;
 }
 
 interface Factors {
@@ -180,29 +194,16 @@ class Blob {
 }
 
 const GREEN_BLUE = [
-  "#007a3d",
-  "#02894e",
-  "#04975f",
-  "#08a67a",
-  "#0bb494",
-  "#0fafaa",
-  "#12a9c0",
-  "#119ec6",
-  "#0f94c3",
-  "#0c8ac0",
-];
-
-const ORANGE_VIOLET = [
-  "#e46205",
-  "#d94d16",
-  "#cd3726",
-  "#c12136",
-  "#b50b46",
-  "#ac1870",
-  "#a3259a",
-  "#9a32c4",
-  "#9539d9",
-  "#903fee",
+  "#23ba76",
+  "#26cd82",
+  "#34d19b",
+  "#42d4b4",
+  "#49cfbc",
+  "#53c8c8",
+  "#5dc0d4",
+  "#5fb8d6",
+  "#5bb2d7",
+  "#56acd7",
 ];
 
 const BLUE_PINK = [
@@ -218,7 +219,20 @@ const BLUE_PINK = [
   "#f07596",
 ];
 
-const PALETTES = [GREEN_BLUE, BLUE_PINK, ORANGE_VIOLET];
+const ORANGE_VIOLET = [
+  "#fb8632",
+  "#ed7444",
+  "#e06355",
+  "#e14e68",
+  "#e1397a",
+  "#d64099",
+  "#cb46b8",
+  "#b45fd6",
+  "#b069e2",
+  "#ab6df2",
+];
+
+const PALETTES = [GREEN_BLUE, ORANGE_VIOLET, BLUE_PINK];
 
 const colors =
   PALETTES[Math.floor(Math.random() * PALETTES.length) % PALETTES.length];
@@ -564,6 +578,37 @@ const PictureSection = () => {
 
 const CubeWall = ({ percent }: { percent: number }) => {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
+  const stateRef = React.useRef<{
+    boxes: paper.Item[];
+    circle: paper.Path | null;
+  }>({ boxes: [], circle: null });
+
+  const RADIUS = 100;
+  const SPACER = 10;
+
+  React.useEffect(() => {
+    const { boxes, circle } = stateRef.current;
+
+    const p = lerp(percent, 0, 0.5);
+    const childCount = boxes.length;
+    const visibleCount = Math.floor(p * childCount);
+    const step = 1 / childCount;
+
+    boxes.forEach((box, i) => {
+      box.visible = i < visibleCount;
+    });
+
+    if (circle) {
+      if (percent > 0.5) {
+        circle.visible = true;
+        circle.position = circle.view.center;
+        const s = lerp(percent, 0.5, 1) * 20;
+        circle.scaling = new Point(s, s);
+      } else {
+        circle.visible = false;
+      }
+    }
+  }, [percent]);
 
   React.useEffect(() => {
     if (!ref.current) return;
@@ -573,9 +618,126 @@ const CubeWall = ({ percent }: { percent: number }) => {
     const canvas = ref.current;
 
     if (!canvas) return;
-
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    function createPiece(t: string) {
+      const color1 = colors[Math.floor(Math.random() * colors.length)];
+      const color2 = colors[Math.floor(Math.random() * colors.length)];
+      const piece = new Group();
+      const hexagon = new Path.RegularPolygon({
+        center: paper.view.center,
+        sides: 6,
+        radius: RADIUS,
+      });
+      hexagon.fillColor = {
+        gradient: {
+          stops: [color1, color2],
+        },
+        origin: hexagon.bounds.topLeft,
+        destination: hexagon.bounds.bottomRight,
+      };
+      piece.addChild(hexagon);
+      const text = new PointText({
+        content: t,
+        fillColor: "white",
+        justification: "center",
+        fontSize: 18,
+        fontWeight: "bold",
+        point: piece.position,
+      });
+      piece.addChild(text);
+
+      return piece;
+    }
+
+    // const tech = [
+    //   "TypeScript",
+    //   "JavaScript",
+    //   "React",
+    //   "Node",
+    //   "Postgres",
+    //   "Docker",
+    //   "Nginx",
+    //   "GraphQL",
+    //   "C++",
+    //   "Java",
+    //   "C",
+    //   "Vue",
+    //   "Remix",
+    //   "NextJS",
+    //   "Arduino",
+    //   "C#",
+    //   "Python",
+    //   "CSS",
+    //   "SQL",
+    // ];
+
+    const tech = Array(180).fill("");
+    const group = new Group();
+
+    function calculateHexagonVertices(radius: number) {
+      let vertices: paper.Point[] = [];
+      for (let i = 0; i < 6; i++) {
+        let x = radius * Math.cos((2 * Math.PI * i) / 6);
+        let y = radius * Math.sin((2 * Math.PI * i) / 6);
+        vertices.push(new Point(x, y));
+      }
+      return vertices;
+    }
+
+    function calculatePoints(V: paper.Point[], N: number) {
+      const points: paper.Point[] = [];
+      for (let i = 0; i < 6; i++) {
+        for (let j = 0; j <= N; j++) {
+          let x = (1 - j / (N + 1)) * V[i].x + (j / (N + 1)) * V[(i + 1) % 6].x;
+          let y = (1 - j / (N + 1)) * V[i].y + (j / (N + 1)) * V[(i + 1) % 6].y;
+          points.push(new Point(x, y));
+        }
+      }
+      return points;
+    }
+
+    let ring = 0; // The current ring
+    let numInRing = 0; // The number of hexagons placed in the current ring
+    let inRing = 0; // The index of the current hexagon in the current ring
+
+    const w = Math.sqrt(3) * RADIUS + SPACER;
+
+    const boxes = tech.map((t) => {
+      const box = createPiece(t);
+      if (inRing >= numInRing) {
+        // Move to the next ring
+        ring++;
+        numInRing = ring * 6;
+        inRing = 0;
+      }
+
+      const additionalPoints = Math.floor(numInRing / 6) - 1;
+      const verts = calculateHexagonVertices(ring * w);
+      const pts = calculatePoints(verts, additionalPoints);
+
+      const point = pts[inRing];
+
+      // Compute the x and y position using polar to Cartesian conversion
+      box.position = box.view.center.add(point);
+
+      inRing++;
+      group.addChild(box);
+      box.visible = false;
+      return box;
+    });
+
+    const circle = new Path.Circle({
+      center: paper.view.center,
+      fillColor: "black",
+      radius: 50,
+    });
+
+    circle.scale(0);
+    circle.sendToBack();
+
+    stateRef.current = { boxes, circle };
   }, []);
 
   return (
@@ -586,7 +748,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
 const KnowledgeSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
-    <section ref={ref} className="w-full h-[600vh] -mt-[200vh]">
+    <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
       <CubeWall percent={percent} />
     </section>
   );
