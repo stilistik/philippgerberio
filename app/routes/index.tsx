@@ -620,7 +620,7 @@ const PictureSection = () => {
   );
 };
 
-const CubeWall = ({ percent }: { percent: number }) => {
+const HexagonGrid = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper();
   const stateRef = React.useRef<{
     boxes: paper.Item[];
@@ -643,7 +643,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
     });
 
     if (circle) {
-      if (percent > 0.5) {
+      if (p > 0.5) {
         circle.visible = true;
         circle.position = circle.view.center;
         const s = lerp(percent, 0.5, 1) * 20;
@@ -658,7 +658,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
     if (!paper) return;
     paper.activate();
 
-    function createPiece(t: string) {
+    function createPiece(t: string, colorless: boolean) {
       const color1 = colors[Math.floor(Math.random() * colors.length)];
       const color2 = colors[Math.floor(Math.random() * colors.length)];
       const piece = new Group();
@@ -667,13 +667,16 @@ const CubeWall = ({ percent }: { percent: number }) => {
         sides: 6,
         radius: RADIUS,
       });
-      hexagon.fillColor = {
-        gradient: {
-          stops: [color1, color2],
-        },
-        origin: hexagon.bounds.topLeft,
-        destination: hexagon.bounds.bottomRight,
-      } as any;
+
+      hexagon.fillColor = colorless
+        ? "black"
+        : ({
+            gradient: {
+              stops: [color1, color2],
+            },
+            origin: hexagon.bounds.topLeft,
+            destination: hexagon.bounds.bottomRight,
+          } as any);
       piece.addChild(hexagon);
       const text = new PointText({
         content: t,
@@ -719,8 +722,15 @@ const CubeWall = ({ percent }: { percent: number }) => {
 
     const w = Math.sqrt(3) * RADIUS + SPACER;
 
-    const boxes = tech.map((t) => {
-      const box = createPiece(t);
+    const boxes = tech.map((t, i) => {
+      const box = createPiece(t, i < 7);
+      if (i === 0) {
+        box.position = box.view.center;
+        box.visible = false;
+        group.addChild(box);
+        return box;
+      }
+
       if (inRing >= numInRing) {
         // Move to the next ring
         ring++;
@@ -746,7 +756,7 @@ const CubeWall = ({ percent }: { percent: number }) => {
     const circle = new Path.Circle({
       center: paper.view.center,
       fillColor: "black",
-      radius: 50,
+      radius: RADIUS,
     });
 
     circle.scale(0);
@@ -760,11 +770,162 @@ const CubeWall = ({ percent }: { percent: number }) => {
   );
 };
 
+const MorphText = ({ percent }: { percent: number }) => {
+  const text1Ref = React.useRef<HTMLSpanElement | null>(null);
+  const text2Ref = React.useRef<HTMLSpanElement | null>(null);
+
+  React.useEffect(() => {
+    const text1 = text1Ref.current;
+    const text2 = text2Ref.current;
+
+    if (!text1 || !text2) return;
+
+    // The strings to morph between. You can change these to anything you want!
+    const texts = [
+      "React",
+      "JavaScript",
+      "NodeJS",
+      "TypeScript",
+      "PostgreSQL",
+      "CSS",
+      "Tailwind",
+      "Docker",
+      "NginX",
+      "Prisma",
+      "Remix",
+      "Vue",
+      "NextJS",
+      "C",
+      "C++",
+      "C#",
+      "Unity",
+      "Arduino",
+      "Java",
+      "Python",
+    ];
+
+    // Controls the speed of morphing.
+    const morphTime = 1;
+    const cooldownTime = 0.25;
+
+    let textIndex = texts.length - 1;
+    let time = new Date();
+    let morph = 0;
+    let cooldown = cooldownTime;
+
+    text1.textContent = texts[textIndex % texts.length];
+    text2.textContent = texts[(textIndex + 1) % texts.length];
+
+    function doMorph() {
+      morph -= cooldown;
+      cooldown = 0;
+
+      let fraction = morph / morphTime;
+
+      if (fraction > 1) {
+        cooldown = cooldownTime;
+        fraction = 1;
+      }
+
+      setMorph(fraction);
+    }
+
+    // A lot of the magic happens here, this is what applies the blur filter to the text.
+    function setMorph(fraction) {
+      if (!text1 || !text2) return;
+
+      text2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
+      text2.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
+
+      fraction = 1 - fraction;
+      text1.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
+      text1.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
+
+      text1.textContent = texts[textIndex % texts.length];
+      text2.textContent = texts[(textIndex + 1) % texts.length];
+    }
+
+    function doCooldown() {
+      if (!text1 || !text2) return;
+
+      morph = 0;
+
+      text2.style.filter = "";
+      text2.style.opacity = "100%";
+
+      text1.style.filter = "";
+      text1.style.opacity = "0%";
+    }
+
+    // Animation loop, which is called every frame.
+    function animate() {
+      requestAnimationFrame(animate);
+
+      let newTime = new Date();
+      let shouldIncrementIndex = cooldown > 0;
+      let dt = (newTime.getTime() - time.getTime()) / 1000;
+      time = newTime;
+
+      cooldown -= dt;
+
+      if (cooldown <= 0) {
+        if (shouldIncrementIndex) {
+          textIndex++;
+        }
+
+        doMorph();
+      } else {
+        doCooldown();
+      }
+    }
+
+    // Start the animation.
+    animate();
+  }, []);
+
+  return (
+    <>
+      <div
+        className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-7xl"
+        style={{
+          filter: "url(#threshold) blur(0.6px)",
+          display: percent < 0.55 ? "none" : "flex",
+        }}
+      >
+        <span
+          ref={text1Ref}
+          className="absolute w-full inline-block text-center"
+        ></span>
+        <span
+          ref={text2Ref}
+          className="absolute w-full inline-block text-center"
+        ></span>
+      </div>
+
+      <svg id="filters">
+        <defs>
+          <filter id="threshold">
+            <feColorMatrix
+              in="SourceGraphic"
+              type="matrix"
+              values="1 0 0 0 0
+									0 1 0 0 0
+									0 0 1 0 0
+									0 0 0 255 -140"
+            />
+          </filter>
+        </defs>
+      </svg>
+    </>
+  );
+};
+
 const KnowledgeSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
-      <CubeWall percent={percent} />
+      <HexagonGrid percent={percent} />
+      <MorphText percent={percent} />
     </section>
   );
 };
