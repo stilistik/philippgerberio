@@ -294,7 +294,7 @@ const colors =
   PALETTES[Math.floor(Math.random() * PALETTES.length) % PALETTES.length];
 
 const Blobs = ({ percent }: { percent: number }) => {
-  const { ref, paper } = usePaper();
+  const { ref, paper } = usePaper({ resolution: "half" });
   const blobRef = React.useRef<Blob[]>([]);
   const isMobile = useIsMobile();
 
@@ -330,6 +330,8 @@ const Blobs = ({ percent }: { percent: number }) => {
 };
 
 const Hello = ({ percent }: { percent: number }) => {
+  const isMobile = useIsMobile();
+  const f = isMobile ? 3 : 1;
   return (
     <>
       <h1
@@ -343,7 +345,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h1
         className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
+          transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200 * f}vw)`,
         }}
       >
         I'm Philipp
@@ -351,7 +353,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h1
         className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
+          transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400 * f}vw)`,
         }}
       >
         Nice to meet you
@@ -621,7 +623,7 @@ const PictureSection = () => {
 };
 
 const HexagonGrid = ({ percent }: { percent: number }) => {
-  const { ref, paper } = usePaper();
+  const { ref, paper } = usePaper({ resolution: "full" });
   const stateRef = React.useRef<{
     boxes: paper.Item[];
     circle: paper.Path | null;
