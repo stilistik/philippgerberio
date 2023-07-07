@@ -776,6 +776,40 @@ const MorphText = ({ percent }: { percent: number }) => {
   const text1Ref = React.useRef<HTMLSpanElement | null>(null);
   const text2Ref = React.useRef<HTMLSpanElement | null>(null);
 
+  const TEXTS = [
+    "...",
+    "React",
+    "JavaScript",
+    "NodeJS",
+    "TypeScript",
+    "PostgreSQL",
+    "CSS",
+    "Tailwind",
+    "Docker",
+    "NginX",
+    "Prisma",
+    "Remix",
+    "Vue",
+    "NextJS",
+    "C",
+    "C++",
+    "C#",
+    "Unity",
+    "Arduino",
+    "Java",
+    "Python",
+  ];
+
+  const stateRef = React.useRef({ running: false });
+
+  React.useEffect(() => {
+    if (percent > 0.55) {
+      stateRef.current.running = true;
+    } else {
+      stateRef.current.running = false;
+    }
+  }, [percent]);
+
   React.useEffect(() => {
     const text1 = text1Ref.current;
     const text2 = text2Ref.current;
@@ -783,40 +817,16 @@ const MorphText = ({ percent }: { percent: number }) => {
     if (!text1 || !text2) return;
 
     // The strings to morph between. You can change these to anything you want!
-    const texts = [
-      "React",
-      "JavaScript",
-      "NodeJS",
-      "TypeScript",
-      "PostgreSQL",
-      "CSS",
-      "Tailwind",
-      "Docker",
-      "NginX",
-      "Prisma",
-      "Remix",
-      "Vue",
-      "NextJS",
-      "C",
-      "C++",
-      "C#",
-      "Unity",
-      "Arduino",
-      "Java",
-      "Python",
-    ];
 
     // Controls the speed of morphing.
     const morphTime = 1;
     const cooldownTime = 0.25;
 
-    let textIndex = texts.length - 1;
+    let textIndex = TEXTS.length - 1;
     let time = new Date();
     let morph = 0;
     let cooldown = cooldownTime;
-
-    text1.textContent = texts[textIndex % texts.length];
-    text2.textContent = texts[(textIndex + 1) % texts.length];
+    let switching = false;
 
     function doMorph() {
       morph -= cooldown;
@@ -833,7 +843,7 @@ const MorphText = ({ percent }: { percent: number }) => {
     }
 
     // A lot of the magic happens here, this is what applies the blur filter to the text.
-    function setMorph(fraction) {
+    function setMorph(fraction: number) {
       if (!text1 || !text2) return;
 
       text2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
@@ -842,9 +852,6 @@ const MorphText = ({ percent }: { percent: number }) => {
       fraction = 1 - fraction;
       text1.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
       text1.style.opacity = `${Math.pow(fraction, 0.4) * 100}%`;
-
-      text1.textContent = texts[textIndex % texts.length];
-      text2.textContent = texts[(textIndex + 1) % texts.length];
     }
 
     function doCooldown() {
@@ -862,6 +869,7 @@ const MorphText = ({ percent }: { percent: number }) => {
     // Animation loop, which is called every frame.
     function animate() {
       requestAnimationFrame(animate);
+      if (!text1 || !text2) return;
 
       let newTime = new Date();
       let shouldIncrementIndex = cooldown > 0;
@@ -872,7 +880,22 @@ const MorphText = ({ percent }: { percent: number }) => {
 
       if (cooldown <= 0) {
         if (shouldIncrementIndex) {
-          textIndex++;
+          const { running } = stateRef.current;
+          if (running) {
+            const i1 = textIndex % TEXTS.length;
+            const i2 = (textIndex + 1) % TEXTS.length;
+            text1.textContent = TEXTS[i1];
+            text2.textContent = TEXTS[i2];
+            textIndex++;
+          } else {
+            textIndex = 0;
+            if (text2.textContent !== TEXTS[0]) {
+              text1.textContent = text2.textContent;
+              text2.textContent = TEXTS[0];
+            } else {
+              text1.textContent = TEXTS[0];
+            }
+          }
         }
 
         doMorph();
@@ -891,7 +914,7 @@ const MorphText = ({ percent }: { percent: number }) => {
         className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-7xl"
         style={{
           filter: "url(#threshold) blur(0.6px)",
-          display: percent < 0.55 ? "none" : "flex",
+          display: percent > 0 ? "flex" : "none",
         }}
       >
         <span
