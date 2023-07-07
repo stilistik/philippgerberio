@@ -1,4 +1,4 @@
-import { useOnResize, useScrollPosition } from "~/utils/hooks";
+import { useIsMobile, useOnResize, useScrollPosition } from "~/utils/hooks";
 import {
   PaperScope,
   Path,
@@ -115,13 +115,17 @@ class Blob {
   private translateDirectionX: number;
   private translateDirectionY: number;
   private translationSpeed: number;
+  private originalSegmentPoints: paper.Point[];
+  private velocities: paper.Point[];
+  private t = 0;
 
   constructor(
     x: number,
     y: number,
     radius: number,
     color1: string,
-    color2: string
+    color2: string,
+    isMobile: boolean
   ) {
     this.x = x;
     this.y = y;
@@ -133,14 +137,18 @@ class Blob {
       },
       origin: this.path.bounds.topLeft,
       destination: this.path.bounds.bottomRight,
-    };
-    this.path.shadowBlur = 100;
+    } as any;
+    this.path.shadowBlur = isMobile ? 20 : 100;
     const shadowColor = new Color("white");
     shadowColor.alpha = 0.5;
     this.path.shadowColor = shadowColor;
     this.path.closed = true;
     this.path.smooth();
     this.originalPos = this.path.position.clone();
+    this.originalSegmentPoints = this.path.segments.map((s) => s.point.clone());
+    this.velocities = this.path.segments.map(() =>
+      new Point(Math.random() * 2 - 1, Math.random() * 2 - 1).normalize()
+    );
 
     this.translateDirectionX = (Math.random() - 0.5) * 2;
     this.translateDirectionY = (Math.random() - 0.5) * 2;
@@ -164,14 +172,34 @@ class Blob {
   }
 
   wobble(t: number) {
-    const wobbleSpeed = 0.4;
-    const wobbleIntensity = 0.6;
-    const rnd = Math.random();
-    this.path.segments.forEach((segment, i) => {
-      const dx = rnd * wobbleIntensity * Math.cos(i + t * wobbleSpeed);
-      const dy = rnd * wobbleIntensity * Math.cos(-i + t * wobbleSpeed);
-      segment.point.x += dx;
-      segment.point.y += dy;
+    const CHANGE_INTERVAL = 1;
+    const WOBBLE_AMPLITUDE = 10;
+    const WOBLLE_INTENSITY = 0.5;
+    const WOBBLE_ATTENUATION = 0.05;
+    const MAX_D = this.radius / WOBBLE_AMPLITUDE;
+    this.path.segments.forEach((s, i) => {
+      if (t - this.t > CHANGE_INTERVAL) {
+        this.velocities[i] = this.velocities[i]
+          .add(
+            new Point(Math.random() * 2 - 1, Math.random() * 2 - 1).multiply(
+              WOBBLE_ATTENUATION
+            )
+          )
+          .normalize();
+        this.t = t;
+      }
+      const velocity = this.velocities[i];
+      const newPoint = s.point.add(velocity.multiply(WOBLLE_INTENSITY));
+
+      if (this.originalSegmentPoints[i].subtract(newPoint).length > MAX_D) {
+        this.velocities[i] = velocity.add(
+          this.originalSegmentPoints[i]
+            .subtract(newPoint)
+            .normalize()
+            .multiply(WOBBLE_ATTENUATION)
+        );
+      }
+      s.point = newPoint;
     });
   }
 
@@ -240,6 +268,7 @@ const colors =
 const Blobs = ({ percent }: { percent: number }) => {
   const ref = React.useRef<HTMLCanvasElement | null>(null);
   const blobRef = React.useRef<Blob[]>([]);
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     blobRef.current.forEach((b) => {
@@ -259,15 +288,15 @@ const Blobs = ({ percent }: { percent: number }) => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const numBlobs = 80;
+    const numBlobs = isMobile ? 30 : 80;
     for (let i = 0; i < numBlobs; i++) {
-      const x = Math.random() * 2 * canvas.width;
-      const y = Math.random() * 2 * canvas.height;
-      const radius = 200 + Math.random() * 400;
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const radius = getHeight() / 6 + (Math.random() * getHeight()) / 6;
       const colorIdx = Math.floor((i / numBlobs) * colors.length);
       const color1 = colors[colorIdx];
       const color2 = colors[(colorIdx + 1) % colors.length];
-      const blob = new Blob(x, y, radius, color1, color2);
+      const blob = new Blob(x, y, radius, color1, color2, isMobile);
       blobRef.current.push(blob);
     }
 
@@ -283,9 +312,9 @@ const Blobs = ({ percent }: { percent: number }) => {
 
 const Hello = ({ percent }: { percent: number }) => {
   return (
-    <>
+    <div className="w-screen h-screen overflow-hidden">
       <h1
-        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${-lerp(percent, 0, 0.1) * 100}vw)`,
         }}
@@ -293,7 +322,7 @@ const Hello = ({ percent }: { percent: number }) => {
         Hello
       </h1>
       <h1
-        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200}vw)`,
         }}
@@ -301,14 +330,14 @@ const Hello = ({ percent }: { percent: number }) => {
         I'm Philipp
       </h1>
       <h1
-        className="absolute w-full whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="whitespace-nowrap md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400}vw)`,
         }}
       >
         Nice to meet you
       </h1>
-    </>
+    </div>
   );
 };
 
