@@ -7,6 +7,7 @@ import {
   Raster,
   Color,
   Size,
+  Rectangle,
   PointText,
   Matrix,
 } from "paper";
@@ -624,13 +625,14 @@ const PictureSection = () => {
 
 const HexagonGrid = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper({ resolution: "full" });
+  const isMobile = useIsMobile();
   const stateRef = React.useRef<{
     boxes: paper.Item[];
     circle: paper.Path | null;
   }>({ boxes: [], circle: null });
 
-  const RADIUS = 100;
-  const SPACER = 10;
+  const RADIUS = isMobile ? 50 : 100;
+  const SPACER = isMobile ? 5 : 10;
 
   React.useEffect(() => {
     const { boxes, circle } = stateRef.current;
@@ -692,7 +694,6 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
       return piece;
     }
 
-    const tech = Array(180).fill("");
     const group = new Group();
 
     function calculateHexagonVertices(radius: number) {
@@ -723,15 +724,10 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
 
     const w = Math.sqrt(3) * RADIUS + SPACER;
 
-    const boxes = tech.map((t, i) => {
-      const box = createPiece(t, i < 7);
-      if (i === 0) {
-        box.position = box.view.center;
-        box.visible = false;
-        group.addChild(box);
-        return box;
-      }
+    const positions = [paper.view.center];
+    const expandedBounds = paper.view.bounds.expand(RADIUS * 2);
 
+    while (ring < 20) {
       if (inRing >= numInRing) {
         // Move to the next ring
         ring++;
@@ -742,13 +738,17 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
       const additionalPoints = Math.floor(numInRing / 6) - 1;
       const verts = calculateHexagonVertices(ring * w);
       const pts = calculatePoints(verts, additionalPoints);
-
       const point = pts[inRing];
-
-      // Compute the x and y position using polar to Cartesian conversion
-      box.position = box.view.center.add(point);
-
+      const position = paper.view.center.add(point);
+      if (expandedBounds.contains(position)) {
+        positions.push(position);
+      }
       inRing++;
+    }
+
+    const boxes = positions.map((pos, i) => {
+      const box = createPiece("", i < 7);
+      box.position = pos;
       group.addChild(box);
       box.visible = false;
       return box;
@@ -772,6 +772,7 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
 };
 
 const MorphText = ({ percent }: { percent: number }) => {
+  const isMobile = useIsMobile();
   const text1Ref = React.useRef<HTMLSpanElement | null>(null);
   const text2Ref = React.useRef<HTMLSpanElement | null>(null);
 
@@ -864,10 +865,16 @@ const MorphText = ({ percent }: { percent: number }) => {
       text1.style.opacity = "0%";
     }
 
+    let lastTime = 0;
+
     // Animation loop, which is called every frame.
-    function animate() {
+    function animate(t: number) {
+      console.log();
+
       requestAnimationFrame(animate);
+      if (t - lastTime < 24) return;
       if (!text1 || !text2) return;
+      lastTime = t;
 
       let newTime = new Date();
       let shouldIncrementIndex = cooldown > 0;
@@ -901,7 +908,7 @@ const MorphText = ({ percent }: { percent: number }) => {
     }
 
     // Start the animation.
-    animate();
+    animate(30);
   }, []);
 
   return (
@@ -923,26 +930,29 @@ const MorphText = ({ percent }: { percent: number }) => {
         ></span>
       </div>
 
-      <svg id="filters">
-        <defs>
-          <filter id="threshold">
-            <feColorMatrix
-              in="SourceGraphic"
-              type="matrix"
-              values="1 0 0 0 0
+      {!isMobile && (
+        <svg id="filters">
+          <defs>
+            <filter id="threshold">
+              <feColorMatrix
+                in="SourceGraphic"
+                type="matrix"
+                values="1 0 0 0 0
 									0 1 0 0 0
 									0 0 1 0 0
 									0 0 0 255 -140"
-            />
-          </filter>
-        </defs>
-      </svg>
+              />
+            </filter>
+          </defs>
+        </svg>
+      )}
     </>
   );
 };
 
 const KnowledgeSection = () => {
   const { ref, percent } = useScrollPosition();
+  const isMobile = useIsMobile();
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
       <HexagonGrid percent={percent} />
