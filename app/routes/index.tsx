@@ -69,72 +69,6 @@ function usePaper(
   return { ref, paper };
 }
 
-interface Factors {
-  topOffset: number;
-  yBallScrollFactor: number;
-  ballTranslationFactor: number;
-  ballScaleMin: number;
-  ballScaleFactor: number;
-  leftMarginFactor: number;
-}
-
-type BreakPoint = "xs" | "sm" | "md" | "lg" | "xl";
-
-const FACTORS: Record<BreakPoint, Factors> = {
-  xs: {
-    topOffset: 120,
-    yBallScrollFactor: 6.5,
-    ballTranslationFactor: 3.5,
-    ballScaleMin: 5,
-    ballScaleFactor: 18,
-    leftMarginFactor: 0.5,
-  },
-  sm: {
-    topOffset: 120,
-    yBallScrollFactor: 6.5,
-    ballTranslationFactor: 3.5,
-    ballScaleMin: 5,
-    ballScaleFactor: 18,
-    leftMarginFactor: 0,
-  },
-  md: {
-    topOffset: 120,
-    yBallScrollFactor: 6.5,
-    ballTranslationFactor: 3.5,
-    ballScaleMin: 5,
-    ballScaleFactor: 18,
-    leftMarginFactor: 0,
-  },
-  lg: {
-    topOffset: 0,
-    yBallScrollFactor: 6.5,
-    ballTranslationFactor: 0.6,
-    ballScaleMin: 10,
-    ballScaleFactor: 12,
-    leftMarginFactor: 0,
-  },
-  xl: {
-    topOffset: 0,
-    yBallScrollFactor: 3.5,
-    ballTranslationFactor: 0.2,
-    ballScaleMin: 10,
-    ballScaleFactor: 12,
-    leftMarginFactor: 0,
-  },
-};
-
-function useBreakPoint() {
-  const [bp, setBp] = React.useState<BreakPoint>("xs");
-
-  useOnResize(() => {
-    const w = getWidth();
-    const breakPoint =
-      w < 420 ? "xs" : w < 640 ? "sm" : w < 768 ? "md" : w < 1024 ? "lg" : "xl";
-    setBp(breakPoint);
-  });
-  return bp;
-}
-
 class Blob {
   private x: number;
   private y: number;
@@ -394,6 +328,7 @@ const Picture = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     const { path, points, pointsNoImage } = stateRef.current;
     const w = getWidth();
+
     if (path && points) {
       if (percent === 0) {
         path.visible = false;
@@ -413,7 +348,6 @@ const Picture = ({ percent }: { percent: number }) => {
             const d1 = points[i * 2].subtract(pointsNoImage[i * 2]);
             d1.length = d1.length * (1 - lerp(percent, 0.8, 0.95));
             const p1 = pointsNoImage[i * 2].add(d1);
-
             const d2 = points[i * 2 + 1].subtract(pointsNoImage[i * 2 + 1]);
             d2.length = d2.length * (1 - lerp(percent, 0.8, 0.95));
             const p2 = pointsNoImage[i * 2 + 1].add(d2);
@@ -422,7 +356,8 @@ const Picture = ({ percent }: { percent: number }) => {
           }
         }
       }
-      if (percent > 0.5) {
+
+      if (percent > 0.5 && !isMobile) {
         const d = w - path.bounds.width / 2 - path.view.center.x;
         path.position.x = path.view.center.x + lerp(percent, 0.5, 0.7) * d;
       }
@@ -435,85 +370,107 @@ const Picture = ({ percent }: { percent: number }) => {
     }
   }, [percent]);
 
+  // function computeVertices() {
+  //   const raster = new Raster({
+  //     source: "me-square.png",
+  //   });
+  //   raster.visible = false;
+  //   raster.on("load", resetSpiral);
+
+  //   let position: paper.Point;
+  //   let path: paper.Path;
+  //   let count = 0;
+  //   let grow = false;
+
+  //   const points: paper.Point[] = [];
+  //   const pointsNoImage: paper.Point[] = [];
+
+  //   function growSpiral() {
+  //     count++;
+  //     const vector = new Point({
+  //       angle: count * (isMobile ? 6.5 : 5),
+  //       length: count / 100,
+  //     });
+  //     const rot = vector.rotate(90, [0, 0]);
+  //     const color = raster.getAverageColor(position.add(vector));
+
+  //     let value = color ? (1 - color.gray) * MAX_DRAW_WIDTH : 0;
+  //     if (color?.gray > 0.7) {
+  //       value = 0;
+  //     }
+  //     rot.length = Math.max(value, MIN_DRAW_WIDTH);
+  //     points.push(position.add(vector).subtract(rot));
+  //     points.push(position.add(vector).add(rot));
+
+  //     rot.length = MIN_DRAW_WIDTH;
+  //     pointsNoImage.push(position.add(vector).subtract(rot));
+  //     pointsNoImage.push(position.add(vector).add(rot));
+
+  //     position = position.add(vector);
+  //   }
+
+  //   function resetSpiral() {
+  //     if (!paper) return;
+  //     raster.fitBounds(paper.view.bounds);
+
+  //     grow = true;
+
+  //     // Transform the raster, so it fills the view:
+  //     if (path) {
+  //       path.remove();
+  //     }
+
+  //     position = paper.view.center;
+  //     count = 0;
+  //     path = new Path({
+  //       fillColor: "black",
+  //       closed: true,
+  //     });
+
+  //     const max = Math.max(raster.bounds.width, raster.bounds.height) / 2;
+
+  //     while (grow) {
+  //       if (
+  //         raster.loaded &&
+  //         paper.view.center.subtract(position).length < max
+  //       ) {
+  //         for (let i = 0, l = 100; i < l; i++) {
+  //           growSpiral();
+  //         }
+  //       } else {
+  //         grow = false;
+  //       }
+  //     }
+
+  //     stateRef.current = { path, points, pointsNoImage };
+  //   }
+  // }
+
   React.useEffect(() => {
     if (!paper) return;
     paper.activate();
 
-    // As the web is asynchronous, we need to wait for the raster to
-    // load before we can perform any operation on its pixels.
-    const raster = new Raster({
-      source: "me-square.png",
-    });
-    raster.visible = false;
-    raster.on("load", resetSpiral);
-
-    let position: paper.Point;
-    let path: paper.Path;
-    let count = 0;
-    let grow = false;
-
-    const points: paper.Point[] = [];
-    const pointsNoImage: paper.Point[] = [];
-
-    function growSpiral() {
-      count++;
-      const vector = new Point({
-        angle: count * (isMobile ? 6.5 : 5),
-        length: count / 100,
-      });
-      const rot = vector.rotate(90, [0, 0]);
-      const color = raster.getAverageColor(position.add(vector));
-
-      let value = color ? (1 - color.gray) * MAX_DRAW_WIDTH : 0;
-      if (color?.gray > 0.7) {
-        value = 0;
-      }
-      rot.length = Math.max(value, MIN_DRAW_WIDTH);
-      points.push(position.add(vector).subtract(rot));
-      points.push(position.add(vector).add(rot));
-
-      rot.length = MIN_DRAW_WIDTH;
-      pointsNoImage.push(position.add(vector).subtract(rot));
-      pointsNoImage.push(position.add(vector).add(rot));
-
-      position = position.add(vector);
-    }
-
-    function resetSpiral() {
-      if (!paper) return;
-      raster.fitBounds(paper.view.bounds);
-
-      grow = true;
-
-      // Transform the raster, so it fills the view:
-      if (path) {
-        path.remove();
-      }
-
-      position = paper.view.center;
-      count = 0;
-      path = new Path({
-        fillColor: "black",
-        closed: true,
+    fetch("vertices_image.json")
+      .then((r) => r.json())
+      .then((json) => {
+        const points = json.map((el: [number, number]) => new Point(el));
+        const path = new Path({
+          fillColor: "black",
+          closed: true,
+          segments: points,
+        });
+        path.position = paper.view.center;
+        path.segments = [];
+        stateRef.current = { ...stateRef.current, path, points };
       });
 
-      const max = Math.max(raster.bounds.width, raster.bounds.height) / 2;
-
-      while (grow) {
-        if (
-          raster.loaded &&
-          paper.view.center.subtract(position).length < max
-        ) {
-          for (let i = 0, l = 100; i < l; i++) {
-            growSpiral();
-          }
-        } else {
-          grow = false;
-        }
-      }
-
-      stateRef.current = { path, points, pointsNoImage };
-    }
+    fetch("vertices_blank.json")
+      .then((r) => r.json())
+      .then((json) => {
+        stateRef.current.pointsNoImage = json.map(
+          (el: [number, number]) => new Point(el)
+        );
+      });
   }, [paper]);
 
   return (
@@ -561,7 +518,7 @@ const Presentation = ({ percent }: { percent: number }) => {
   const blur = 10;
   return (
     <div className="sticky top-0 w-screen h-screen flex items-center">
-      <h1 className="w-1/2 md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-black text-center">
+      <h1 className="md:w-1/2 text-[7rem] md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-black text-center">
         <AnimatedSpan
           blur={blur}
           percent={percent}
@@ -771,34 +728,35 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
   );
 };
 
+const TEXTS = [
+  "...",
+  "React",
+  "JavaScript",
+  "NodeJS",
+  "TypeScript",
+  "PostgreSQL",
+  "CSS",
+  "Tailwind",
+  "Docker",
+  "NginX",
+  "Prisma",
+  "Remix",
+  "Vue",
+  "NextJS",
+  "C",
+  "C++",
+  "C#",
+  "Unity",
+  "Arduino",
+  "Java",
+  "Python",
+];
+
 const MorphText = ({ percent }: { percent: number }) => {
   const isMobile = useIsMobile();
+
   const text1Ref = React.useRef<HTMLSpanElement | null>(null);
   const text2Ref = React.useRef<HTMLSpanElement | null>(null);
-
-  const TEXTS = [
-    "...",
-    "React",
-    "JavaScript",
-    "NodeJS",
-    "TypeScript",
-    "PostgreSQL",
-    "CSS",
-    "Tailwind",
-    "Docker",
-    "NginX",
-    "Prisma",
-    "Remix",
-    "Vue",
-    "NextJS",
-    "C",
-    "C++",
-    "C#",
-    "Unity",
-    "Arduino",
-    "Java",
-    "Python",
-  ];
 
   const stateRef = React.useRef({ running: false });
 
@@ -816,25 +774,21 @@ const MorphText = ({ percent }: { percent: number }) => {
 
     if (!text1 || !text2) return;
 
-    // The strings to morph between. You can change these to anything you want!
-
-    // Controls the speed of morphing.
-    const morphTime = 1;
-    const cooldownTime = 0.25;
+    const morphTimeMs = 1000;
+    const cooldownTimeMs = 250;
 
     let textIndex = TEXTS.length - 1;
-    let time = new Date();
     let morph = 0;
-    let cooldown = cooldownTime;
+    let cooldown = cooldownTimeMs;
 
     function doMorph() {
       morph -= cooldown;
       cooldown = 0;
 
-      let fraction = morph / morphTime;
+      let fraction = morph / morphTimeMs;
 
       if (fraction > 1) {
-        cooldown = cooldownTime;
+        cooldown = cooldownTimeMs;
         fraction = 1;
       }
 
@@ -843,6 +797,7 @@ const MorphText = ({ percent }: { percent: number }) => {
 
     // A lot of the magic happens here, this is what applies the blur filter to the text.
     function setMorph(fraction: number) {
+      if (isMobile) return;
       if (!text1 || !text2) return;
 
       text2.style.filter = `blur(${Math.min(8 / fraction - 8, 100)}px)`;
@@ -869,17 +824,13 @@ const MorphText = ({ percent }: { percent: number }) => {
 
     // Animation loop, which is called every frame.
     function animate(t: number) {
-      console.log();
-
       requestAnimationFrame(animate);
       if (t - lastTime < 24) return;
       if (!text1 || !text2) return;
+      const dt = t - lastTime;
       lastTime = t;
 
-      let newTime = new Date();
       let shouldIncrementIndex = cooldown > 0;
-      let dt = (newTime.getTime() - time.getTime()) / 1000;
-      time = newTime;
 
       cooldown -= dt;
       const { running } = stateRef.current;
@@ -914,7 +865,7 @@ const MorphText = ({ percent }: { percent: number }) => {
   return (
     <>
       <div
-        className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-7xl"
+        className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-4xl md:text-7xl"
         style={{
           filter: "url(#threshold) blur(0.6px)",
           display: percent > 0 ? "flex" : "none",
@@ -930,7 +881,7 @@ const MorphText = ({ percent }: { percent: number }) => {
         ></span>
       </div>
 
-      {!isMobile && (
+      {isMobile ? null : (
         <svg id="filters">
           <defs>
             <filter id="threshold">
@@ -952,7 +903,6 @@ const MorphText = ({ percent }: { percent: number }) => {
 
 const KnowledgeSection = () => {
   const { ref, percent } = useScrollPosition();
-  const isMobile = useIsMobile();
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
       <HexagonGrid percent={percent} />
