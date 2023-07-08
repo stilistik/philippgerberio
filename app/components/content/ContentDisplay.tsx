@@ -7,7 +7,6 @@ interface ContentDisplayProps {
 export const ContentDisplay = ({ content }: ContentDisplayProps) => {
   return (
     <>
-      <Background />
       <header>
         <h1>{content.title}</h1>
         <h3>{content.description}</h3>
