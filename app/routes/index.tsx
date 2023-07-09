@@ -241,7 +241,7 @@ const Blobs = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     if (!paper) return;
     paper.activate();
-    const numBlobs = isMobile ? 20 : 40;
+    const numBlobs = isMobile ? 16 : 24;
     for (let i = 0; i < numBlobs; i++) {
       const x = Math.random() * paper.view.bounds.width;
       const y = Math.random() * paper.view.bounds.height;
