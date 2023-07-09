@@ -310,7 +310,8 @@ const TitleSection = () => {
 };
 
 const Picture = ({ percent }: { percent: number }) => {
-  const { ref, paper } = usePaper({ resolution: "full" });
+  const isMobile = useIsMobile();
+  const { ref, paper } = usePaper({ resolution: isMobile ? "half" : "full" });
   const isMobile = useIsMobile();
   const stateRef = React.useRef<{
     path: paper.Path | null;
