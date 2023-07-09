@@ -910,12 +910,138 @@ const KnowledgeSection = () => {
   );
 };
 
+const Rays = ({ percent }: { percent: number }) => {
+  const { ref, paper } = usePaper({ resolution: "full" });
+  const stateRef = React.useRef<{
+    lines: paper.Path[];
+    leftSpot: paper.Path[];
+    rightSpot: paper.Path[];
+  }>({ lines: [], leftSpot: [], rightSpot: [] });
+
+  React.useEffect(() => {
+    const { lines, leftSpot, rightSpot } = stateRef.current;
+    lines.forEach((line) => {
+      const s = lerp(percent, 0, 0.5);
+      line.strokeWidth = s * line.data.maxStroke;
+    });
+
+    const BASE_SPOT_WIDTH = 50;
+    const BASE_SPACING = 10;
+
+    const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 30;
+    const SPACING = BASE_SPACING + percent * 200;
+
+    leftSpot.forEach((ray, i) => {
+      const o = ray.view.bounds.bottomLeft;
+      const a = ray.view.bounds.topCenter
+        .subtract(new Point(-i * (SPOT_WIDTH + SPACING), 0))
+        .subtract(o)
+        .multiply(2);
+      const b = ray.view.bounds.topCenter
+        .subtract(new Point(-i * (SPOT_WIDTH + SPACING) - SPOT_WIDTH, 0))
+        .subtract(o)
+        .multiply(2);
+      ray.segments = [o, o.add(a), o.add(b)] as any;
+      ray.rotation = -90 + percent * 100;
+    });
+
+    rightSpot.forEach((ray, i) => {
+      const o = ray.view.bounds.bottomRight;
+      const a = ray.view.bounds.topCenter
+        .subtract(new Point(i * (SPOT_WIDTH + SPACING), 0))
+        .subtract(o)
+        .multiply(2);
+      const b = ray.view.bounds.topCenter
+        .subtract(new Point(i * (SPOT_WIDTH + SPACING) + SPOT_WIDTH, 0))
+        .subtract(o)
+        .multiply(2);
+      ray.segments = [o, o.add(a), o.add(b)] as any;
+      ray.rotation = 90 + percent * -100;
+    });
+  }, [percent]);
+
+  React.useEffect(() => {
+    if (!paper) return;
+    paper.activate();
+
+    const numLines = getWidth() / 50;
+    const lines: paper.Path[] = [];
+    for (let i = 0; i < numLines; ++i) {
+      const x = Math.random() * paper.view.bounds.width;
+      const line = new Path.Line({
+        from: [x, 0],
+        to: [x, paper.view.bounds.height],
+        strokeWidth: 0,
+        strokeColor: "white",
+        shadowBlur: 10,
+        shadowColor: "white",
+      });
+      line.data.maxStroke =
+        i === Math.floor(numLines / 2) ? getWidth() : Math.random() * 500;
+      lines.push(line);
+    }
+
+    const leftSpot: paper.Path[] = [];
+    const rightSpot: paper.Path[] = [];
+    colors.forEach((color, i) => {
+      const leftPath = new Path({
+        fillColor: color,
+        closed: true,
+      });
+      leftPath.pivot = paper.view.bounds.bottomLeft;
+      leftSpot.push(leftPath);
+
+      const rightPath = new Path({
+        fillColor: color,
+        closed: true,
+      });
+      rightPath.pivot = paper.view.bounds.bottomRight;
+      rightSpot.push(rightPath);
+    });
+
+    stateRef.current = { ...stateRef.current, lines, leftSpot, rightSpot };
+  }, [paper]);
+  return (
+    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+  );
+};
+
+const PgBall = ({ percent }: { percent: number }) => {
+  const isMobile = useIsMobile();
+  return (
+    <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
+      <div
+        className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full shadow-2xl"
+        style={{
+          backgroundImage: "linear-gradient(#666, black)",
+          transform: `scale(${lerp(percent, 0.5, 1)})`,
+        }}
+      >
+        <h1 className="text-white text-[8rem] md:text-[12rem] font-medium -mt-8">
+          pg
+        </h1>
+      </div>
+    </div>
+  );
+};
+
+const EndSection = () => {
+  const { ref, percent } = useScrollPosition();
+  return (
+    <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
+      <Rays percent={percent} />
+      <PgBall percent={percent} />
+    </section>
+  );
+};
+
 export default function Index() {
   return (
     <>
       <TitleSection />
       <PictureSection />
       <KnowledgeSection />
+      <EndSection />
     </>
   );
 }
