@@ -115,7 +115,7 @@ class Blob {
 
     this.translateDirectionX = (Math.random() - 0.5) * 2;
     this.translateDirectionY = (Math.random() - 0.5) * 2;
-    this.translationSpeed = 1000 + Math.random() * 3000;
+    this.translationSpeed = 500 + Math.random() * 2000;
   }
 
   generatePoints() {
@@ -167,9 +167,9 @@ class Blob {
   }
 
   animate(percent: number) {
-    const SPEED = (this.path.position.x =
+    this.path.position.x =
       this.originalPos.x +
-      this.translateDirectionX * percent * this.translationSpeed);
+      this.translateDirectionX * percent * this.translationSpeed;
     this.path.position.y =
       this.originalPos.y +
       this.translateDirectionY * percent * this.translationSpeed;
@@ -241,11 +241,11 @@ const Blobs = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     if (!paper) return;
     paper.activate();
-    const numBlobs = isMobile ? 30 : 80;
+    const numBlobs = isMobile ? 20 : 40;
     for (let i = 0; i < numBlobs; i++) {
       const x = Math.random() * paper.view.bounds.width;
       const y = Math.random() * paper.view.bounds.height;
-      const radius = getHeight() / 6 + (Math.random() * getHeight()) / 6;
+      const radius = getHeight() / 6 + (Math.random() * getHeight()) / 3;
       const colorIdx = Math.floor((i / numBlobs) * colors.length);
       const color1 = colors[colorIdx];
       const color2 = colors[(colorIdx + 1) % colors.length];
