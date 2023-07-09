@@ -184,19 +184,6 @@ class Blob {
   }
 }
 
-const GREEN_BLUE = [
-  "#23ba76",
-  "#26cd82",
-  "#34d19b",
-  "#42d4b4",
-  "#49cfbc",
-  "#53c8c8",
-  "#5dc0d4",
-  "#5fb8d6",
-  "#5bb2d7",
-  "#56acd7",
-];
-
 const BLUE_PINK = [
   "#0077b6",
   "#0096c7",
@@ -210,23 +197,35 @@ const BLUE_PINK = [
   "#f07596",
 ];
 
-const ORANGE_VIOLET = [
-  "#fb8632",
-  "#ed7444",
-  "#e06355",
-  "#e14e68",
-  "#e1397a",
-  "#d64099",
-  "#cb46b8",
-  "#b45fd6",
-  "#b069e2",
-  "#ab6df2",
+const TURQUOISE_ORANGE = [
+  "#fa710f",
+  "#ea7c21",
+  "#d18b3c",
+  "#b39d5b",
+  "#95af79",
+  "#84b98b",
+  "#73c39c",
+  "#68cba9",
+  "#53dcc4",
+  "#3eeddf",
 ];
 
-const PALETTES = [GREEN_BLUE, ORANGE_VIOLET, BLUE_PINK];
+const YELLOW_RED = [
+  "#b85360",
+  "#bd6361",
+  "#c17361",
+  "#c58362",
+  "#c99362",
+  "#cb9b63",
+  "#cda363",
+  "#d1b363",
+  "#d5c364",
+  "#d9d364",
+];
 
-const colors =
-  PALETTES[Math.floor(Math.random() * PALETTES.length) % PALETTES.length];
+const PALETTES = [TURQUOISE_ORANGE, BLUE_PINK, YELLOW_RED];
+
+const colors = PALETTES[Math.floor(Math.random() * PALETTES.length)];
 
 const Blobs = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper({ resolution: "half" });
