@@ -1,3 +1,5 @@
+import React from "react";
+import { createNoise2D } from "simplex-noise";
 import { useIsMobile, useOnResize, useScrollPosition } from "~/utils/hooks";
 import {
   PaperScope,
@@ -11,7 +13,6 @@ import {
   PointText,
   Matrix,
 } from "paper";
-import React from "react";
 import { Button } from "~/components/interaction/Button";
 
 function lerp(percent: number, start: number, end: number) {
@@ -40,6 +41,20 @@ function getHeight() {
 
 function toRadians(angleInDeg: number) {
   return (Math.PI / 180) * angleInDeg;
+}
+
+function random(max?: number, min?: number) {
+  if (typeof max !== "number") {
+    return Math.random();
+  } else if (typeof min !== "number") {
+    min = 0;
+  }
+  return Math.random() * (max - min) + min;
+}
+
+function randomInt(max?: number, min?: number) {
+  if (!max) return 0;
+  return random(max + 1, min) | 0;
 }
 
 function usePaper(
@@ -1021,25 +1036,295 @@ const Rays = ({ percent }: { percent: number }) => {
 
     const leftSpot: paper.Path[] = [];
     const rightSpot: paper.Path[] = [];
-    colors.forEach((color, i) => {
-      const leftPath = new Path({
-        fillColor: color,
-        shadowColor: "white",
-        shadowBlur: 20,
-        closed: true,
-      });
-      leftSpot.push(leftPath);
+    // colors.forEach((color, i) => {
+    //   const leftPath = new Path({
+    //     fillColor: color,
+    //     shadowColor: "white",
+    //     shadowBlur: 20,
+    //     closed: true,
+    //   });
+    //   leftSpot.push(leftPath);
 
-      const rightPath = new Path({
-        fillColor: color,
-        shadowColor: "white",
-        shadowBlur: 10,
-        closed: true,
-      });
-      rightSpot.push(rightPath);
-    });
+    //   const rightPath = new Path({
+    //     fillColor: color,
+    //     shadowColor: "white",
+    //     shadowBlur: 10,
+    //     closed: true,
+    //   });
+    //   rightSpot.push(rightPath);
+    // });
 
     stateRef.current = { ...stateRef.current, lines, leftSpot, rightSpot };
+  }, [paper]);
+
+  return (
+    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+  );
+};
+
+class Lightning {
+  public path: paper.Path;
+  public speed = 0.025;
+
+  private startPoint: paper.Point;
+  private endPoint: paper.Point;
+  private step: number;
+  private amplitude = 1;
+  private off = 0;
+  private _simplexNoise = createNoise2D();
+
+  // child stuff
+  private parent: Lightning | null = null;
+  private children: Lightning[];
+  private childCount: number;
+  private startStep = 0;
+  private endStep = 0;
+
+  constructor({
+    startPoint,
+    endPoint,
+    childCount,
+  }: {
+    startPoint?: paper.Point;
+    endPoint?: paper.Point;
+    childCount?: number;
+  } = {}) {
+    this.startPoint = startPoint ?? new Point(0, 0);
+    this.endPoint = endPoint ?? new Point(0, 0);
+    this.childCount = childCount ?? 0;
+    this.step = 45;
+    this.path = new Path({
+      strokeColor: "black",
+      strokeWidth: 3,
+      shadowBlur: 5,
+      shadowColor: "black",
+      segments: [],
+    });
+
+    this.children = [];
+    for (let i = 0; i < this.childCount; i++) {
+      const child = new Lightning();
+      child.setAsChild(this);
+      this.children.push(child);
+    }
+  }
+
+  public setAsChild(lightning: Lightning) {
+    if (!(lightning instanceof Lightning)) return;
+    this.parent = lightning;
+
+    const setTimer = () => {
+      this.updateStepsByParent();
+      setTimeout(setTimer, randomInt(1500));
+    };
+
+    setTimeout(setTimer, randomInt(1500));
+  }
+
+  private updateStepsByParent() {
+    if (!this.parent) return;
+    var parentStep = this.parent.step;
+    this.startStep = randomInt(parentStep - 2);
+    this.endStep =
+      this.startStep + randomInt(parentStep - this.startStep - 2) + 2;
+    this.step = this.endStep - this.startStep;
+  }
+
+  public length() {
+    return this.endPoint.subtract(this.startPoint).length;
+  }
+
+  public update() {
+    const startPoint = this.startPoint;
+    const endPoint = this.endPoint;
+
+    if (this.parent) {
+      if (this.endStep > this.parent.step) {
+        this.updateStepsByParent();
+      }
+
+      startPoint.set(this.parent.path.segments[this.startStep].point);
+      endPoint.set(this.parent.path.segments[this.endStep].point);
+    }
+
+    const length = this.length();
+    const normal = endPoint
+      .subtract(startPoint)
+      .normalize()
+      .multiply(length / this.step);
+    const radian = toRadians(normal.angle);
+    const sinv = Math.sin(radian);
+    const cosv = Math.cos(radian);
+
+    const off = (this.off += random(this.speed, this.speed * 0.2));
+    let waveWidth = (this.parent ? length * 1.5 : length) * this.amplitude;
+    if (waveWidth > 750) waveWidth = 750;
+
+    this.path.segments = [];
+
+    for (let i = 0, len = this.step + 1; i < len; i++) {
+      const n = i / 60;
+      const av = waveWidth * this.noise(n - off) * 0.5;
+      const ax = sinv * av;
+      const ay = cosv * av;
+
+      const bv = waveWidth * this.noise(n + off) * 0.5;
+      const bx = sinv * bv;
+      const by = cosv * bv;
+
+      const m = Math.sin(Math.PI * (i / (len - 1)));
+
+      const x = startPoint.x + normal.x * i + (ax - bx) * m;
+      const y = startPoint.y + normal.y * i - (ay - by) * m;
+
+      this.path.add(new Point(x, y));
+    }
+
+    this.children.forEach((child) => {
+      child.speed = this.speed * 1.35;
+      child.path.strokeWidth = Math.max(
+        this.path.strokeWidth * Math.random() * 1,
+        0.5
+      );
+      child.update();
+    });
+  }
+
+  private noise(v: number) {
+    var octaves = 6,
+      fallout = 0.5,
+      amp = 1,
+      f = 1,
+      sum = 0,
+      i;
+
+    for (i = 0; i < octaves; ++i) {
+      amp *= fallout;
+      sum += amp * (this._simplexNoise(v * f, 0) + 1) * 0.5;
+      f *= 2;
+    }
+
+    return sum;
+  }
+}
+
+// Particles Around the Parent
+class Particle {
+  private path: paper.Path;
+  private angle: number;
+  private distance: number;
+  private speed: number;
+  private position: paper.Point;
+
+  constructor(x: number, y: number, distance: number) {
+    this.angle = Math.random() * 2 * Math.PI;
+    const opacity = (Math.random() * 5 + 2) / 10;
+    this.distance = (1 / opacity) * distance;
+    this.speed = this.distance * 0.00006;
+    this.path = new Path.Circle({
+      radius: Math.random(),
+      fillColor: "black",
+      opacity,
+      center: new Point(
+        x + this.distance * Math.cos(this.angle),
+        y + this.distance * Math.sin(this.angle)
+      ),
+    });
+    this.position = new Point(x, y);
+  }
+
+  public update() {
+    this.angle += this.speed;
+    this.path.position = this.position.add(
+      new Point(
+        this.distance * Math.cos(this.angle),
+        this.distance * Math.sin(this.angle)
+      )
+    );
+  }
+
+  public getItem() {
+    return this.path;
+  }
+}
+
+class BlackHole {
+  private group: paper.Group;
+  private particles: Particle[];
+
+  constructor(center: paper.Point) {
+    const radius = 30;
+    const count = 6000;
+    this.group = new Group();
+    this.group.pivot = this.group.view.center;
+    const path = new Path.Circle({
+      center,
+      radius: radius + 12,
+      fillColor: "white",
+      shadowColor: "black",
+      shadowBlur: 10,
+    });
+    this.group.addChild(path);
+    this.particles = [];
+
+    for (let i = 0; i < count; i++) {
+      const p = new Particle(center.x, center.y, radius);
+      this.particles.push(p);
+      this.group.addChild(p.getItem());
+    }
+  }
+
+  public update(percent: number) {
+    this.particles.forEach((p) => p.update());
+    const s = percent * 3;
+    this.group.scaling = new Point(s, s);
+    this.group.position = this.group.view.center;
+  }
+}
+
+const Lightnings = ({ percent }: { percent: number }) => {
+  const { ref, paper } = usePaper({ resolution: "full" });
+  const isMobile = useIsMobile();
+  const stateRef = React.useRef<{
+    lightnings: Lightning[];
+    blackhole: BlackHole | null;
+  }>({
+    lightnings: [],
+    blackhole: null,
+  });
+
+  React.useEffect(() => {
+    const { lightnings, blackhole } = stateRef.current;
+    lightnings.forEach((l) => l.update());
+    blackhole?.update(percent);
+  }, [percent]);
+
+  React.useEffect(() => {
+    if (!paper) return;
+    paper.activate();
+
+    const l1 = new Lightning({
+      startPoint: isMobile
+        ? paper.view.bounds.topCenter
+        : paper.view.bounds.leftCenter,
+      endPoint: paper.view.bounds.center,
+      childCount: 10,
+    });
+    const l2 = new Lightning({
+      startPoint: isMobile
+        ? paper.view.bounds.bottomCenter
+        : paper.view.bounds.rightCenter,
+      endPoint: paper.view.bounds.center,
+      childCount: 10,
+    });
+
+    const bh = new BlackHole(paper.view.center);
+
+    stateRef.current = {
+      ...stateRef.current,
+      lightnings: [l1, l2],
+      blackhole: bh,
+    };
   }, [paper]);
 
   return (
@@ -1053,13 +1338,12 @@ const PgBall = ({ percent }: { percent: number }) => {
     <>
       <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
         <div
-          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full shadow-2xl"
+          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full"
           style={{
-            backgroundImage: "linear-gradient(#666, black)",
-            transform: `scale(${lerp(percent, 0.5, 1)})`,
+            transform: `scale(${percent})`,
           }}
         >
-          <h1 className="text-white text-[8rem] md:text-[12rem] font-medium -mt-8">
+          <h1 className="text-black text-[5rem] md:text-[8rem] font-medium -mt-8">
             pg
           </h1>
         </div>
@@ -1073,6 +1357,7 @@ const EndSection = () => {
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
       <Rays percent={percent} />
+      <Lightnings percent={percent} />
       <PgBall percent={percent} />
     </section>
   );
