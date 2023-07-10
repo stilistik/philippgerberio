@@ -12,6 +12,7 @@ import {
   Matrix,
 } from "paper";
 import React from "react";
+import { Button } from "~/components/interaction/Button";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -867,7 +868,7 @@ const MorphText = ({ percent }: { percent: number }) => {
         className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-4xl md:text-7xl"
         style={{
           filter: "url(#threshold) blur(0.6px)",
-          display: percent > 0 ? "flex" : "none",
+          display: percent > 0 && percent < 1 ? "flex" : "none",
         }}
       >
         <span
@@ -911,12 +912,13 @@ const KnowledgeSection = () => {
 };
 
 const Rays = ({ percent }: { percent: number }) => {
-  const { ref, paper } = usePaper({ resolution: "full" });
+  const { ref, paper } = usePaper();
   const stateRef = React.useRef<{
     lines: paper.Path[];
     leftSpot: paper.Path[];
     rightSpot: paper.Path[];
   }>({ lines: [], leftSpot: [], rightSpot: [] });
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const { lines, leftSpot, rightSpot } = stateRef.current;
@@ -925,14 +927,39 @@ const Rays = ({ percent }: { percent: number }) => {
       line.strokeWidth = s * line.data.maxStroke;
     });
 
+    const view = lines[0]?.view;
+    let lastTime = 0;
+    let count = 0;
+    const CHANGE_INTERVAL = 0.1;
+    if (view && !view.onFrame) {
+      view.onFrame = (e) => {
+        const delta = e.time - lastTime;
+        if (delta > CHANGE_INTERVAL) {
+          count++;
+          leftSpot.forEach((ray, i) => {
+            const index = i + count;
+            ray.fillColor = new Color(colors[index % colors.length]);
+          });
+          rightSpot.forEach((ray, i) => {
+            const index = i + count;
+            ray.fillColor = new Color(colors[index % colors.length]);
+          });
+          lastTime = e.time;
+        }
+      };
+    }
+
     const BASE_SPOT_WIDTH = 50;
     const BASE_SPACING = 10;
 
-    const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 30;
+    const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 100;
     const SPACING = BASE_SPACING + percent * 200;
 
     leftSpot.forEach((ray, i) => {
-      const o = ray.view.bounds.bottomLeft;
+      const o = isMobile
+        ? ray.view.bounds.bottomLeft
+        : ray.view.bounds.bottomCenter;
+      ray.pivot = o;
       const a = ray.view.bounds.topCenter
         .subtract(new Point(-i * (SPOT_WIDTH + SPACING), 0))
         .subtract(o)
@@ -942,11 +969,18 @@ const Rays = ({ percent }: { percent: number }) => {
         .subtract(o)
         .multiply(2);
       ray.segments = [o, o.add(a), o.add(b)] as any;
-      ray.rotation = -90 + percent * 100;
+      if (isMobile) {
+        ray.rotation = -90 + percent * 100;
+      } else {
+        ray.rotation = -130 + percent * 135;
+      }
     });
 
     rightSpot.forEach((ray, i) => {
-      const o = ray.view.bounds.bottomRight;
+      const o = isMobile
+        ? ray.view.bounds.bottomRight
+        : ray.view.bounds.bottomCenter;
+      ray.pivot = o;
       const a = ray.view.bounds.topCenter
         .subtract(new Point(i * (SPOT_WIDTH + SPACING), 0))
         .subtract(o)
@@ -956,7 +990,11 @@ const Rays = ({ percent }: { percent: number }) => {
         .subtract(o)
         .multiply(2);
       ray.segments = [o, o.add(a), o.add(b)] as any;
-      ray.rotation = 90 + percent * -100;
+      if (isMobile) {
+        ray.rotation = 90 + percent * -100;
+      } else {
+        ray.rotation = 130 + percent * -135;
+      }
     });
   }, [percent]);
 
@@ -973,7 +1011,7 @@ const Rays = ({ percent }: { percent: number }) => {
         to: [x, paper.view.bounds.height],
         strokeWidth: 0,
         strokeColor: "white",
-        shadowBlur: 10,
+        shadowBlur: 20,
         shadowColor: "white",
       });
       line.data.maxStroke =
@@ -986,21 +1024,24 @@ const Rays = ({ percent }: { percent: number }) => {
     colors.forEach((color, i) => {
       const leftPath = new Path({
         fillColor: color,
+        shadowColor: "white",
+        shadowBlur: 20,
         closed: true,
       });
-      leftPath.pivot = paper.view.bounds.bottomLeft;
       leftSpot.push(leftPath);
 
       const rightPath = new Path({
         fillColor: color,
+        shadowColor: "white",
+        shadowBlur: 10,
         closed: true,
       });
-      rightPath.pivot = paper.view.bounds.bottomRight;
       rightSpot.push(rightPath);
     });
 
     stateRef.current = { ...stateRef.current, lines, leftSpot, rightSpot };
   }, [paper]);
+
   return (
     <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
   );
@@ -1009,19 +1050,21 @@ const Rays = ({ percent }: { percent: number }) => {
 const PgBall = ({ percent }: { percent: number }) => {
   const isMobile = useIsMobile();
   return (
-    <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
-      <div
-        className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full shadow-2xl"
-        style={{
-          backgroundImage: "linear-gradient(#666, black)",
-          transform: `scale(${lerp(percent, 0.5, 1)})`,
-        }}
-      >
-        <h1 className="text-white text-[8rem] md:text-[12rem] font-medium -mt-8">
-          pg
-        </h1>
+    <>
+      <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
+        <div
+          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full shadow-2xl"
+          style={{
+            backgroundImage: "linear-gradient(#666, black)",
+            transform: `scale(${lerp(percent, 0.5, 1)})`,
+          }}
+        >
+          <h1 className="text-white text-[8rem] md:text-[12rem] font-medium -mt-8">
+            pg
+          </h1>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
