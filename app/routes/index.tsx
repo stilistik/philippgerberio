@@ -916,14 +916,29 @@ const KnowledgeSection = () => {
 
 const Rays = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper();
-  const stateRef = React.useRef<{ lines: paper.Path[] }>({ lines: [] });
+  const stateRef = React.useRef<{
+    lines: paper.Path[];
+    flood: paper.Path | null;
+  }>({ lines: [], flood: null });
 
   React.useEffect(() => {
-    const { lines } = stateRef.current;
+    const { lines, flood } = stateRef.current;
     lines.forEach((line) => {
       const s = lerp(percent, 0, 0.3);
       line.strokeWidth = s * line.data.maxStroke;
     });
+
+    if (percent >= 1 && !flood) {
+      stateRef.current.flood = new Path.Rectangle({
+        from: paper?.view.bounds.topLeft,
+        to: paper?.view.bounds.bottomRight,
+        fillColor: "white",
+      });
+    } else {
+      if (flood) {
+        flood.remove();
+      }
+    }
   }, [percent]);
 
   React.useEffect(() => {
