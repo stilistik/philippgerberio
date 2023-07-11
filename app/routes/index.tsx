@@ -1,20 +1,7 @@
 import React from "react";
 import { createNoise2D } from "simplex-noise";
-import { useIsMobile, useOnResize, useScrollPosition } from "~/utils/hooks";
-import {
-  PaperScope,
-  Path,
-  Point,
-  Group,
-  Raster,
-  Color,
-  Size,
-  Rectangle,
-  PointText,
-  Matrix,
-  CompoundPath,
-} from "paper";
-import { Button } from "~/components/interaction/Button";
+import { useIsMobile, useScrollPosition } from "~/utils/hooks";
+import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -338,9 +325,6 @@ const Picture = ({ percent }: { percent: number }) => {
     pointsNoImage: [],
   });
 
-  const MIN_DRAW_WIDTH = 0.5;
-  const MAX_DRAW_WIDTH = isMobile ? 2.4 : 3.7;
-
   React.useEffect(() => {
     const { path, points, pointsNoImage } = stateRef.current;
     const w = getWidth();
@@ -387,6 +371,9 @@ const Picture = ({ percent }: { percent: number }) => {
   }, [percent]);
 
   // function computeVertices() {
+  //   const MIN_DRAW_WIDTH = 0.5;
+  //   const MAX_DRAW_WIDTH = isMobile ? 2.4 : 3.7;
+
   //   const raster = new Raster({
   //     source: "me-square.png",
   //   });
@@ -929,89 +916,14 @@ const KnowledgeSection = () => {
 
 const Rays = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper();
-  const stateRef = React.useRef<{
-    lines: paper.Path[];
-    leftSpot: paper.Path[];
-    rightSpot: paper.Path[];
-  }>({ lines: [], leftSpot: [], rightSpot: [] });
-  const isMobile = useIsMobile();
+  const stateRef = React.useRef<{ lines: paper.Path[] }>({ lines: [] });
 
   React.useEffect(() => {
-    const { lines, leftSpot, rightSpot } = stateRef.current;
+    const { lines } = stateRef.current;
     lines.forEach((line) => {
       const s = lerp(percent, 0, 0.3);
       line.strokeWidth = s * line.data.maxStroke;
     });
-
-    // const view = lines[0]?.view;
-    // let lastTime = 0;
-    // let count = 0;
-    // const CHANGE_INTERVAL = 0.1;
-    // if (view && !view.onFrame) {
-    //   view.onFrame = (e) => {
-    //     const delta = e.time - lastTime;
-    //     if (delta > CHANGE_INTERVAL) {
-    //       count++;
-    //       leftSpot.forEach((ray, i) => {
-    //         const index = i + count;
-    //         ray.fillColor = new Color(colors[index % colors.length]);
-    //       });
-    //       rightSpot.forEach((ray, i) => {
-    //         const index = i + count;
-    //         ray.fillColor = new Color(colors[index % colors.length]);
-    //       });
-    //       lastTime = e.time;
-    //     }
-    //   };
-    // }
-
-    // const BASE_SPOT_WIDTH = 50;
-    // const BASE_SPACING = 10;
-
-    // const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 100;
-    // const SPACING = BASE_SPACING + percent * 200;
-
-    // leftSpot.forEach((ray, i) => {
-    //   const o = isMobile
-    //     ? ray.view.bounds.bottomLeft
-    //     : ray.view.bounds.bottomCenter;
-    //   ray.pivot = o;
-    //   const a = ray.view.bounds.topCenter
-    //     .subtract(new Point(-i * (SPOT_WIDTH + SPACING), 0))
-    //     .subtract(o)
-    //     .multiply(2);
-    //   const b = ray.view.bounds.topCenter
-    //     .subtract(new Point(-i * (SPOT_WIDTH + SPACING) - SPOT_WIDTH, 0))
-    //     .subtract(o)
-    //     .multiply(2);
-    //   ray.segments = [o, o.add(a), o.add(b)] as any;
-    //   if (isMobile) {
-    //     ray.rotation = -90 + percent * 100;
-    //   } else {
-    //     ray.rotation = -130 + percent * 135;
-    //   }
-    // });
-
-    // rightSpot.forEach((ray, i) => {
-    //   const o = isMobile
-    //     ? ray.view.bounds.bottomRight
-    //     : ray.view.bounds.bottomCenter;
-    //   ray.pivot = o;
-    //   const a = ray.view.bounds.topCenter
-    //     .subtract(new Point(i * (SPOT_WIDTH + SPACING), 0))
-    //     .subtract(o)
-    //     .multiply(2);
-    //   const b = ray.view.bounds.topCenter
-    //     .subtract(new Point(i * (SPOT_WIDTH + SPACING) + SPOT_WIDTH, 0))
-    //     .subtract(o)
-    //     .multiply(2);
-    //   ray.segments = [o, o.add(a), o.add(b)] as any;
-    //   if (isMobile) {
-    //     ray.rotation = 90 + percent * -100;
-    //   } else {
-    //     ray.rotation = 130 + percent * -135;
-    //   }
-    // });
   }, [percent]);
 
   React.useEffect(() => {
@@ -1034,27 +946,7 @@ const Rays = ({ percent }: { percent: number }) => {
       lines.push(line);
     }
 
-    const leftSpot: paper.Path[] = [];
-    const rightSpot: paper.Path[] = [];
-    // colors.forEach((color, i) => {
-    //   const leftPath = new Path({
-    //     fillColor: color,
-    //     shadowColor: "white",
-    //     shadowBlur: 20,
-    //     closed: true,
-    //   });
-    //   leftSpot.push(leftPath);
-
-    //   const rightPath = new Path({
-    //     fillColor: color,
-    //     shadowColor: "white",
-    //     shadowBlur: 10,
-    //     closed: true,
-    //   });
-    //   rightSpot.push(rightPath);
-    // });
-
-    stateRef.current = { ...stateRef.current, lines, leftSpot, rightSpot };
+    stateRef.current = { ...stateRef.current, lines };
   }, [paper]);
 
   return (
@@ -1352,36 +1244,53 @@ const Lightnings = ({ percent }: { percent: number }) => {
 const PgBall = ({ percent }: { percent: number }) => {
   const isMobile = useIsMobile();
   const { ref, paper } = usePaper({ resolution: "full" });
-  const stateRef = React.useRef<{ stars: paper.Path[] }>({ stars: [] });
+  const stateRef = React.useRef<{
+    warpRays: paper.Path[];
+    stars: paper.Path[];
+  }>({ warpRays: [], stars: [] });
 
   React.useEffect(() => {
-    const { stars } = stateRef.current;
+    paper?.activate();
+    const { warpRays, stars } = stateRef.current;
     const p = lerp(percent, 0.5, 1);
     const growFactor = 1000;
     const mask = new Path.Circle({
       radius: lerp(percent, 0.3, 1) * 1300,
       center: paper?.view.center,
+      strokeWidth: 2,
     });
 
-    stars.forEach((star) => {
-      const { pos } = star.data;
-
+    warpRays.forEach((path) => {
+      const { pos } = path.data;
       const radialVector = pos.normalize();
       const newEndPoint = pos.add(radialVector.multiply(p * growFactor));
       const newStartPoint = pos.add(
         radialVector.multiply(lerp(p, 0.5, 1) * growFactor)
       );
-      star.segments[0].point = newStartPoint;
-      star.segments[1].point = newEndPoint;
+      path.segments[0].point = newStartPoint;
+      path.segments[1].point = newEndPoint.add([0.1, 0.1]); // add small offset to get at least a dot on mobile
       if (
         mask.contains(newStartPoint.add(paper?.view.center)) ||
         mask.contains(newEndPoint.add(paper?.view.center))
       ) {
-        star.visible = true;
+        path.visible = true;
       } else {
-        star.visible = false;
+        path.visible = false;
       }
     });
+
+    if (p > 0.6 && !stars[0]?.visible) {
+      stars.forEach((star) => {
+        star.visible = true;
+      });
+    }
+
+    if (p < 0.6 && stars[0]?.visible) {
+      stars.forEach((star) => {
+        star.visible = false;
+      });
+    }
+
     return () => {
       mask.remove();
     };
@@ -1391,13 +1300,12 @@ const PgBall = ({ percent }: { percent: number }) => {
     if (!paper) return;
     paper.activate();
 
-    const count = 60;
-    const stars = [];
+    const warpCount = 60;
+    const warpRays = [];
 
-    for (let i = 0; i < count; ++i) {
+    for (let i = 0; i < warpCount; ++i) {
       const extent = 300;
       const angle = Math.random() * 2 * Math.PI;
-
       const d = random(0.2, 1) * extent;
       const pos = new Point(Math.sin(angle) * d, Math.cos(angle) * d);
       const color = new Color(colors[Math.floor(random() * colors.length)]);
@@ -1414,19 +1322,35 @@ const PgBall = ({ percent }: { percent: number }) => {
         },
       });
       path.add(pos, pos);
+      warpRays.push(path);
+    }
+
+    const starCount = isMobile ? 300 : 1000;
+    const stars = [];
+    for (let i = 0; i < starCount; ++i) {
+      const color = new Color(colors[Math.floor(random() * colors.length)]);
+      const path = new Path.Circle({
+        fillColor: color,
+        radius: random(0.5, 1.5),
+        shadowColor: "white",
+        shadowBlur: 6,
+        position: [random() * getWidth(), random() * getHeight()],
+        visible: false,
+      });
       stars.push(path);
     }
 
-    stateRef.current = { ...stateRef.current, stars };
+    stateRef.current = { ...stateRef.current, warpRays, stars };
   }, [paper]);
 
   return (
     <>
       <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
         <div
-          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full shadow-2xl"
+          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full "
           style={{
             transform: `scale(${lerp(percent, 0.8, 1)})`,
+            boxShadow: `0 0 100px rgba(255,255,255,0.5)`,
           }}
         >
           <div
