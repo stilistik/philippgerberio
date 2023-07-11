@@ -2,6 +2,7 @@ import React from "react";
 import { createNoise2D } from "simplex-noise";
 import { useIsMobile, useScrollPosition } from "~/utils/hooks";
 import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
+import { colors } from "../utils/colors";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -188,49 +189,6 @@ class Blob {
   }
 }
 
-const BLUE_PINK = [
-  "#0077b6",
-  "#0096c7",
-  "#00b4d8",
-  "#48cae4",
-  "#90e0ef",
-  "#a8c6d9",
-  "#c0abc3",
-  "#d891ad",
-  "#e484a2",
-  "#f07596",
-];
-
-const TURQUOISE_ORANGE = [
-  "#fa710f",
-  "#ea7c21",
-  "#d18b3c",
-  "#b39d5b",
-  "#95af79",
-  "#84b98b",
-  "#73c39c",
-  "#68cba9",
-  "#53dcc4",
-  "#3eeddf",
-];
-
-const YELLOW_RED = [
-  "#b85360",
-  "#bd6361",
-  "#c17361",
-  "#c58362",
-  "#c99362",
-  "#cb9b63",
-  "#cda363",
-  "#d1b363",
-  "#d5c364",
-  "#d9d364",
-];
-
-const PALETTES = [TURQUOISE_ORANGE, BLUE_PINK, YELLOW_RED];
-
-const colors = PALETTES[Math.floor(Math.random() * PALETTES.length)];
-
 const Blobs = ({ percent }: { percent: number }) => {
   const { ref, paper } = usePaper({ resolution: "half" });
   const blobRef = React.useRef<Blob[]>([]);
@@ -257,7 +215,7 @@ const Blobs = ({ percent }: { percent: number }) => {
       blobRef.current.push(blob);
     }
 
-    paper.view.onFrame = function (e) {
+    paper.view.onFrame = function (e: any) {
       for (let blob of blobRef.current) {
         blob.update(e.time);
       }
@@ -1365,14 +1323,14 @@ const PgBall = ({ percent }: { percent: number }) => {
           className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full "
           style={{
             transform: `scale(${lerp(percent, 0.8, 1)})`,
-            boxShadow: `0 0 100px rgba(255,255,255,0.5)`,
+            boxShadow: `0 0 100px rgba(255,255,255,0.3)`,
           }}
         >
           <div
             className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full"
             style={{
               boxShadow: `inset -25px -25px 40px rgba(0,0,0,.5)`,
-              backgroundImage: `linear-gradient(-45deg, #000 0%, #666 100%)`,
+              backgroundImage: `linear-gradient(-45deg, #000 0%, #343434 100%)`,
             }}
           >
             <h1 className="text-white text-[7rem] md:text-[10rem] font-medium -mt-8">
