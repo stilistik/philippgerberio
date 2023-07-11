@@ -1278,6 +1278,8 @@ class BlackHole {
       this.particles.push(p);
       this.group.addChild(p.getItem());
     }
+
+    this.group.scaling = new Point(0, 0);
   }
 
   public update(percent: number) {
