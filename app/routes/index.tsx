@@ -938,79 +938,79 @@ const Rays = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     const { lines, leftSpot, rightSpot } = stateRef.current;
     lines.forEach((line) => {
-      const s = lerp(percent, 0, 0.5);
+      const s = lerp(percent, 0, 0.3);
       line.strokeWidth = s * line.data.maxStroke;
     });
 
-    const view = lines[0]?.view;
-    let lastTime = 0;
-    let count = 0;
-    const CHANGE_INTERVAL = 0.1;
-    if (view && !view.onFrame) {
-      view.onFrame = (e) => {
-        const delta = e.time - lastTime;
-        if (delta > CHANGE_INTERVAL) {
-          count++;
-          leftSpot.forEach((ray, i) => {
-            const index = i + count;
-            ray.fillColor = new Color(colors[index % colors.length]);
-          });
-          rightSpot.forEach((ray, i) => {
-            const index = i + count;
-            ray.fillColor = new Color(colors[index % colors.length]);
-          });
-          lastTime = e.time;
-        }
-      };
-    }
+    // const view = lines[0]?.view;
+    // let lastTime = 0;
+    // let count = 0;
+    // const CHANGE_INTERVAL = 0.1;
+    // if (view && !view.onFrame) {
+    //   view.onFrame = (e) => {
+    //     const delta = e.time - lastTime;
+    //     if (delta > CHANGE_INTERVAL) {
+    //       count++;
+    //       leftSpot.forEach((ray, i) => {
+    //         const index = i + count;
+    //         ray.fillColor = new Color(colors[index % colors.length]);
+    //       });
+    //       rightSpot.forEach((ray, i) => {
+    //         const index = i + count;
+    //         ray.fillColor = new Color(colors[index % colors.length]);
+    //       });
+    //       lastTime = e.time;
+    //     }
+    //   };
+    // }
 
-    const BASE_SPOT_WIDTH = 50;
-    const BASE_SPACING = 10;
+    // const BASE_SPOT_WIDTH = 50;
+    // const BASE_SPACING = 10;
 
-    const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 100;
-    const SPACING = BASE_SPACING + percent * 200;
+    // const SPOT_WIDTH = BASE_SPOT_WIDTH + percent * 100;
+    // const SPACING = BASE_SPACING + percent * 200;
 
-    leftSpot.forEach((ray, i) => {
-      const o = isMobile
-        ? ray.view.bounds.bottomLeft
-        : ray.view.bounds.bottomCenter;
-      ray.pivot = o;
-      const a = ray.view.bounds.topCenter
-        .subtract(new Point(-i * (SPOT_WIDTH + SPACING), 0))
-        .subtract(o)
-        .multiply(2);
-      const b = ray.view.bounds.topCenter
-        .subtract(new Point(-i * (SPOT_WIDTH + SPACING) - SPOT_WIDTH, 0))
-        .subtract(o)
-        .multiply(2);
-      ray.segments = [o, o.add(a), o.add(b)] as any;
-      if (isMobile) {
-        ray.rotation = -90 + percent * 100;
-      } else {
-        ray.rotation = -130 + percent * 135;
-      }
-    });
+    // leftSpot.forEach((ray, i) => {
+    //   const o = isMobile
+    //     ? ray.view.bounds.bottomLeft
+    //     : ray.view.bounds.bottomCenter;
+    //   ray.pivot = o;
+    //   const a = ray.view.bounds.topCenter
+    //     .subtract(new Point(-i * (SPOT_WIDTH + SPACING), 0))
+    //     .subtract(o)
+    //     .multiply(2);
+    //   const b = ray.view.bounds.topCenter
+    //     .subtract(new Point(-i * (SPOT_WIDTH + SPACING) - SPOT_WIDTH, 0))
+    //     .subtract(o)
+    //     .multiply(2);
+    //   ray.segments = [o, o.add(a), o.add(b)] as any;
+    //   if (isMobile) {
+    //     ray.rotation = -90 + percent * 100;
+    //   } else {
+    //     ray.rotation = -130 + percent * 135;
+    //   }
+    // });
 
-    rightSpot.forEach((ray, i) => {
-      const o = isMobile
-        ? ray.view.bounds.bottomRight
-        : ray.view.bounds.bottomCenter;
-      ray.pivot = o;
-      const a = ray.view.bounds.topCenter
-        .subtract(new Point(i * (SPOT_WIDTH + SPACING), 0))
-        .subtract(o)
-        .multiply(2);
-      const b = ray.view.bounds.topCenter
-        .subtract(new Point(i * (SPOT_WIDTH + SPACING) + SPOT_WIDTH, 0))
-        .subtract(o)
-        .multiply(2);
-      ray.segments = [o, o.add(a), o.add(b)] as any;
-      if (isMobile) {
-        ray.rotation = 90 + percent * -100;
-      } else {
-        ray.rotation = 130 + percent * -135;
-      }
-    });
+    // rightSpot.forEach((ray, i) => {
+    //   const o = isMobile
+    //     ? ray.view.bounds.bottomRight
+    //     : ray.view.bounds.bottomCenter;
+    //   ray.pivot = o;
+    //   const a = ray.view.bounds.topCenter
+    //     .subtract(new Point(i * (SPOT_WIDTH + SPACING), 0))
+    //     .subtract(o)
+    //     .multiply(2);
+    //   const b = ray.view.bounds.topCenter
+    //     .subtract(new Point(i * (SPOT_WIDTH + SPACING) + SPOT_WIDTH, 0))
+    //     .subtract(o)
+    //     .multiply(2);
+    //   ray.segments = [o, o.add(a), o.add(b)] as any;
+    //   if (isMobile) {
+    //     ray.rotation = 90 + percent * -100;
+    //   } else {
+    //     ray.rotation = 130 + percent * -135;
+    //   }
+    // });
   }, [percent]);
 
   React.useEffect(() => {
@@ -1029,8 +1029,7 @@ const Rays = ({ percent }: { percent: number }) => {
         shadowBlur: 20,
         shadowColor: "white",
       });
-      line.data.maxStroke =
-        i === Math.floor(numLines / 2) ? getWidth() : Math.random() * 500;
+      line.data.maxStroke = Math.random() * 500;
       lines.push(line);
     }
 
@@ -1134,6 +1133,11 @@ class Lightning {
     return this.endPoint.subtract(this.startPoint).length;
   }
 
+  public setOpacity(o: number) {
+    this.path.opacity = o;
+    this.children.forEach((c) => (c.path.opacity = o));
+  }
+
   public update() {
     const startPoint = this.startPoint;
     const endPoint = this.endPoint;
@@ -1221,10 +1225,12 @@ class Particle {
     const opacity = (Math.random() * 5 + 2) / 10;
     this.distance = (1 / opacity) * distance;
     this.speed = this.distance * 0.00006;
+    const color = new Color("black");
+    color.lightness = 1 - opacity * 1.5;
     this.path = new Path.Circle({
       radius: Math.random(),
-      fillColor: "black",
-      opacity,
+      fillColor: color,
+
       center: new Point(
         x + this.distance * Math.cos(this.angle),
         y + this.distance * Math.sin(this.angle)
@@ -1252,17 +1258,17 @@ class BlackHole {
   private group: paper.Group;
   private particles: Particle[];
 
-  constructor(center: paper.Point) {
+  constructor(center: paper.Point, mobile?: boolean) {
     const radius = 30;
-    const count = 6000;
+    const count = mobile ? 4000 : 8000;
     this.group = new Group();
     this.group.pivot = this.group.view.center;
     const path = new Path.Circle({
       center,
-      radius: radius + 12,
+      radius: radius + 13,
       fillColor: "white",
       shadowColor: "black",
-      shadowBlur: 10,
+      shadowBlur: 100,
     });
     this.group.addChild(path);
     this.particles = [];
@@ -1276,7 +1282,7 @@ class BlackHole {
 
   public update(percent: number) {
     this.particles.forEach((p) => p.update());
-    const s = percent * 3;
+    const s = percent * 30;
     this.group.scaling = new Point(s, s);
     this.group.position = this.group.view.center;
   }
@@ -1295,8 +1301,16 @@ const Lightnings = ({ percent }: { percent: number }) => {
 
   React.useEffect(() => {
     const { lightnings, blackhole } = stateRef.current;
-    lightnings.forEach((l) => l.update());
-    blackhole?.update(percent);
+    const start = 0.3;
+    lightnings.forEach((l) => {
+      if (percent < start || percent === 1) {
+        l.setOpacity(0);
+      } else {
+        l.setOpacity(1);
+      }
+      l.update();
+    });
+    blackhole?.update(lerp(percent, start, 1));
   }, [percent]);
 
   React.useEffect(() => {
@@ -1318,7 +1332,7 @@ const Lightnings = ({ percent }: { percent: number }) => {
       childCount: 10,
     });
 
-    const bh = new BlackHole(paper.view.center);
+    const bh = new BlackHole(paper.view.center, isMobile);
 
     stateRef.current = {
       ...stateRef.current,
@@ -1338,14 +1352,22 @@ const PgBall = ({ percent }: { percent: number }) => {
     <>
       <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
         <div
-          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full"
+          className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full shadow-2xl"
           style={{
-            transform: `scale(${percent})`,
+            transform: `scale(${lerp(percent, 0.5, 1)})`,
           }}
         >
-          <h1 className="text-black text-[5rem] md:text-[8rem] font-medium -mt-8">
-            pg
-          </h1>
+          <div
+            className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] flex items-center justify-center rounded-full"
+            style={{
+              boxShadow: `inset -25px -25px 40px rgba(0,0,0,.5)`,
+              backgroundImage: `linear-gradient(-45deg, #000 0%, #666 100%)`,
+            }}
+          >
+            <h1 className="text-white text-[7rem] md:text-[10rem] font-medium -mt-8">
+              pg
+            </h1>
+          </div>
         </div>
       </div>
     </>
@@ -1355,7 +1377,7 @@ const PgBall = ({ percent }: { percent: number }) => {
 const EndSection = () => {
   const { ref, percent } = useScrollPosition();
   return (
-    <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
+    <section ref={ref} className="w-full h-[1200vh] -mt-[100vh]">
       <Rays percent={percent} />
       <Lightnings percent={percent} />
       <PgBall percent={percent} />
