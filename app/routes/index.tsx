@@ -886,16 +886,18 @@ const Rays = ({ percent }: { percent: number }) => {
       line.strokeWidth = s * line.data.maxStroke;
     });
 
-    if (percent >= 1 && !flood) {
+    if (percent >= 0.3 && !flood && paper) {
+      paper?.activate();
       stateRef.current.flood = new Path.Rectangle({
         from: paper?.view.bounds.topLeft,
         to: paper?.view.bounds.bottomRight,
         fillColor: "white",
       });
-    } else {
-      if (flood) {
-        flood.remove();
-      }
+    }
+
+    if (percent < 0.3 && flood) {
+      flood.remove();
+      stateRef.current.flood = null;
     }
   }, [percent]);
 
