@@ -19,27 +19,27 @@
 
   /*-----------------------------------PROSE--------------------------------------*/
   h1 {
-    @apply text-5xl text-gray-600;
+    @apply text-5xl text-black font-medium;
   }
 
   h2 {
-    @apply text-4xl text-gray-600;
+    @apply text-4xl text-black;
   }
 
   h3 {
-    @apply text-3xl text-gray-600;
+    @apply text-3xl text-black;
   }
 
   h4 {
-    @apply text-2xl text-gray-600;
+    @apply text-2xl text-black;
   }
 
   h5 {
-    @apply text-xl text-gray-600;
+    @apply text-xl text-black;
   }
 
   h6 {
-    @apply text-base text-gray-600;
+    @apply text-base text-black;
   }
 
   header {
@@ -47,7 +47,11 @@
   }
 
   header :is(h1, h2, h3, h4, h5, h6) {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5;
+    @apply col-span-full lg:col-span-10 lg:col-start-2 mb-10;
+  }
+
+  header :is(h4, h5, h6) {
+    @apply col-span-full lg:col-span-10 lg:col-start-2 mb-5;
   }
 
   header img {
@@ -59,23 +63,23 @@
   }
 
   main :is(h1, h2, h3) {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-10 mt-20;
+    @apply col-span-full lg:col-span-10 lg:col-start-2 mb-10 mt-20;
   }
 
   main :is(h4, h5, h6) {
-    @apply col-span-full lg:col-span-8 lg:col-start-3 mb-5 mt-5;
+    @apply col-span-full lg:col-span-10 lg:col-start-2 mb-5 mt-5;
   }
 
   main p {
-    @apply mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply mb-3 col-span-full lg:col-span-10 lg:col-start-2;
   }
 
   main div {
-    @apply mb-3 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply mb-3 col-span-full lg:col-span-10 lg:col-start-2;
   }
 
   main pre {
-    @apply bg-gray-600 text-white p-5 rounded-lg shadow-2xl my-5 col-span-full overflow-x-auto;
+    @apply bg-gray-600 text-white p-5 rounded-lg my-10 col-span-full lg:col-span-10 lg:col-start-2 overflow-x-auto;
   }
 
   main img {
@@ -95,7 +99,7 @@
   }
 
   main blockquote {
-    @apply bg-gray-100 rounded-lg py-4 pb-8 px-8 mb-8 my-10 col-span-full lg:col-span-8 lg:col-start-3;
+    @apply bg-gray-100 rounded-lg p-8 my-10 col-span-full lg:col-span-8 lg:col-start-3;
   }
 
   main blockquote :is(h1, h2, h3, h4, h5, h6) {
@@ -155,8 +159,9 @@
   /*-----------------------------------END BUTTON---------------------------------------*/
 
   /*-----------------------------------HEADERS---------------------------------------*/
+
   .subheader {
-    @apply text-3xl text-gray-400 mb-6;
+    @apply text-3xl text-black mb-6;
   }
 
   /*-----------------------------------END HEADERS---------------------------------------*/

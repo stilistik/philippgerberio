@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import { ContentThumbnail } from "~/components/content/ContentThumbnail";
 import { Button } from "~/components/interaction/Button";
+import { Masonry } from "~/components/layout/Masonry";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
@@ -48,13 +49,13 @@ export default function Projects() {
           <Button type="submit">New Project</Button>
         </Form>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <Masonry>
         {projects.map((project) => (
-          <Link to={project.id} key={project.id}>
-            <ContentThumbnail content={project} />
-          </Link>
+          // <Link to={project.id} key={project.id}>
+          <ContentThumbnail content={project} />
+          // </Link>
         ))}
-      </div>
+      </Masonry>
     </>
   );
 }
