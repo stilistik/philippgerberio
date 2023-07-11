@@ -12,6 +12,7 @@ import {
   Rectangle,
   PointText,
   Matrix,
+  CompoundPath,
 } from "paper";
 import { Button } from "~/components/interaction/Button";
 
@@ -1266,7 +1267,7 @@ class BlackHole {
     const path = new Path.Circle({
       center,
       radius: radius + 13,
-      fillColor: "white",
+      fillColor: "black",
       shadowColor: "black",
       shadowBlur: 100,
     });
@@ -1350,13 +1351,82 @@ const Lightnings = ({ percent }: { percent: number }) => {
 
 const PgBall = ({ percent }: { percent: number }) => {
   const isMobile = useIsMobile();
+  const { ref, paper } = usePaper({ resolution: "full" });
+  const stateRef = React.useRef<{ stars: paper.Path[] }>({ stars: [] });
+
+  React.useEffect(() => {
+    const { stars } = stateRef.current;
+    const p = lerp(percent, 0.5, 1);
+    const growFactor = 1000;
+    const mask = new Path.Circle({
+      radius: lerp(percent, 0.3, 1) * 1300,
+      center: paper?.view.center,
+    });
+
+    stars.forEach((star) => {
+      const { pos } = star.data;
+
+      const radialVector = pos.normalize();
+      const newEndPoint = pos.add(radialVector.multiply(p * growFactor));
+      const newStartPoint = pos.add(
+        radialVector.multiply(lerp(p, 0.5, 1) * growFactor)
+      );
+      star.segments[0].point = newStartPoint;
+      star.segments[1].point = newEndPoint;
+      if (
+        mask.contains(newStartPoint.add(paper?.view.center)) ||
+        mask.contains(newEndPoint.add(paper?.view.center))
+      ) {
+        star.visible = true;
+      } else {
+        star.visible = false;
+      }
+    });
+    return () => {
+      mask.remove();
+    };
+  }, [percent]);
+
+  React.useEffect(() => {
+    if (!paper) return;
+    paper.activate();
+
+    const count = 60;
+    const stars = [];
+
+    for (let i = 0; i < count; ++i) {
+      const extent = 300;
+      const angle = Math.random() * 2 * Math.PI;
+
+      const d = random(0.2, 1) * extent;
+      const pos = new Point(Math.sin(angle) * d, Math.cos(angle) * d);
+      const color = new Color(colors[Math.floor(random() * colors.length)]);
+      const path = new Path({
+        strokeColor: color,
+        strokeWidth: random(0.5, 3),
+        shadowColor: "white",
+        shadowBlur: 6,
+        strokeCap: "round",
+        position: paper.view.center,
+        visible: false,
+        data: {
+          pos,
+        },
+      });
+      path.add(pos, pos);
+      stars.push(path);
+    }
+
+    stateRef.current = { ...stateRef.current, stars };
+  }, [paper]);
+
   return (
     <>
       <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
         <div
           className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full shadow-2xl"
           style={{
-            transform: `scale(${lerp(percent, 0.5, 1)})`,
+            transform: `scale(${lerp(percent, 0.8, 1)})`,
           }}
         >
           <div
@@ -1372,6 +1442,10 @@ const PgBall = ({ percent }: { percent: number }) => {
           </div>
         </div>
       </div>
+      <canvas
+        ref={ref}
+        className="w-screen h-screen fixed top-0 left-0 -z-10"
+      />
     </>
   );
 };
