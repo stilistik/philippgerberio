@@ -11,17 +11,15 @@ const NavLink: React.FC<NavLinkProps> = ({ to, children }) => {
   const [hovered, setHovered] = React.useState(false);
   const location = useLocation();
 
-  const isAdmin = location.pathname.includes("admin");
   const showUnderline = hovered || location.pathname.includes(to);
 
   return (
     <Link
-      to={isAdmin ? `/admin${to}` : to}
+      to={to}
       className="relative font-bold text-xl sm:text-2xl text-main pb-1"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {isAdmin ? "Admin:" : ""}
       {children}
       <span
         className={clx(
@@ -44,6 +42,8 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
   const [count, setCount] = React.useState(0);
   const navigate = useNavigate();
   const timeoutRef = React.useRef<ReturnType<typeof setTimeout>>();
+  const location = useLocation();
+  const isAdmin = location.pathname.includes("admin");
 
   function handleClick(e: React.MouseEvent) {
     if (timeoutRef.current) {
@@ -64,15 +64,26 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
         <Link to="/" className="mr-5 sm:mr-10" onClick={handleClick}>
           <Button
             variant="round"
-            className="text-4xl font-medium shadow-md"
+            className="text-4xl font-medium shadow-md flex flex-col"
             style={{ width: 70, height: 70 }}
           >
             <span className="-mt-2">pg</span>
+            {isAdmin ? <span className="text-xs">Admin</span> : null}
           </Button>
         </Link>
-        <NavLink to="/projects">Projects</NavLink>
-        <NavLink to="/posts">Blog</NavLink>
-        <NavLink to="/about">About</NavLink>
+
+        {isAdmin ? (
+          <NavLink to="/admin/projects">Projects</NavLink>
+        ) : (
+          <NavLink to="/projects">Projects</NavLink>
+        )}
+        {isAdmin ? (
+          <NavLink to="/admin/posts">Blog</NavLink>
+        ) : (
+          <NavLink to="/posts">Blog</NavLink>
+        )}
+        {isAdmin ? null : <NavLink to="/music">Music</NavLink>}
+        {isAdmin ? null : <NavLink to="/about">About</NavLink>}
       </div>
       {showLogout && (
         <form action="/logout" method="post">

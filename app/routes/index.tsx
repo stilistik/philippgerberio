@@ -3,6 +3,8 @@ import { createNoise2D } from "simplex-noise";
 import { useIsMobile, useScrollPosition } from "~/utils/hooks";
 import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
 import { colors } from "../utils/colors";
+import { Button } from "~/components/interaction/Button";
+import { Link } from "@remix-run/react";
 
 function lerp(percent: number, start: number, end: number) {
   if (percent < start) return 0;
@@ -1340,6 +1342,32 @@ const PgBall = ({ percent }: { percent: number }) => {
             </h1>
           </div>
         </div>
+      </div>
+      <div
+        className="fixed bottom-20 left-0 w-full flex justify-center text-white gap-10"
+        style={{
+          opacity: lerp(percent, 0.9, 1),
+          display: percent < 0.9 ? "none" : "flex",
+        }}
+      >
+        <Link
+          to="/projects"
+          className="font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-white after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100"
+        >
+          Projects
+        </Link>
+        <Link
+          to="/posts"
+          className="font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-white after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100"
+        >
+          Blog
+        </Link>
+        <Link
+          to="/music"
+          className="font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-white after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100"
+        >
+          Music
+        </Link>
       </div>
       <canvas
         ref={ref}

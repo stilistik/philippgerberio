@@ -31,9 +31,9 @@ export const ContentThumbnail = ({
       }}
     >
       <div
-        className="absolute top-0 left-0 w-full h-full -z-10 rounded-2xl"
+        className="absolute top-0 left-0 w-full h-full -z-10 rounded-2xl "
         style={{
-          backgroundImage: `linear-gradient(-45deg, ${colors[0]} 0%, ${colors[9]} 100%)`,
+          background: `linear-gradient(-45deg, ${colors[0]} 0%, ${colors[9]} 100%)`,
           transform: hovered ? "scale(1)" : "scale(0.95)",
           transition: `all 300ms ease-in-out`,
         }}
@@ -41,7 +41,7 @@ export const ContentThumbnail = ({
       <div className="m-2 p-5 bg-white rounded-xl">
         {content.thumbnail ? (
           <div
-            className="rounded-md w-full h-[500px] shadow-md"
+            className="rounded-md w-full h-[500px] shadow-xl"
             style={{
               backgroundImage: `url("${content.thumbnail}")`,
               backgroundSize: "cover",
