@@ -139,12 +139,23 @@ function springEffect(
 const MobileMenu = () => {
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = React.useState(false);
+  const [showLinks, setShowLinks] = React.useState(false);
   const { ref, paper } = usePaper({ resolution: "full" });
   const buttonRef = React.useRef<HTMLButtonElement>(null);
   const stateRef = React.useRef<{ blob: Blob | null; increment: number }>({
     blob: null,
     increment: 0,
   });
+
+  React.useEffect(() => {
+    if (menuOpen) {
+      setTimeout(() => {
+        setShowLinks(true);
+      }, 200);
+    } else {
+      setShowLinks(false);
+    }
+  }, [menuOpen]);
 
   React.useEffect(() => {
     if (!isMobile) return;
@@ -158,6 +169,9 @@ const MobileMenu = () => {
     if (!isMobile || !paper || !buttonRef.current) return;
     paper.activate();
 
+    const maxScale = getHeight() / 35;
+    const minScale = 0.001;
+
     const rect = buttonRef.current.getBoundingClientRect();
     const pos = new Point(
       rect.left + rect.width / 2,
@@ -169,13 +183,12 @@ const MobileMenu = () => {
     blob.changeInterval = 0.1;
     blob.path.shadowBlur = 0;
     blob.path.shadowColor = null;
+    blob.path.scaling = new Point(minScale, minScale);
 
     stateRef.current = { ...stateRef.current, blob };
 
     let velocity = 1;
     let damping = 0.1;
-
-    const maxScale = getHeight() / 35;
 
     paper.view.onFrame = (e: any) => {
       const { increment } = stateRef.current;
@@ -185,7 +198,7 @@ const MobileMenu = () => {
       // In your update loop
       const [newScale, newVelocity] = springEffect(
         blob.path.scaling.x,
-        increment > 0 ? maxScale : 1,
+        increment > 0 ? maxScale : minScale,
         velocity,
         damping
       );
@@ -198,9 +211,9 @@ const MobileMenu = () => {
         blob.path.scaling.x = maxScale;
         blob.path.scaling.y = maxScale;
       }
-      if (blob.path.scaling.x < 1) {
-        blob.path.scaling.x = 1;
-        blob.path.scaling.y = 1;
+      if (blob.path.scaling.x < minScale) {
+        blob.path.scaling.x = minScale;
+        blob.path.scaling.y = minScale;
       }
     };
   }, [paper, isMobile]);
@@ -211,8 +224,8 @@ const MobileMenu = () => {
         ref={ref}
         className="w-screen h-screen absolute top-0 left-0 z-10 pointer-events-none"
       />
-      {menuOpen && (
-        <div className="absolute w-screen h-screen top-0 left-0 z-10 flex flex-col justify-center items-center">
+      {showLinks && (
+        <div className="absolute w-screen h-screen top-0 left-0 z-10 flex flex-col items-center pt-40">
           <NavLink
             to="/projects"
             onClick={() => setMenuOpen(false)}

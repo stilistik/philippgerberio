@@ -2,6 +2,7 @@ import { Post } from "@prisma/client";
 import { LoaderFunction } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { ContentThumbnail } from "~/components/content/ContentThumbnail";
+import { ThumbnailGrid } from "~/components/layout/ThumbnailGrid";
 import { db } from "~/utils/db.server";
 
 export const loader: LoaderFunction = async () => {
@@ -15,7 +16,7 @@ export default function Posts() {
   const posts = useLoaderData<Post[]>();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <ThumbnailGrid>
       {posts.length === 0 && <h3>No blog posts yet</h3>}
       {posts.map((post) => {
         return (
@@ -24,6 +25,6 @@ export default function Posts() {
           </Link>
         );
       })}
-    </div>
+    </ThumbnailGrid>
   );
 }
