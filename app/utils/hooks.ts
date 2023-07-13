@@ -48,7 +48,7 @@ export function useIsMobile() {
 
 export const useScrollPosition = () => {
   const ref = React.useRef<HTMLDivElement>(null);
-  const [percent, setPercent] = React.useState<number>(0);
+  const [value, setValue] = React.useState<number>(0);
   const [scrollY, setScrollY] = React.useState<number>(0);
   const [bbox, setBbox] = React.useState<DOMRect | null>(null);
 
@@ -60,7 +60,7 @@ export const useScrollPosition = () => {
           1,
           Math.max(0, -bbox.y) / (bbox.height - window.innerHeight)
         );
-        setPercent(percent);
+        setValue(percent);
         setScrollY(window.scrollY);
         setBbox(bbox);
       }
@@ -75,7 +75,7 @@ export const useScrollPosition = () => {
     };
   }, []);
 
-  return { ref, percent, scrollY, bbox };
+  return { ref, value, scrollY, bbox };
 };
 
 export function useMobileAutoHoverOnScroll(
@@ -130,4 +130,10 @@ export function useOnResize(fn: () => void) {
     window.addEventListener("resize", fn);
     return () => window.removeEventListener("resize", fn);
   }, [fn]);
+}
+
+export function useValueRef<T extends unknown>(value: T) {
+  const ref = React.useRef<T>(value);
+  ref.current = value;
+  return ref;
 }

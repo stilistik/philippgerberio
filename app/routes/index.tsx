@@ -1,16 +1,15 @@
 import React from "react";
 import { createNoise2D } from "simplex-noise";
-import { useIsMobile, useScrollPosition } from "~/utils/hooks";
+import { useIsMobile, useScrollPosition, useValueRef } from "~/utils/hooks";
 import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
 import { colors } from "../utils/colors";
-import { Button } from "~/components/interaction/Button";
 import { Link } from "@remix-run/react";
 
-function lerp(percent: number, start: number, end: number) {
-  if (percent < start) return 0;
-  else if (percent > end) return 1;
+function lerp(value: number, start: number, end: number) {
+  if (value < start) return 0;
+  else if (value > end) return 1;
   else {
-    return (percent - start) / (end - start);
+    return (value - start) / (end - start);
   }
 }
 
@@ -173,17 +172,17 @@ class Blob {
     });
   }
 
-  animate(percent: number) {
+  animate(value: number) {
     this.path.position.x =
       this.originalPos.x +
-      this.translateDirectionX * percent * this.translationSpeed;
+      this.translateDirectionX * value * this.translationSpeed;
     this.path.position.y =
       this.originalPos.y +
-      this.translateDirectionY * percent * this.translationSpeed;
+      this.translateDirectionY * value * this.translationSpeed;
 
-    const scaling = Math.max(1 - lerp(percent, 0.6, 1), 0.01);
+    const scaling = Math.max(1 - lerp(value, 0.6, 1), 0.01);
     this.path.scaling = new Point(scaling, scaling);
-    this.path.opacity = 1 - lerp(percent, 0.9, 1);
+    this.path.opacity = 1 - lerp(value, 0.9, 1);
   }
 
   update(t: number) {
@@ -191,16 +190,16 @@ class Blob {
   }
 }
 
-const Blobs = ({ percent }: { percent: number }) => {
+const Blobs = ({ value }: { value: number }) => {
   const { ref, paper } = usePaper({ resolution: "half" });
   const blobRef = React.useRef<Blob[]>([]);
   const isMobile = useIsMobile();
 
   React.useEffect(() => {
     blobRef.current.forEach((b) => {
-      b.animate(percent);
+      b.animate(value);
     });
-  }, [percent]);
+  }, [value]);
 
   React.useEffect(() => {
     if (!paper) return;
@@ -227,7 +226,7 @@ const Blobs = ({ percent }: { percent: number }) => {
   return <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0" />;
 };
 
-const Hello = ({ percent }: { percent: number }) => {
+const Hello = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
   const f = isMobile ? 3 : 1;
   return (
@@ -235,7 +234,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h1
         className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translateX(${-lerp(percent, 0, 0.1) * 100}vw)`,
+          transform: `translateX(${-lerp(value, 0, 0.1) * 100}vw)`,
         }}
       >
         Hello
@@ -243,7 +242,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h1
         className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translateX(${100 - lerp(percent, 0.1, 0.3) * 200 * f}vw)`,
+          transform: `translateX(${100 - lerp(value, 0.1, 0.3) * 200 * f}vw)`,
         }}
       >
         I'm Philipp
@@ -251,7 +250,7 @@ const Hello = ({ percent }: { percent: number }) => {
       <h1
         className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
-          transform: `translate(${200 - lerp(percent, 0.3, 0.6) * 400 * f}vw)`,
+          transform: `translate(${200 - lerp(value, 0.3, 0.6) * 400 * f}vw)`,
         }}
       >
         Nice to meet you
@@ -261,202 +260,100 @@ const Hello = ({ percent }: { percent: number }) => {
 };
 
 const TitleSection = () => {
-  const { ref, percent } = useScrollPosition();
+  const { ref, value } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[600vh]">
       <div className="sticky top-56 sm:pt-10">
-        <Blobs percent={percent} />
-        <Hello percent={percent} />
+        <Blobs value={value} />
+        <Hello value={value} />
       </div>
     </section>
   );
 };
 
-const Picture = ({ percent }: { percent: number }) => {
+const Picture = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
-  const { ref, paper } = usePaper({ resolution: isMobile ? "half" : "full" });
-  const stateRef = React.useRef<{
-    path: paper.Path | null;
-    points: paper.Point[];
-    pointsNoImage: paper.Point[];
-  }>({
-    path: null,
-    points: [],
-    pointsNoImage: [],
-  });
-
-  React.useEffect(() => {
-    const { path, points, pointsNoImage } = stateRef.current;
-    const w = getWidth();
-
-    if (path && points) {
-      if (percent === 0) {
-        path.visible = false;
-      } else {
-        path.visible = true;
-        path.segments = [];
-        const stepCount = points.length / 2;
-        const relevantPercent = lerp(percent, 0, 0.5);
-        const visibleSteps = Math.floor(relevantPercent * stepCount);
-
-        for (let i = 0; i < visibleSteps; i++) {
-          if (percent < 0.8) {
-            path.add(points[i * 2]);
-            path.insert(0, points[i * 2 + 1]);
-          } else {
-            // we are collapsing the image in the spiral
-            const d1 = points[i * 2].subtract(pointsNoImage[i * 2]);
-            d1.length = d1.length * (1 - lerp(percent, 0.8, 0.95));
-            const p1 = pointsNoImage[i * 2].add(d1);
-            const d2 = points[i * 2 + 1].subtract(pointsNoImage[i * 2 + 1]);
-            d2.length = d2.length * (1 - lerp(percent, 0.8, 0.95));
-            const p2 = pointsNoImage[i * 2 + 1].add(d2);
-            path.add(p1);
-            path.insert(0, p2);
-          }
-        }
-      }
-
-      if (percent > 0.5 && !isMobile) {
-        const d = w - path.bounds.width / 2 - path.view.center.x;
-        path.position.x = path.view.center.x + lerp(percent, 0.5, 0.7) * d;
-      }
-
-      if (percent > 0.95) {
-        path.opacity = 1 - lerp(percent, 0.95, 1);
-      } else {
-        path.opacity = 1;
-      }
-    }
-  }, [percent]);
-
-  // function computeVertices() {
-  //   const MIN_DRAW_WIDTH = 0.5;
-  //   const MAX_DRAW_WIDTH = isMobile ? 2.4 : 3.7;
-
-  //   const raster = new Raster({
-  //     source: "me-square.png",
-  //   });
-  //   raster.visible = false;
-  //   raster.on("load", resetSpiral);
-
-  //   let position: paper.Point;
-  //   let path: paper.Path;
-  //   let count = 0;
-  //   let grow = false;
-
-  //   const points: paper.Point[] = [];
-  //   const pointsNoImage: paper.Point[] = [];
-
-  //   function growSpiral() {
-  //     count++;
-  //     const vector = new Point({
-  //       angle: count * (isMobile ? 6.5 : 5),
-  //       length: count / 100,
-  //     });
-  //     const rot = vector.rotate(90, [0, 0]);
-  //     const color = raster.getAverageColor(position.add(vector));
-
-  //     let value = color ? (1 - color.gray) * MAX_DRAW_WIDTH : 0;
-  //     if (color?.gray > 0.7) {
-  //       value = 0;
-  //     }
-  //     rot.length = Math.max(value, MIN_DRAW_WIDTH);
-  //     points.push(position.add(vector).subtract(rot));
-  //     points.push(position.add(vector).add(rot));
-
-  //     rot.length = MIN_DRAW_WIDTH;
-  //     pointsNoImage.push(position.add(vector).subtract(rot));
-  //     pointsNoImage.push(position.add(vector).add(rot));
-
-  //     position = position.add(vector);
-  //   }
-
-  //   function resetSpiral() {
-  //     if (!paper) return;
-  //     raster.fitBounds(paper.view.bounds);
-
-  //     grow = true;
-
-  //     // Transform the raster, so it fills the view:
-  //     if (path) {
-  //       path.remove();
-  //     }
-
-  //     position = paper.view.center;
-  //     count = 0;
-  //     path = new Path({
-  //       fillColor: "black",
-  //       closed: true,
-  //     });
-
-  //     const max = Math.max(raster.bounds.width, raster.bounds.height) / 2;
-
-  //     while (grow) {
-  //       if (
-  //         raster.loaded &&
-  //         paper.view.center.subtract(position).length < max
-  //       ) {
-  //         for (let i = 0, l = 100; i < l; i++) {
-  //           growSpiral();
-  //         }
-  //       } else {
-  //         grow = false;
-  //       }
-  //     }
-
-  //     stateRef.current = { path, points, pointsNoImage };
-  //   }
-  // }
-
-  React.useEffect(() => {
-    if (!paper) return;
-    paper.activate();
-
-    fetch("vertices_image.json")
-      .then((r) => r.json())
-      .then((json) => {
-        const points = json.map((el: [number, number]) => new Point(el));
-        const path = new Path({
-          fillColor: "black",
-          closed: true,
-          segments: points,
-        });
-        path.position = paper.view.center;
-        path.segments = [];
-        stateRef.current = { ...stateRef.current, path, points };
-      });
-
-    fetch("vertices_blank.json")
-      .then((r) => r.json())
-      .then((json) => {
-        stateRef.current.pointsNoImage = json.map(
-          (el: [number, number]) => new Point(el)
-        );
-      });
-  }, [paper]);
-
+  const valueRef = useValueRef(value);
   return (
-    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
+    <BackgroundVideo
+      src="spiral.mp4"
+      valueRef={valueRef}
+      style={{
+        transform: isMobile
+          ? ""
+          : `translateX(${lerp(value, 0.5, 0.7) * 20}vw)`,
+        opacity: value >= 1 ? 0 : 1,
+      }}
+    />
   );
 };
 
+const BackgroundVideo = React.memo(
+  ({
+    src,
+    valueRef,
+    className,
+    style,
+  }: {
+    src: string;
+    valueRef: React.MutableRefObject<number>;
+    className?: string;
+    style?: React.CSSProperties;
+  }) => {
+    const ref = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+      const video = ref.current;
+      if (!video) return;
+
+      video.play();
+      video.pause();
+
+      setInterval(function () {
+        video.pause();
+        const t = valueRef.current * video.duration;
+        video.currentTime = t;
+      }, 40);
+    }, []);
+
+    return (
+      <div
+        className={
+          "fixed top-0 left-0 right-0 bottom-0 overflow-hidden -z-10 " +
+          className
+        }
+        style={style}
+      >
+        <video
+          ref={ref}
+          playsInline
+          preload="auto"
+          muted
+          className="absolute top-0 left-0 w-full h-full object-cover"
+        >
+          <source src={src} type="video/mp4" />
+        </video>
+      </div>
+    );
+  }
+);
+
 const AnimatedSpan = ({
   children,
-  percent,
+  value,
   blur,
   start,
   end,
   color,
 }: {
   children: React.ReactNode;
-  percent: number;
+  value: number;
   blur: number;
   start: number;
   end: number;
   color: string;
 }) => {
-  const value = lerp(percent, start, end);
+  const interpolatedValue = lerp(value, start, end);
   const initialScale = 1.2;
   return (
     <span
@@ -464,11 +361,11 @@ const AnimatedSpan = ({
       style={{
         display: "inline-block",
         transform: `scale(${
-          initialScale - value * Math.abs(1 - initialScale)
-        }) translateX(${-100 * lerp(percent, 0.8, 1)}vw)`,
-        filter: `blur(${blur - value * blur}px)`,
-        opacity: value,
-        color: value === 1 ? color : "black",
+          initialScale - interpolatedValue * Math.abs(1 - initialScale)
+        }) translateX(${-100 * lerp(value, 0.8, 1)}vw)`,
+        filter: `blur(${blur - interpolatedValue * blur}px)`,
+        opacity: interpolatedValue,
+        color: interpolatedValue === 1 ? color : "black",
         transition: `color 0.7s ease-in-out`,
       }}
     >
@@ -477,14 +374,14 @@ const AnimatedSpan = ({
   );
 };
 
-const Presentation = ({ percent }: { percent: number }) => {
+const Presentation = ({ value }: { value: number }) => {
   const blur = 10;
   return (
     <div className="sticky top-0 w-screen h-screen flex items-center">
       <h1 className="md:w-1/2 text-[7rem] md:text-[10rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-black text-center">
         <AnimatedSpan
           blur={blur}
-          percent={percent}
+          value={value}
           start={0.5}
           end={0.55}
           color={colors[0]}
@@ -493,7 +390,7 @@ const Presentation = ({ percent }: { percent: number }) => {
         </AnimatedSpan>
         <AnimatedSpan
           blur={blur}
-          percent={percent}
+          value={value}
           start={0.55}
           end={0.6}
           color={colors[2]}
@@ -502,7 +399,7 @@ const Presentation = ({ percent }: { percent: number }) => {
         </AnimatedSpan>
         <AnimatedSpan
           blur={blur}
-          percent={percent}
+          value={value}
           start={0.6}
           end={0.65}
           color={colors[4]}
@@ -511,7 +408,7 @@ const Presentation = ({ percent }: { percent: number }) => {
         </AnimatedSpan>
         <AnimatedSpan
           blur={blur}
-          percent={percent}
+          value={value}
           start={0.65}
           end={0.7}
           color={colors[6]}
@@ -520,7 +417,7 @@ const Presentation = ({ percent }: { percent: number }) => {
         </AnimatedSpan>
         <AnimatedSpan
           blur={blur}
-          percent={percent}
+          value={value}
           start={0.7}
           end={0.75}
           color={colors[8]}
@@ -533,17 +430,17 @@ const Presentation = ({ percent }: { percent: number }) => {
 };
 
 const PictureSection = () => {
-  const { ref, percent } = useScrollPosition();
+  const { ref, value } = useScrollPosition();
 
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[200vh]">
-      <Picture percent={percent} />
-      <Presentation percent={percent} />
+      <Picture value={value} />
+      <Presentation value={value} />
     </section>
   );
 };
 
-const HexagonGrid = ({ percent }: { percent: number }) => {
+const HexagonGrid = ({ value }: { value: number }) => {
   const { ref, paper } = usePaper({ resolution: "full" });
   const isMobile = useIsMobile();
   const stateRef = React.useRef<{
@@ -557,7 +454,7 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     const { boxes, circle } = stateRef.current;
 
-    const p = lerp(percent, 0, 0.5);
+    const p = lerp(value, 0, 0.5);
     const childCount = boxes.length;
     const visibleCount = Math.floor(p * childCount);
 
@@ -569,13 +466,13 @@ const HexagonGrid = ({ percent }: { percent: number }) => {
       if (p > 0.5) {
         circle.visible = true;
         circle.position = circle.view.center;
-        const s = lerp(percent, 0.5, 1) * 20;
+        const s = lerp(value, 0.5, 1) * 20;
         circle.scaling = new Point(s, s);
       } else {
         circle.visible = false;
       }
     }
-  }, [percent]);
+  }, [value]);
 
   React.useEffect(() => {
     if (!paper) return;
@@ -715,7 +612,7 @@ const TEXTS = [
   "Python",
 ];
 
-const MorphText = ({ percent }: { percent: number }) => {
+const MorphText = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
 
   const text1Ref = React.useRef<HTMLSpanElement | null>(null);
@@ -724,12 +621,12 @@ const MorphText = ({ percent }: { percent: number }) => {
   const stateRef = React.useRef({ running: false });
 
   React.useEffect(() => {
-    if (percent > 0.55) {
+    if (value > 0.55) {
       stateRef.current.running = true;
     } else {
       stateRef.current.running = false;
     }
-  }, [percent]);
+  }, [value]);
 
   React.useEffect(() => {
     const text1 = text1Ref.current;
@@ -831,7 +728,7 @@ const MorphText = ({ percent }: { percent: number }) => {
         className="fixed w-screen h-screen top-0 left-0 flex items-center text-white font-black select-none text-4xl md:text-7xl"
         style={{
           filter: "url(#threshold) blur(0.6px)",
-          display: percent > 0 && percent < 1 ? "flex" : "none",
+          display: value > 0 && value < 1 ? "flex" : "none",
         }}
       >
         <span
@@ -865,16 +762,16 @@ const MorphText = ({ percent }: { percent: number }) => {
 };
 
 const KnowledgeSection = () => {
-  const { ref, percent } = useScrollPosition();
+  const { ref, value } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[600vh] -mt-[100vh]">
-      <HexagonGrid percent={percent} />
-      <MorphText percent={percent} />
+      <HexagonGrid value={value} />
+      <MorphText value={value} />
     </section>
   );
 };
 
-const Rays = ({ percent }: { percent: number }) => {
+const Rays = ({ value }: { value: number }) => {
   const { ref, paper } = usePaper();
   const stateRef = React.useRef<{
     lines: paper.Path[];
@@ -884,11 +781,11 @@ const Rays = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     const { lines, flood } = stateRef.current;
     lines.forEach((line) => {
-      const s = lerp(percent, 0, 0.3);
+      const s = lerp(value, 0, 0.3);
       line.strokeWidth = s * line.data.maxStroke;
     });
 
-    if (percent >= 0.3 && !flood && paper) {
+    if (value >= 0.3 && !flood && paper) {
       paper?.activate();
       stateRef.current.flood = new Path.Rectangle({
         from: paper?.view.bounds.topLeft,
@@ -897,11 +794,11 @@ const Rays = ({ percent }: { percent: number }) => {
       });
     }
 
-    if (percent < 0.3 && flood) {
+    if (value < 0.3 && flood) {
       flood.remove();
       stateRef.current.flood = null;
     }
-  }, [percent]);
+  }, [value]);
 
   React.useEffect(() => {
     if (!paper) return;
@@ -1152,15 +1049,15 @@ class BlackHole {
     this.group.scaling = new Point(0, 0);
   }
 
-  public update(percent: number) {
+  public update(value: number) {
     this.particles.forEach((p) => p.update());
-    const s = percent * 30;
+    const s = value * 30;
     this.group.scaling = new Point(s, s);
     this.group.position = this.group.view.center;
   }
 }
 
-const Lightnings = ({ percent }: { percent: number }) => {
+const Lightnings = ({ value }: { value: number }) => {
   const { ref, paper } = usePaper({ resolution: "full" });
   const isMobile = useIsMobile();
   const stateRef = React.useRef<{
@@ -1175,15 +1072,15 @@ const Lightnings = ({ percent }: { percent: number }) => {
     const { lightnings, blackhole } = stateRef.current;
     const start = 0.3;
     lightnings.forEach((l) => {
-      if (percent < start || percent === 1) {
+      if (value < start || value === 1) {
         l.setOpacity(0);
       } else {
         l.setOpacity(1);
       }
       l.update();
     });
-    blackhole?.update(lerp(percent, start, 1));
-  }, [percent]);
+    blackhole?.update(lerp(value, start, 1));
+  }, [value]);
 
   React.useEffect(() => {
     if (!paper) return;
@@ -1218,7 +1115,7 @@ const Lightnings = ({ percent }: { percent: number }) => {
   );
 };
 
-const PgBall = ({ percent }: { percent: number }) => {
+const PgBall = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
   const { ref, paper } = usePaper({ resolution: "full" });
   const stateRef = React.useRef<{
@@ -1229,10 +1126,10 @@ const PgBall = ({ percent }: { percent: number }) => {
   React.useEffect(() => {
     paper?.activate();
     const { warpRays, stars } = stateRef.current;
-    const p = lerp(percent, 0.5, 1);
+    const p = lerp(value, 0.5, 1);
     const growFactor = 1000;
     const mask = new Path.Circle({
-      radius: lerp(percent, 0.3, 1) * 1300,
+      radius: lerp(value, 0.3, 1) * 1300,
       center: paper?.view.center,
       strokeWidth: 2,
     });
@@ -1271,7 +1168,7 @@ const PgBall = ({ percent }: { percent: number }) => {
     return () => {
       mask.remove();
     };
-  }, [percent]);
+  }, [value]);
 
   React.useEffect(() => {
     if (!paper) return;
@@ -1326,7 +1223,7 @@ const PgBall = ({ percent }: { percent: number }) => {
         <div
           className="w-[250px] h-[250px] md:w-[400px] md:h-[400px] rounded-full "
           style={{
-            transform: `scale(${lerp(percent, 0.8, 1)})`,
+            transform: `scale(${lerp(value, 0.8, 1)})`,
             boxShadow: `0 0 100px rgba(255,255,255,0.3)`,
           }}
         >
@@ -1346,8 +1243,8 @@ const PgBall = ({ percent }: { percent: number }) => {
       <div
         className="fixed bottom-20 left-0 w-full flex justify-center text-white gap-10"
         style={{
-          opacity: lerp(percent, 0.9, 1),
-          display: percent < 0.9 ? "none" : "flex",
+          opacity: lerp(value, 0.9, 1),
+          display: value < 0.9 ? "none" : "flex",
         }}
       >
         <Link
@@ -1378,12 +1275,12 @@ const PgBall = ({ percent }: { percent: number }) => {
 };
 
 const EndSection = () => {
-  const { ref, percent } = useScrollPosition();
+  const { ref, value } = useScrollPosition();
   return (
     <section ref={ref} className="w-full h-[1200vh] -mt-[100vh]">
-      <Rays percent={percent} />
-      <Lightnings percent={percent} />
-      <PgBall percent={percent} />
+      <Rays value={value} />
+      <Lightnings value={value} />
+      <PgBall value={value} />
     </section>
   );
 };
