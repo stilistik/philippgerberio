@@ -1,5 +1,4 @@
 import React from "react";
-import { createNoise2D } from "simplex-noise";
 import { useIsMobile, useScrollPosition, useValueRef } from "~/utils/hooks";
 import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
 import { colors } from "../utils/colors";
@@ -29,10 +28,6 @@ function getHeight() {
   }
 }
 
-function toRadians(angleInDeg: number) {
-  return (Math.PI / 180) * angleInDeg;
-}
-
 function random(max?: number, min?: number) {
   if (typeof max !== "number") {
     return Math.random();
@@ -40,11 +35,6 @@ function random(max?: number, min?: number) {
     min = 0;
   }
   return Math.random() * (max - min) + min;
-}
-
-function randomInt(max?: number, min?: number) {
-  if (!max) return 0;
-  return random(max + 1, min) | 0;
 }
 
 function usePaper(
@@ -273,16 +263,14 @@ const TitleSection = () => {
 
 const Picture = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
-  const valueRef = useValueRef(value);
   return (
     <BackgroundVideo
       src="spiral.mp4"
-      valueRef={valueRef}
+      value={value}
       style={{
         transform: isMobile
           ? ""
           : `translateX(${lerp(value, 0.5, 0.7) * 20}vw)`,
-        opacity: value >= 1 ? 0 : 1,
       }}
     />
   );
@@ -291,16 +279,25 @@ const Picture = ({ value }: { value: number }) => {
 const BackgroundVideo = React.memo(
   ({
     src,
-    valueRef,
     className,
+    value,
+    start = 0,
+    end = 1,
+    visibleBeforeStart = false,
+    visibleAfterEnd = false,
     style,
   }: {
     src: string;
-    valueRef: React.MutableRefObject<number>;
+    value: number;
+    start?: number;
+    end?: number;
+    visibleBeforeStart?: boolean;
+    visibleAfterEnd?: boolean;
     className?: string;
     style?: React.CSSProperties;
   }) => {
     const ref = React.useRef<HTMLVideoElement>(null);
+    const valueRef = useValueRef(lerp(value, start, end));
 
     React.useEffect(() => {
       const video = ref.current;
@@ -316,13 +313,26 @@ const BackgroundVideo = React.memo(
       }, 40);
     }, []);
 
+    function getVisible() {
+      if (value > start && value < end) {
+        return true;
+      }
+      if (value <= start && visibleBeforeStart) {
+        return true;
+      }
+      if (value >= end && visibleAfterEnd) {
+        return true;
+      }
+      return false;
+    }
+
     return (
       <div
         className={
           "fixed top-0 left-0 right-0 bottom-0 overflow-hidden -z-10 " +
           className
         }
-        style={style}
+        style={{ display: getVisible() ? "block" : "none", ...style }}
       >
         <video
           ref={ref}
@@ -828,395 +838,7 @@ const Rays = ({ value }: { value: number }) => {
   );
 };
 
-class Lightning {
-  public path: paper.Path;
-  public speed = 0.025;
-
-  private startPoint: paper.Point;
-  private endPoint: paper.Point;
-  private step: number;
-  private amplitude = 1;
-  private off = 0;
-  private _simplexNoise = createNoise2D();
-
-  // child stuff
-  private parent: Lightning | null = null;
-  private children: Lightning[];
-  private childCount: number;
-  private startStep = 0;
-  private endStep = 0;
-
-  constructor({
-    startPoint,
-    endPoint,
-    childCount,
-  }: {
-    startPoint?: paper.Point;
-    endPoint?: paper.Point;
-    childCount?: number;
-  } = {}) {
-    this.startPoint = startPoint ?? new Point(0, 0);
-    this.endPoint = endPoint ?? new Point(0, 0);
-    this.childCount = childCount ?? 0;
-    this.step = 45;
-    this.path = new Path({
-      strokeColor: "black",
-      strokeWidth: 3,
-      shadowBlur: 5,
-      shadowColor: "black",
-      segments: [],
-    });
-
-    this.children = [];
-    for (let i = 0; i < this.childCount; i++) {
-      const child = new Lightning();
-      child.setAsChild(this);
-      this.children.push(child);
-    }
-  }
-
-  public setAsChild(lightning: Lightning) {
-    if (!(lightning instanceof Lightning)) return;
-    this.parent = lightning;
-
-    const setTimer = () => {
-      this.updateStepsByParent();
-      setTimeout(setTimer, randomInt(1500));
-    };
-
-    setTimeout(setTimer, randomInt(1500));
-  }
-
-  private updateStepsByParent() {
-    if (!this.parent) return;
-    var parentStep = this.parent.step;
-    this.startStep = randomInt(parentStep - 2);
-    this.endStep =
-      this.startStep + randomInt(parentStep - this.startStep - 2) + 2;
-    this.step = this.endStep - this.startStep;
-  }
-
-  public length() {
-    return this.endPoint.subtract(this.startPoint).length;
-  }
-
-  public setOpacity(o: number) {
-    this.path.opacity = o;
-    this.children.forEach((c) => (c.path.opacity = o));
-  }
-
-  public update() {
-    const startPoint = this.startPoint;
-    const endPoint = this.endPoint;
-
-    if (this.parent) {
-      if (this.endStep > this.parent.step) {
-        this.updateStepsByParent();
-      }
-
-      startPoint.set(this.parent.path.segments[this.startStep].point);
-      endPoint.set(this.parent.path.segments[this.endStep].point);
-    }
-
-    const length = this.length();
-    const normal = endPoint
-      .subtract(startPoint)
-      .normalize()
-      .multiply(length / this.step);
-    const radian = toRadians(normal.angle);
-    const sinv = Math.sin(radian);
-    const cosv = Math.cos(radian);
-
-    const off = (this.off += random(this.speed, this.speed * 0.2));
-    let waveWidth = (this.parent ? length * 1.5 : length) * this.amplitude;
-    if (waveWidth > 750) waveWidth = 750;
-
-    this.path.segments = [];
-
-    for (let i = 0, len = this.step + 1; i < len; i++) {
-      const n = i / 60;
-      const av = waveWidth * this.noise(n - off) * 0.5;
-      const ax = sinv * av;
-      const ay = cosv * av;
-
-      const bv = waveWidth * this.noise(n + off) * 0.5;
-      const bx = sinv * bv;
-      const by = cosv * bv;
-
-      const m = Math.sin(Math.PI * (i / (len - 1)));
-
-      const x = startPoint.x + normal.x * i + (ax - bx) * m;
-      const y = startPoint.y + normal.y * i - (ay - by) * m;
-
-      this.path.add(new Point(x, y));
-    }
-
-    this.children.forEach((child) => {
-      child.speed = this.speed * 1.35;
-      child.path.strokeWidth = Math.max(
-        this.path.strokeWidth * Math.random() * 1,
-        0.5
-      );
-      child.update();
-    });
-  }
-
-  private noise(v: number) {
-    var octaves = 6,
-      fallout = 0.5,
-      amp = 1,
-      f = 1,
-      sum = 0,
-      i;
-
-    for (i = 0; i < octaves; ++i) {
-      amp *= fallout;
-      sum += amp * (this._simplexNoise(v * f, 0) + 1) * 0.5;
-      f *= 2;
-    }
-
-    return sum;
-  }
-}
-
-// Particles Around the Parent
-class Particle {
-  private path: paper.Path;
-  private angle: number;
-  private distance: number;
-  private speed: number;
-  private position: paper.Point;
-
-  constructor(x: number, y: number, distance: number) {
-    this.angle = Math.random() * 2 * Math.PI;
-    const opacity = (Math.random() * 5 + 2) / 10;
-    this.distance = (1 / opacity) * distance;
-    this.speed = this.distance * 0.00006;
-    const color = new Color("black");
-    color.lightness = 1 - opacity * 1.5;
-    this.path = new Path.Circle({
-      radius: Math.random(),
-      fillColor: color,
-
-      center: new Point(
-        x + this.distance * Math.cos(this.angle),
-        y + this.distance * Math.sin(this.angle)
-      ),
-    });
-    this.position = new Point(x, y);
-  }
-
-  public update() {
-    this.angle += this.speed;
-    this.path.position = this.position.add(
-      new Point(
-        this.distance * Math.cos(this.angle),
-        this.distance * Math.sin(this.angle)
-      )
-    );
-  }
-
-  public getItem() {
-    return this.path;
-  }
-}
-
-class BlackHole {
-  private group: paper.Group;
-  private particles: Particle[];
-
-  constructor(center: paper.Point, mobile?: boolean) {
-    const radius = 30;
-    const count = mobile ? 4000 : 8000;
-    this.group = new Group();
-    this.group.pivot = this.group.view.center;
-    const path = new Path.Circle({
-      center,
-      radius: radius + 13,
-      fillColor: "black",
-      shadowColor: "black",
-      shadowBlur: 100,
-    });
-    this.group.addChild(path);
-    this.particles = [];
-
-    for (let i = 0; i < count; i++) {
-      const p = new Particle(center.x, center.y, radius);
-      this.particles.push(p);
-      this.group.addChild(p.getItem());
-    }
-
-    this.group.scaling = new Point(0, 0);
-  }
-
-  public update(value: number) {
-    this.particles.forEach((p) => p.update());
-    const s = value * 30;
-    this.group.scaling = new Point(s, s);
-    this.group.position = this.group.view.center;
-  }
-}
-
-const Lightnings = ({ value }: { value: number }) => {
-  const { ref, paper } = usePaper({ resolution: "full" });
-  const isMobile = useIsMobile();
-  const stateRef = React.useRef<{
-    lightnings: Lightning[];
-    blackhole: BlackHole | null;
-  }>({
-    lightnings: [],
-    blackhole: null,
-  });
-
-  React.useEffect(() => {
-    const { lightnings, blackhole } = stateRef.current;
-    const start = 0.3;
-    lightnings.forEach((l) => {
-      if (value < start || value === 1) {
-        l.setOpacity(0);
-      } else {
-        l.setOpacity(1);
-      }
-      l.update();
-    });
-    blackhole?.update(lerp(value, start, 1));
-  }, [value]);
-
-  React.useEffect(() => {
-    if (!paper) return;
-    paper.activate();
-
-    const l1 = new Lightning({
-      startPoint: isMobile
-        ? paper.view.bounds.topCenter
-        : paper.view.bounds.leftCenter,
-      endPoint: paper.view.bounds.center,
-      childCount: 10,
-    });
-    const l2 = new Lightning({
-      startPoint: isMobile
-        ? paper.view.bounds.bottomCenter
-        : paper.view.bounds.rightCenter,
-      endPoint: paper.view.bounds.center,
-      childCount: 10,
-    });
-
-    const bh = new BlackHole(paper.view.center, isMobile);
-
-    stateRef.current = {
-      ...stateRef.current,
-      lightnings: [l1, l2],
-      blackhole: bh,
-    };
-  }, [paper]);
-
-  return (
-    <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0 -z-10" />
-  );
-};
-
 const PgBall = ({ value }: { value: number }) => {
-  const isMobile = useIsMobile();
-  const { ref, paper } = usePaper({ resolution: "full" });
-  const stateRef = React.useRef<{
-    warpRays: paper.Path[];
-    stars: paper.Path[];
-  }>({ warpRays: [], stars: [] });
-
-  React.useEffect(() => {
-    paper?.activate();
-    const { warpRays, stars } = stateRef.current;
-    const p = lerp(value, 0.5, 1);
-    const growFactor = 1000;
-    const mask = new Path.Circle({
-      radius: lerp(value, 0.3, 1) * 1300,
-      center: paper?.view.center,
-      strokeWidth: 2,
-    });
-
-    warpRays.forEach((path) => {
-      const { pos } = path.data;
-      const radialVector = pos.normalize();
-      const newEndPoint = pos.add(radialVector.multiply(p * growFactor));
-      const newStartPoint = pos.add(
-        radialVector.multiply(lerp(p, 0.5, 1) * growFactor)
-      );
-      path.segments[0].point = newStartPoint;
-      path.segments[1].point = newEndPoint.add([0.1, 0.1]); // add small offset to get at least a dot on mobile
-      if (
-        mask.contains(newStartPoint.add(paper?.view.center)) ||
-        mask.contains(newEndPoint.add(paper?.view.center))
-      ) {
-        path.visible = true;
-      } else {
-        path.visible = false;
-      }
-    });
-
-    if (p > 0.6 && !stars[0]?.visible) {
-      stars.forEach((star) => {
-        star.visible = true;
-      });
-    }
-
-    if (p < 0.6 && stars[0]?.visible) {
-      stars.forEach((star) => {
-        star.visible = false;
-      });
-    }
-
-    return () => {
-      mask.remove();
-    };
-  }, [value]);
-
-  React.useEffect(() => {
-    if (!paper) return;
-    paper.activate();
-
-    const warpCount = 60;
-    const warpRays = [];
-
-    for (let i = 0; i < warpCount; ++i) {
-      const extent = 300;
-      const angle = Math.random() * 2 * Math.PI;
-      const d = random(0.2, 1) * extent;
-      const pos = new Point(Math.sin(angle) * d, Math.cos(angle) * d);
-      const color = new Color(colors[Math.floor(random() * colors.length)]);
-      const path = new Path({
-        strokeColor: color,
-        strokeWidth: random(0.5, 3),
-        shadowColor: "white",
-        shadowBlur: 6,
-        strokeCap: "round",
-        position: paper.view.center,
-        visible: false,
-        data: {
-          pos,
-        },
-      });
-      path.add(pos, pos);
-      warpRays.push(path);
-    }
-
-    const starCount = isMobile ? 300 : 1000;
-    const stars = [];
-    for (let i = 0; i < starCount; ++i) {
-      const color = new Color(colors[Math.floor(random() * colors.length)]);
-      const path = new Path.Circle({
-        fillColor: color,
-        radius: random(0.5, 1.5),
-        shadowColor: "white",
-        shadowBlur: 6,
-        position: [random() * getWidth(), random() * getHeight()],
-        visible: false,
-      });
-      stars.push(path);
-    }
-
-    stateRef.current = { ...stateRef.current, warpRays, stars };
-  }, [paper]);
-
   return (
     <>
       <div className="fixed top-0 w-screen h-screen flex items-center justify-center">
@@ -1266,10 +888,6 @@ const PgBall = ({ value }: { value: number }) => {
           Music
         </Link>
       </div>
-      <canvas
-        ref={ref}
-        className="w-screen h-screen fixed top-0 left-0 -z-10"
-      />
     </>
   );
 };
@@ -1279,7 +897,13 @@ const EndSection = () => {
   return (
     <section ref={ref} className="w-full h-[1200vh] -mt-[100vh]">
       <Rays value={value} />
-      <Lightnings value={value} />
+      <BackgroundVideo
+        src="lightnings.mp4"
+        value={value}
+        start={0.2}
+        end={1}
+        visibleAfterEnd
+      />
       <PgBall value={value} />
     </section>
   );
