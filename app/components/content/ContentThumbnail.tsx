@@ -43,7 +43,7 @@ export const ContentThumbnail = ({
       <div className="m-2 p-5 bg-white rounded-xl">
         {content.thumbnail ? (
           <div
-            className="rounded-md w-full h-[300px] md:h-[500px] shadow-xl"
+            className="rounded-md w-full h-[300px] md:h-[380px] lg:h-[500px] shadow-xl"
             style={{
               backgroundImage: `url("${content.thumbnail}")`,
               backgroundSize: "cover",
@@ -57,7 +57,7 @@ export const ContentThumbnail = ({
         )}
         <div className="mt-5">
           <SubHeader className="font-medium">{content.title}</SubHeader>
-          <p className="text:xl md:text-2xl  text-gray-600">
+          <p className="text:xl lg:text-2xl  text-gray-600">
             {content.description}
           </p>
         </div>

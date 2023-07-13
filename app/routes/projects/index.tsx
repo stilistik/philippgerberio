@@ -15,7 +15,7 @@ export default function Projects() {
   const projects = useLoaderData<Project[]>();
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
       {projects.length === 0 && <h3>No projects yet</h3>}
       {projects.map((project) => {
         return (

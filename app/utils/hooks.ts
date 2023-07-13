@@ -1,5 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
+import { getWidth } from "./math";
 
 export function useMediaQuery(query: string): boolean {
   const getMatches = (query: string): boolean => {
@@ -43,7 +44,7 @@ export function useMediaQuery(query: string): boolean {
 }
 
 export function useIsMobile() {
-  return useMediaQuery("(max-device-width: 480px)");
+  return getWidth() < 640;
 }
 
 export const useScrollPosition = () => {
