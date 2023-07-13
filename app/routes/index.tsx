@@ -689,7 +689,7 @@ const PgBall = ({ value }: { value: number }) => {
         </div>
       </div>
       <div
-        className="fixed bottom-20 left-0 w-full flex justify-center text-white gap-10"
+        className="fixed bottom-20 left-0 w-full flex justify-center text-white gap-10 overflow-hidden"
         style={{
           opacity: lerp(value, 0.9, 1),
           display: value < 0.9 ? "none" : "flex",

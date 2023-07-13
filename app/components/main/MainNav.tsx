@@ -149,9 +149,12 @@ const MobileMenu = () => {
 
   React.useEffect(() => {
     if (menuOpen) {
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         setShowLinks(true);
       }, 200);
+      return () => {
+        clearTimeout(timer);
+      };
     } else {
       setShowLinks(false);
     }
@@ -177,7 +180,7 @@ const MobileMenu = () => {
       rect.left + rect.width / 2,
       rect.top + rect.height / 2
     );
-    const blob = new Blob(pos.x, pos.y, 30, colors[0], colors[9], true);
+    const blob = new Blob(pos.x, pos.y, 30, colors[2], colors[9], true);
     blob.amplitude = 20;
     blob.intensity = 0.1;
     blob.changeInterval = 0.1;

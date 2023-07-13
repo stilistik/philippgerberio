@@ -10,6 +10,7 @@ import {
 } from "@remix-run/react";
 import { ContentThumbnail } from "~/components/content/ContentThumbnail";
 import { Button } from "~/components/interaction/Button";
+import { ThumbnailGrid } from "~/components/layout/ThumbnailGrid";
 import { db } from "~/utils/db.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
@@ -43,18 +44,18 @@ export default function Projects() {
   const projects = useLoaderData<Project[]>();
   return (
     <>
-      <div className="mb-10">
+      <div className="mb-10 ml-8">
         <Form method="post">
           <Button type="submit">New Project</Button>
         </Form>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+      <ThumbnailGrid>
         {projects.map((project) => (
           <Link to={project.id} key={project.id}>
             <ContentThumbnail content={project} />
           </Link>
         ))}
-      </div>
+      </ThumbnailGrid>
     </>
   );
 }
