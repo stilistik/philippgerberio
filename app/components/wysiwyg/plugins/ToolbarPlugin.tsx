@@ -321,12 +321,12 @@ function BlockOptionsDropdownList({
   };
 
   const formatLargeHeading = () => {
-    if (blockType !== "h1") {
+    if (blockType !== "h2") {
       editor.update(() => {
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapNodes(selection, () => $createHeadingNode("h1"));
+          $wrapNodes(selection, () => $createHeadingNode("h2"));
         }
       });
     }
@@ -334,12 +334,12 @@ function BlockOptionsDropdownList({
   };
 
   const formatSmallHeading = () => {
-    if (blockType !== "h2") {
+    if (blockType !== "h3") {
       editor.update(() => {
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapNodes(selection, () => $createHeadingNode("h2"));
+          $wrapNodes(selection, () => $createHeadingNode("h3"));
         }
       });
     }
@@ -400,12 +400,12 @@ function BlockOptionsDropdownList({
       <button className="item" onClick={formatLargeHeading}>
         <span className="icon large-heading" />
         <span className="text">Large Heading</span>
-        {blockType === "h1" && <span className="active" />}
+        {blockType === "h2" && <span className="active" />}
       </button>
       <button className="item" onClick={formatSmallHeading}>
         <span className="icon small-heading" />
         <span className="text">Small Heading</span>
-        {blockType === "h2" && <span className="active" />}
+        {blockType === "h3" && <span className="active" />}
       </button>
       <button className="item" onClick={formatBulletList}>
         <span className="icon bullet-list" />

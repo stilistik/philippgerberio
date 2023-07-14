@@ -84,6 +84,8 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
     React.useEffect(() => {
       const editor = innerRef.current;
       editor?.update(() => {
+        console.log(content);
+
         const parser = new DOMParser();
         const dom = parser.parseFromString(content, "text/html");
 

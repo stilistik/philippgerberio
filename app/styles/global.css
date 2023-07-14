@@ -61,7 +61,7 @@
   }
 
   header img {
-    @apply rounded-lg shadow-lg mx-auto col-span-full;
+    @apply rounded-lg shadow-lg mx-auto col-span-full mb-10 md:mb-20;
   }
 
   main {
@@ -204,32 +204,9 @@
   /*-----------------------------------END CHECKBOX---------------------------------------*/
 }
 
-.other h2 {
-  font-size: 18px;
-  color: #444;
-  margin-bottom: 7px;
-}
-
-.other a {
-  color: #777;
-  text-decoration: underline;
-  font-size: 14px;
-}
-
-.other ul {
-  padding: 0;
-  margin: 0;
-  list-style-type: none;
-}
-
 .App {
   font-family: sans-serif;
   text-align: center;
-}
-
-h1 {
-  font-size: 24px;
-  color: #333;
 }
 
 .ltr {
