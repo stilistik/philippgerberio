@@ -29,9 +29,10 @@ export function InsertImageUriDialogBody({
   resources: Resource[];
   onClick: (payload: InsertImagePayload) => void;
 }) {
+  const images = resources.filter((r) => (r.mimetype = "image"));
   return (
     <div className="flex gap-2 flex-wrap">
-      {resources.map((r) => (
+      {images.map((r) => (
         <button key={r.id} onClick={() => onClick({ altText: "", src: r.url })}>
           <ResourceDisplay resource={r} />
         </button>
