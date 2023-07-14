@@ -55,6 +55,8 @@ import { AlignJustifyIcon } from "~/icons/AlignJustify";
 import { ArrowDownIcon } from "~/icons/ArrowDown";
 import { ImageIcon } from "~/icons/Image";
 import useModal from "../utils/useModal";
+import { InsertVideoDialog } from "./VideoPlugin";
+import { VideoIcon } from "~/icons/Video";
 
 const LowPriority = 1;
 
@@ -716,6 +718,21 @@ export default function ToolbarPlugin({ resources }: ToolbarPluginProps) {
             aria-label="Insert image"
           >
             <ImageIcon />
+          </button>
+          <button
+            onClick={() => {
+              showModal("Insert Video", (onClose) => (
+                <InsertVideoDialog
+                  activeEditor={editor}
+                  resources={resources}
+                  onClose={onClose}
+                />
+              ));
+            }}
+            className="toolbar-item"
+            aria-label="Insert video"
+          >
+            <VideoIcon />
           </button>
         </>
       )}

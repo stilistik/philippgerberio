@@ -26,6 +26,8 @@ import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import React from "react";
 import { EditorRefPlugin } from "./plugins/EditorRefPlugin";
 import { Resource } from "@prisma/client";
+import VideoPlugin from "./plugins/VideoPlugin";
+import { VideoNode } from "./nodes/VideoNode";
 
 function Placeholder() {
   return <div className="editor-placeholder">Start typing</div>;
@@ -49,6 +51,7 @@ const editorConfig = {
     AutoLinkNode,
     LinkNode,
     ImageNode,
+    VideoNode,
   ],
 };
 
@@ -86,8 +89,6 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
     React.useEffect(() => {
       const editor = innerRef.current;
       editor?.update(() => {
-        console.log(content);
-
         const parser = new DOMParser();
         const dom = parser.parseFromString(content, "text/html");
 
@@ -119,6 +120,7 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
             <LinkPlugin />
             <AutoLinkPlugin />
             <ImagesPlugin />
+            <VideoPlugin />
             <ListMaxIndentLevelPlugin maxDepth={7} />
             <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
             <EditorRefPlugin editorRef={innerRef} />

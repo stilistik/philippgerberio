@@ -9,31 +9,28 @@ import {
   LexicalCommand,
   LexicalEditor,
 } from "lexical";
-import { useEffect, useState } from "react";
-import { $createImageNode, ImageNode, ImagePayload } from "../nodes/ImageNode";
-import Button from "../ui/Button";
-import { DialogActions } from "../ui/Dialog";
-import TextInput from "../ui/TextInput";
+import { useEffect } from "react";
 import { Resource } from "@prisma/client";
 import { ResourceDisplay } from "~/components/interaction/ResourceBrowser";
+import { $createVideoNode, VideoNode, VideoPayload } from "../nodes/VideoNode";
 
-export type InsertImagePayload = Readonly<ImagePayload>;
+export type InsertVideoPayload = Readonly<VideoPayload>;
 
-export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
-  createCommand("INSERT_IMAGE_COMMAND");
+export const INSERT_VIDEO_COMMAND: LexicalCommand<InsertVideoPayload> =
+  createCommand("INSERT_VIDEO_COMMAND");
 
 export function InsertImageUriDialogBody({
   resources,
   onClick,
 }: {
   resources: Resource[];
-  onClick: (payload: InsertImagePayload) => void;
+  onClick: (payload: InsertVideoPayload) => void;
 }) {
-  const images = resources.filter((r) => r.mimetype.includes("image"));
+  const images = resources.filter((r) => r.mimetype.includes("video"));
   return (
     <div className="flex gap-2 flex-wrap">
       {images.map((r) => (
-        <button key={r.id} onClick={() => onClick({ altText: "", src: r.url })}>
+        <button key={r.id} onClick={() => onClick({ src: r.url })}>
           <ResourceDisplay resource={r} />
         </button>
       ))}
@@ -41,7 +38,7 @@ export function InsertImageUriDialogBody({
   );
 }
 
-export function InsertImageDialog({
+export function InsertVideoDialog({
   activeEditor,
   resources,
   onClose,
@@ -50,25 +47,25 @@ export function InsertImageDialog({
   resources: Resource[];
   onClose: () => void;
 }): JSX.Element {
-  const onClick = (payload: InsertImagePayload) => {
-    activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
+  const onClick = (payload: InsertVideoPayload) => {
+    activeEditor.dispatchCommand(INSERT_VIDEO_COMMAND, payload);
     onClose();
   };
   return <InsertImageUriDialogBody onClick={onClick} resources={resources} />;
 }
 
-export default function ImagesPlugin(): JSX.Element | null {
+export default function VideoPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (!editor.hasNodes([ImageNode])) {
-      throw new Error("ImagesPlugin: ImageNode not registered on editor");
+    if (!editor.hasNodes([VideoNode])) {
+      throw new Error("VideoPlugin: VideoNode not registered on editor");
     }
 
-    editor.registerCommand<InsertImagePayload>(
-      INSERT_IMAGE_COMMAND,
+    editor.registerCommand<InsertVideoPayload>(
+      INSERT_VIDEO_COMMAND,
       (payload) => {
-        const imageNode = $createImageNode(payload);
+        const imageNode = $createVideoNode(payload);
         $insertNodes([imageNode]);
         if ($isRootOrShadowRoot(imageNode.getParentOrThrow())) {
           $wrapNodeInElement(imageNode, $createParagraphNode).selectEnd();
