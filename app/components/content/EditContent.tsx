@@ -103,13 +103,11 @@ export function EditContent({ content }: EditContentProps) {
             onClick={handleClickThumbnail}
           />
         </header>
-
-        <Editor
-          ref={editorRef}
-          name="fullText"
-          defaultValue={content.fullText ?? ""}
-        />
       </Form>
+      <main>
+        <Editor />
+      </main>
+
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
         <Form action="delete" method="post">
           <input type="hidden" name="id" value={content.id} />
