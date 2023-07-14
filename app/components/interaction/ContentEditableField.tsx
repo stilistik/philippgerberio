@@ -64,7 +64,6 @@ export const ContentEditableField = React.forwardRef<
     const value = e.currentTarget.innerHTML ?? placeholder;
     inputRef.current.value = value;
     touchedRef.current = true;
-    console.log(value);
   }
 
   function handleBlur(e: React.FormEvent) {
