@@ -18,6 +18,10 @@ export const action: ActionFunction = async ({ request }) => {
   const thumbnail = formData.get("thumbnail");
   const published = formData.get("published") === "true" ? true : false;
 
+  console.log("TEST");
+
+  console.log(fullText);
+
   if (
     typeof id !== "string" ||
     typeof title !== "string" ||

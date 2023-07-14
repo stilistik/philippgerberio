@@ -2,12 +2,9 @@ import React from "react";
 import { Post, Project, Resource } from "@prisma/client";
 import { Form, Link, Outlet, useNavigate, useSubmit } from "@remix-run/react";
 import { Button } from "~/components/interaction/Button";
-import {
-  ContentEditableField,
-  ContentEditableFieldRef,
-} from "~/components/interaction/ContentEditableField";
+import { ContentEditableField } from "~/components/interaction/ContentEditableField";
 import { ImageInput } from "~/components/interaction/ImageInput";
-import { Editor } from "~/components/wysiwyg/Editor";
+import { Editor, EditorImperativeHandle } from "~/components/wysiwyg/Editor";
 import { AirplayIcon } from "~/icons/Airplay";
 import { DeleteIcon } from "~/icons/Delete";
 import { FolderOpenIcon } from "~/icons/FolderOpen";
@@ -15,49 +12,26 @@ import { SaveIcon } from "~/icons/Save";
 import { CheckCircleIcon } from "~/icons/CheckCircle";
 import { CheckCircleBlankIcon } from "~/icons/CheckCircleBlank";
 
-type ResourcePasteTarget = "text" | "thumbnail";
-
 interface EditContentProps {
   content: Project | Post;
 }
 
 export function EditContent({ content }: EditContentProps) {
-  const editorRef = React.useRef<ContentEditableFieldRef>(null);
+  const editorRef = React.useRef<EditorImperativeHandle>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
+  const fullTextInputRef = React.useRef<HTMLInputElement>(null);
   const publishRef = React.useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
   const submit = useSubmit();
   const [thumbnail, setThumbnail] = React.useState("");
-  const [resourceTarget, setResourceTarget] =
-    React.useState<ResourcePasteTarget>("text");
 
   function handleResourceSelected(resource: Resource) {
-    switch (resourceTarget) {
-      case "text": {
-        if (editorRef.current) {
-          if (resource.mimetype.includes("image")) {
-            editorRef.current.insertContent(
-              `<img src=${resource.url} class="prose-image" />`
-            );
-          } else if (resource.mimetype.includes("video")) {
-            editorRef.current.insertContent(
-              `<video autoplay controls><source src="${resource.url}" type="${resource.mimetype}"></video>`
-            );
-          }
-        }
-        break;
-      }
-      case "thumbnail": {
-        setThumbnail(resource.url);
-        setResourceTarget("text");
-      }
-    }
+    setThumbnail(resource.url);
   }
 
   function handleClickThumbnail(e: React.MouseEvent) {
     e.preventDefault();
     navigate("resources");
-    setResourceTarget("thumbnail");
   }
 
   function handlePublish(e: React.MouseEvent) {
@@ -70,7 +44,14 @@ export function EditContent({ content }: EditContentProps) {
     }
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
+    const editor = editorRef.current;
+    const fullTextInput = fullTextInputRef.current;
+    if (!editor || !fullTextInput) return;
+
+    const fullText = await editor.getContent();
+    fullTextInput.value = fullText;
+
     submit(formRef.current);
   }
 
@@ -102,10 +83,11 @@ export function EditContent({ content }: EditContentProps) {
             value={thumbnail || content.thumbnail || ""}
             onClick={handleClickThumbnail}
           />
+          <input type="hidden" name="fullText" ref={fullTextInputRef} />
         </header>
       </Form>
       <main>
-        <Editor />
+        <Editor ref={editorRef} content={content.fullText ?? ""} />
       </main>
 
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">

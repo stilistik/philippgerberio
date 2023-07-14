@@ -21,6 +21,10 @@ import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 import { ImageNode } from "./nodes/ImageNode";
+import { EditorConfig, LexicalEditor, $getRoot, $insertNodes } from "lexical";
+import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
+import React from "react";
+import { EditorRefPlugin } from "./plugins/EditorRefPlugin";
 
 function Placeholder() {
   return <div className="editor-placeholder">Start typing</div>;
@@ -28,6 +32,9 @@ function Placeholder() {
 
 const editorConfig = {
   theme: ExampleTheme,
+  onError: (e) => {
+    throw e;
+  },
   nodes: [
     HeadingNode,
     ListNode,
@@ -44,29 +51,76 @@ const editorConfig = {
   ],
 };
 
-export function Editor() {
-  return (
-    <LexicalComposer initialConfig={editorConfig}>
-      <div className="editor-container">
-        <ToolbarPlugin />
-        <div className="editor-inner">
-          <RichTextPlugin
-            contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<Placeholder />}
-            ErrorBoundary={LexicalErrorBoundary}
-          />
-          <HistoryPlugin />
-          <AutoFocusPlugin />
-          <CodeHighlightPlugin />
-          <ListPlugin />
-          <LinkPlugin />
-          <AutoLinkPlugin />
-          <ImagesPlugin />
-
-          <ListMaxIndentLevelPlugin maxDepth={7} />
-          <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
-        </div>
-      </div>
-    </LexicalComposer>
-  );
+export interface EditorProps {
+  content: string;
 }
+
+export interface EditorImperativeHandle {
+  getContent: () => Promise<string>;
+}
+
+export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
+  ({ content = "" }, ref) => {
+    const innerRef = React.useRef<LexicalEditor | null>(null);
+
+    React.useImperativeHandle(
+      ref,
+      () => ({
+        getContent: () => {
+          return new Promise((resolve) => {
+            const editor = innerRef.current;
+            if (!editor) return resolve("");
+            const state = editor.getEditorState();
+            state.read(() => {
+              const htmlString = $generateHtmlFromNodes(editor, null);
+              resolve(htmlString);
+            });
+          });
+        },
+      }),
+      []
+    );
+
+    React.useEffect(() => {
+      const editor = innerRef.current;
+      editor?.update(() => {
+        const parser = new DOMParser();
+        const dom = parser.parseFromString(content, "text/html");
+
+        // Once you have the DOM instance it's easy to generate LexicalNodes.
+        const nodes = $generateNodesFromDOM(editor, dom);
+
+        // Select the root
+        $getRoot().select();
+
+        // Insert them at a selection.
+        $insertNodes(nodes);
+      });
+    }, []);
+
+    return (
+      <LexicalComposer initialConfig={{ ...editorConfig }}>
+        <div className="editor-container">
+          <ToolbarPlugin />
+          <div className="editor-inner">
+            <RichTextPlugin
+              contentEditable={<ContentEditable className="editor-input" />}
+              placeholder={<Placeholder />}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <HistoryPlugin />
+            <AutoFocusPlugin />
+            <CodeHighlightPlugin />
+            <ListPlugin />
+            <LinkPlugin />
+            <AutoLinkPlugin />
+            <ImagesPlugin />
+            <ListMaxIndentLevelPlugin maxDepth={7} />
+            <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
+            <EditorRefPlugin editorRef={innerRef} />
+          </div>
+        </div>
+      </LexicalComposer>
+    );
+  }
+);
