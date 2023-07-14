@@ -90,13 +90,11 @@ export function EditContent({ content, resources }: EditContentProps) {
         </header>
       </Form>
 
-      <main>
-        <Editor
-          ref={editorRef}
-          content={content.fullText ?? ""}
-          resources={resources}
-        />
-      </main>
+      <Editor
+        ref={editorRef}
+        content={content.fullText ?? ""}
+        resources={resources}
+      />
 
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">
         <Form action="delete" method="post">

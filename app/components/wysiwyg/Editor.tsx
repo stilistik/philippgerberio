@@ -1,7 +1,7 @@
 import ExampleTheme from "./themes/Theme";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { ContentEditable } from "@lexical/react/LexicalContentEditable";
+import { ContentEditable } from "./ui/ContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
@@ -22,13 +22,14 @@ import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 import { ImageNode } from "./nodes/ImageNode";
-import { LexicalEditor, $getRoot, $insertNodes } from "lexical";
+import { LexicalEditor, $getRoot, $insertNodes, ParagraphNode } from "lexical";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import React from "react";
 import { EditorRefPlugin } from "./plugins/EditorRefPlugin";
 import { Resource } from "@prisma/client";
 import VideoPlugin from "./plugins/VideoPlugin";
 import { VideoNode } from "./nodes/VideoNode";
+import { CustomParagraphNode } from "./nodes/CustomParagraphNode";
 
 function Placeholder() {
   return <div className="editor-placeholder">Start typing</div>;
@@ -40,6 +41,13 @@ const editorConfig = {
     throw e;
   },
   nodes: [
+    CustomParagraphNode,
+    {
+      replace: ParagraphNode,
+      with: () => {
+        return new CustomParagraphNode();
+      },
+    },
     HeadingNode,
     ListNode,
     ListItemNode,
@@ -110,7 +118,7 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
           <ToolbarPlugin resources={resources} />
           <div className="editor-inner">
             <RichTextPlugin
-              contentEditable={<ContentEditable className="editor-input" />}
+              contentEditable={<ContentEditable />}
               placeholder={<Placeholder />}
               ErrorBoundary={LexicalErrorBoundary}
             />

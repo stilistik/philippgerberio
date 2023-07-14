@@ -9,11 +9,8 @@ import {
   LexicalCommand,
   LexicalEditor,
 } from "lexical";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { $createImageNode, ImageNode, ImagePayload } from "../nodes/ImageNode";
-import Button from "../ui/Button";
-import { DialogActions } from "../ui/Dialog";
-import TextInput from "../ui/TextInput";
 import { Resource } from "@prisma/client";
 import { ResourceDisplay } from "~/components/interaction/ResourceBrowser";
 
@@ -21,6 +18,12 @@ export type InsertImagePayload = Readonly<ImagePayload>;
 
 export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
   createCommand("INSERT_IMAGE_COMMAND");
+
+export const INCREASE_IMAGE_SIZE_COMMAND: LexicalCommand<undefined> =
+  createCommand("INCREASE_IMAGE_SIZE");
+
+export const DECREASE_IMAGE_SIZE_COMMAND: LexicalCommand<undefined> =
+  createCommand("DECREASE_IMAGE_SIZE");
 
 export function InsertImageUriDialogBody({
   resources,

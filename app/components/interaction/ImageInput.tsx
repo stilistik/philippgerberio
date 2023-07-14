@@ -14,7 +14,7 @@ export const ImageInput = ({ name, value, onClick }: ImageInputProps) => {
       <button
         onClick={onClick}
         className={clx(
-          "w-full border rounded-xl cursor-pointer flex items-center justify-center",
+          "w-full rounded-xl cursor-pointer flex items-center justify-center",
           { "h-[500px]": !value }
         )}
       >

@@ -1,35 +1,29 @@
-import type {
-  GridSelection,
-  LexicalEditor,
-  NodeKey,
-  NodeSelection,
-  RangeSelection,
-} from "lexical";
+import type { LexicalEditor, NodeKey } from "lexical";
 
-import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
-import { useCollaborationContext } from "@lexical/react/LexicalCollaborationContext";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
-import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
 import {
   $getNodeByKey,
   $getSelection,
   $isNodeSelection,
-  $setSelection,
   CLICK_COMMAND,
   COMMAND_PRIORITY_LOW,
-  DRAGSTART_COMMAND,
   KEY_BACKSPACE_COMMAND,
   KEY_DELETE_COMMAND,
-  KEY_ENTER_COMMAND,
-  KEY_ESCAPE_COMMAND,
   SELECTION_CHANGE_COMMAND,
 } from "lexical";
 import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-
+import clx from "classnames";
 import { $isImageNode } from "./ImageNode";
+import { IconButton } from "~/components/interaction/IconButton";
+import { MinusIcon } from "~/icons/Minus";
+import { PlusIcon } from "~/icons/Plus";
+import {
+  DECREASE_IMAGE_SIZE_COMMAND,
+  INCREASE_IMAGE_SIZE_COMMAND,
+} from "../plugins/ImagesPlugin";
+import { $isCustomParagraphNode } from "./CustomParagraphNode";
 
 const imageCache = new Set();
 
@@ -48,71 +42,45 @@ function useSuspenseImage(src: string) {
 
 function LazyImage({
   altText,
-  className,
   imageRef,
   src,
-  width,
-  height,
-  maxWidth,
 }: {
-  altText: string;
-  className: string | null;
-  height: "inherit" | number;
-  imageRef: { current: null | HTMLImageElement };
-  maxWidth: number;
   src: string;
-  width: "inherit" | number;
+  altText: string;
+  imageRef: { current: null | HTMLImageElement };
 }): JSX.Element {
   useSuspenseImage(src);
   return (
     <img
-      className={className || undefined}
       src={src}
       alt={altText}
       ref={imageRef}
-      style={{
-        height,
-        maxWidth,
-        width,
-      }}
+      width="100%"
       draggable="false"
     />
   );
 }
 
+const SIZE_CLASSES = [
+  "col-span-8 col-start-3",
+  "col-span-10 col-start-2",
+  "col-span-full",
+];
+
 export default function ImageComponent({
   src,
   altText,
   nodeKey,
-  width,
-  height,
-  maxWidth,
-  resizable,
-  showCaption,
-  caption,
-  captionsEnabled,
 }: {
-  altText: string;
-  caption: LexicalEditor;
-  height: "inherit" | number;
-  maxWidth: number;
-  nodeKey: NodeKey;
-  resizable: boolean;
-  showCaption: boolean;
   src: string;
-  width: "inherit" | number;
-  captionsEnabled: boolean;
+  altText: string;
+  nodeKey: NodeKey;
 }): JSX.Element {
   const imageRef = useRef<null | HTMLImageElement>(null);
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [isResizing, setIsResizing] = useState<boolean>(false);
-  const { isCollabActive } = useCollaborationContext();
   const [editor] = useLexicalComposerContext();
-  const [selection, setSelection] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
+
   const activeEditorRef = useRef<LexicalEditor | null>(null);
 
   const onDelete = useCallback(
@@ -130,64 +98,39 @@ export default function ImageComponent({
     [isSelected, nodeKey]
   );
 
-  const onEnter = useCallback(
-    (event: KeyboardEvent) => {
-      const latestSelection = $getSelection();
-      const buttonElem = buttonRef.current;
-      if (
-        isSelected &&
-        $isNodeSelection(latestSelection) &&
-        latestSelection.getNodes().length === 1
-      ) {
-        if (showCaption) {
-          // Move focus into nested editor
-          $setSelection(null);
-          event.preventDefault();
-          caption.focus();
-          return true;
-        } else if (
-          buttonElem !== null &&
-          buttonElem !== document.activeElement
-        ) {
-          event.preventDefault();
-          buttonElem.focus();
-          return true;
-        }
+  const onIncreaseSize = useCallback(() => {
+    if (isSelected && $isNodeSelection($getSelection())) {
+      const node = $getNodeByKey(nodeKey);
+      const parent = node?.getParent();
+      if ($isCustomParagraphNode(parent)) {
+        const index = Math.min(
+          SIZE_CLASSES.indexOf(parent.__className || SIZE_CLASSES[1]) + 1,
+          SIZE_CLASSES.length - 1
+        );
+        parent.setClassName(SIZE_CLASSES[index]);
       }
-      return false;
-    },
-    [caption, isSelected, showCaption]
-  );
+    }
+    return true;
+  }, [isSelected, nodeKey]);
 
-  const onEscape = useCallback(
-    (event: KeyboardEvent) => {
-      if (
-        activeEditorRef.current === caption ||
-        buttonRef.current === event.target
-      ) {
-        $setSelection(null);
-        editor.update(() => {
-          setSelected(true);
-          const parentRootElement = editor.getRootElement();
-          if (parentRootElement !== null) {
-            parentRootElement.focus();
-          }
-        });
-        return true;
+  const onDecreaseSize = useCallback(() => {
+    if (isSelected && $isNodeSelection($getSelection())) {
+      const node = $getNodeByKey(nodeKey);
+      const parent = node?.getParent();
+      if ($isCustomParagraphNode(parent)) {
+        const index = Math.max(
+          SIZE_CLASSES.indexOf(parent.__className || SIZE_CLASSES[1]) - 1,
+          0
+        );
+        parent.setClassName(SIZE_CLASSES[index]);
       }
-      return false;
-    },
-    [caption, editor, setSelected]
-  );
+    }
+    return true;
+  }, [isSelected, nodeKey]);
 
   useEffect(() => {
     let isMounted = true;
     const unregister = mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        if (isMounted) {
-          setSelection(editorState.read(() => $getSelection()));
-        }
-      }),
       editor.registerCommand(
         SELECTION_CHANGE_COMMAND,
         (_, activeEditor) => {
@@ -201,9 +144,10 @@ export default function ImageComponent({
         (payload) => {
           const event = payload;
 
-          if (isResizing) {
-            return true;
+          if (isSelected) {
+            console.log("click selected");
           }
+
           if (event.target === imageRef.current) {
             if (event.shiftKey) {
               setSelected(!isSelected);
@@ -219,19 +163,6 @@ export default function ImageComponent({
         COMMAND_PRIORITY_LOW
       ),
       editor.registerCommand(
-        DRAGSTART_COMMAND,
-        (event) => {
-          if (event.target === imageRef.current) {
-            // TODO This is just a temporary workaround for FF to behave like other browsers.
-            // Ideally, this handles drag & drop too (and all browsers).
-            event.preventDefault();
-            return true;
-          }
-          return false;
-        },
-        COMMAND_PRIORITY_LOW
-      ),
-      editor.registerCommand(
         KEY_DELETE_COMMAND,
         onDelete,
         COMMAND_PRIORITY_LOW
@@ -241,8 +172,16 @@ export default function ImageComponent({
         onDelete,
         COMMAND_PRIORITY_LOW
       ),
-      editor.registerCommand(KEY_ENTER_COMMAND, onEnter, COMMAND_PRIORITY_LOW),
-      editor.registerCommand(KEY_ESCAPE_COMMAND, onEscape, COMMAND_PRIORITY_LOW)
+      editor.registerCommand(
+        INCREASE_IMAGE_SIZE_COMMAND,
+        onIncreaseSize,
+        COMMAND_PRIORITY_LOW
+      ),
+      editor.registerCommand(
+        DECREASE_IMAGE_SIZE_COMMAND,
+        onDecreaseSize,
+        COMMAND_PRIORITY_LOW
+      )
     );
     return () => {
       isMounted = false;
@@ -251,74 +190,43 @@ export default function ImageComponent({
   }, [
     clearSelection,
     editor,
-    isResizing,
     isSelected,
     nodeKey,
     onDelete,
-    onEnter,
-    onEscape,
+    onIncreaseSize,
+    onDecreaseSize,
     setSelected,
   ]);
 
-  const setShowCaption = () => {
-    editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setShowCaption(true);
-      }
-    });
-  };
-
-  const onResizeEnd = (
-    nextWidth: "inherit" | number,
-    nextHeight: "inherit" | number
-  ) => {
-    // Delay hiding the resize bars for click case
-    setTimeout(() => {
-      setIsResizing(false);
-    }, 200);
-
-    editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setWidthAndHeight(nextWidth, nextHeight);
-      }
-    });
-  };
-
-  const onResizeStart = () => {
-    setIsResizing(true);
-  };
-
-  const draggable = isSelected && $isNodeSelection(selection) && !isResizing;
-  const isFocused = isSelected || isResizing;
   return (
     <Suspense fallback={null}>
-      <>
-        <div draggable={draggable}>
-          <LazyImage
-            className={
-              isFocused
-                ? `focused ${$isNodeSelection(selection) ? "draggable" : ""}`
-                : null
-            }
-            src={src}
-            altText={altText}
-            imageRef={imageRef}
-            width={width}
-            height={height}
-            maxWidth={maxWidth}
-          />
-        </div>
-        {showCaption && (
-          <div className="image-caption-container">
-            <LexicalNestedComposer initialEditor={caption}>
-              <AutoFocusPlugin />
-              <HashtagPlugin />
-            </LexicalNestedComposer>
+      <div
+        className={clx("relative w-full rounded-lg", {
+          "outline outline-4 outline-blue-400": isSelected,
+        })}
+      >
+        <LazyImage src={src} altText={altText} imageRef={imageRef} />
+        {isSelected ? (
+          <div className="absolute bottom-0 right-5 flex gap-5 bg-white px-3 rounded-lg">
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                editor.dispatchCommand(DECREASE_IMAGE_SIZE_COMMAND, undefined);
+              }}
+            >
+              <MinusIcon />
+            </IconButton>
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                editor.dispatchCommand(INCREASE_IMAGE_SIZE_COMMAND, undefined);
+              }}
+            >
+              <PlusIcon />
+            </IconButton>
           </div>
-        )}
-      </>
+        ) : null}
+      </div>
     </Suspense>
   );
 }

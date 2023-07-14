@@ -60,7 +60,7 @@ import { VideoIcon } from "~/icons/Video";
 const LowPriority = 1;
 
 const supportedBlockTypes = new Set([
-  "paragraph",
+  "custom-paragraph",
   "quote",
   "code",
   "h1",
@@ -77,7 +77,7 @@ const blockTypeToBlockName = {
   h4: "Heading",
   h5: "Heading",
   ol: "Numbered List",
-  paragraph: "Normal",
+  "custom-paragraph": "Normal",
   quote: "Quote",
   ul: "Bulleted List",
 };

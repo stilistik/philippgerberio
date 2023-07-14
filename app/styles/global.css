@@ -49,7 +49,7 @@
   }
 
   header {
-    @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl;
+    @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl mb-10 md:mb-20;
   }
 
   header :is(h1, h2, h3, h4, h5, h6) {
@@ -61,7 +61,7 @@
   }
 
   header img {
-    @apply rounded-lg shadow-lg mx-auto col-span-full mb-10 md:mb-20;
+    @apply rounded-lg shadow-lg mx-auto col-span-full;
   }
 
   main {
@@ -294,6 +294,7 @@
 
 .editor-code,
 main pre {
+  grid-column: 1 / -1;
   background-color: rgb(240, 242, 245);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
