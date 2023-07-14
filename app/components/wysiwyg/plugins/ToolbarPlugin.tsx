@@ -35,11 +35,10 @@ import {
   $isHeadingNode,
 } from "@lexical/rich-text";
 import {
-  $createCodeNode,
-  $isCodeNode,
   getDefaultCodeLanguage,
   getCodeLanguages,
-} from "@lexical/code";
+} from "../nodes/CodeHighlightNode";
+import { $isCodeNode, $createCodeNode } from "../nodes/CodeNode";
 import { InsertImageDialog } from "./ImagesPlugin";
 import { BoldIcon } from "~/icons/Bold";
 import { ItalicIcon } from "~/icons/Italic";

@@ -1,5 +1,5 @@
 import React from "react";
-import { registerCodeHighlighting } from "@lexical/code";
+import { registerCodeHighlighting } from "../nodes/CodeHighlighter";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 export default function CodeHighlightPlugin() {
