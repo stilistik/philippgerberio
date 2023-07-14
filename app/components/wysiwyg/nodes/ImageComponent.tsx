@@ -62,8 +62,8 @@ function LazyImage({
 }
 
 const SIZE_CLASSES = [
-  "col-span-8 col-start-3",
-  "col-span-10 col-start-2",
+  "col-span-full md:col-span-8 md:col-start-3",
+  "col-span-full md:col-span-10 md:col-start-2",
   "col-span-full",
 ];
 
