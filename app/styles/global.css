@@ -85,7 +85,7 @@
   }
 
   main pre {
-    @apply bg-gray-600 text-white p-5 rounded-lg my-10 col-span-full lg:col-span-10 lg:col-start-2 overflow-x-auto;
+    @apply p-5 rounded-lg my-10 col-span-full lg:col-span-10 lg:col-start-2 relative;
   }
 
   main img {
@@ -315,23 +315,8 @@ h1 {
   text-decoration: none;
 }
 
-.tree-view-output {
-  display: block;
-  background: #222;
-  color: #fff;
-  padding: 5px;
-  font-size: 12px;
-  white-space: pre-wrap;
-  margin: 1px auto 10px auto;
-  max-height: 250px;
-  position: relative;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  overflow: auto;
-  line-height: 14px;
-}
-
-.editor-code {
+.editor-code,
+main pre {
   background-color: rgb(240, 242, 245);
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
@@ -347,9 +332,11 @@ h1 {
   position: relative;
 }
 
-.editor-code:before {
+.editor-code:before,
+main pre:before {
   content: attr(data-gutter);
   position: absolute;
+  height: 100%;
   background-color: #eee;
   left: 0;
   top: 0;
@@ -360,7 +347,9 @@ h1 {
   text-align: right;
   min-width: 25px;
 }
-.editor-code:after {
+
+.editor-code:after,
+main pre:after {
   content: attr(data-highlight-language);
   top: 0;
   right: 3px;
@@ -368,6 +357,7 @@ h1 {
   font-size: 10px;
   text-transform: uppercase;
   position: absolute;
+  height: 100%;
   color: rgba(0, 0, 0, 0.5);
 }
 
@@ -411,25 +401,6 @@ h1 {
 
 .editor-paragraph:last-child {
   margin-bottom: 0;
-}
-
-/* .editor-heading-h1 {
-  font-size: 24px;
-  color: rgb(5, 5, 5);
-  font-weight: 400;
-  margin: 0;
-  margin-bottom: 12px;
-  padding: 0;
-} */
-
-.editor-heading-h2 {
-  font-size: 15px;
-  color: rgb(101, 103, 107);
-  font-weight: 700;
-  margin: 0;
-  margin-top: 10px;
-  padding: 0;
-  text-transform: uppercase;
 }
 
 .editor-quote {
@@ -789,7 +760,6 @@ pre::-webkit-scrollbar-thumb {
 }
 
 .link-editor .link-input a {
-  color: rgb(33, 111, 219);
   text-decoration: none;
   display: block;
   white-space: nowrap;

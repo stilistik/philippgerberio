@@ -52,6 +52,8 @@ export function EditContent({ content }: EditContentProps) {
     const fullText = await editor.getContent();
     fullTextInput.value = fullText;
 
+    console.log(fullText);
+
     submit(formRef.current);
   }
 

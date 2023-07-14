@@ -1,16 +1,20 @@
 import type { MetaFunction } from "@remix-run/node";
 import { LoaderFunction } from "@remix-run/node";
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration, useLoaderData } from "@remix-run/react";
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+} from "@remix-run/react";
 import styles from "./tailwind.css";
-import highlights from "highlight.js/styles/rainbow.css";
 import { getUserId } from "./utils/session.server";
 import { MainNav } from "./components/main/MainNav";
 
 export function links() {
-  return [
-    { rel: "stylesheet", href: styles },
-    { rel: "stylesheet", href: highlights },
-  ];
+  return [{ rel: "stylesheet", href: styles }];
 }
 
 export const meta: MetaFunction = () => {

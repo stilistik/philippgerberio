@@ -39,11 +39,7 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages,
 } from "@lexical/code";
-import {
-  INSERT_IMAGE_COMMAND,
-  InsertImageDialog,
-  InsertImagePayload,
-} from "./ImagesPlugin";
+import { InsertImageDialog } from "./ImagesPlugin";
 import { BoldIcon } from "~/icons/Bold";
 import { ItalicIcon } from "~/icons/Italic";
 import { UnderlineIcon } from "~/icons/Underline";
@@ -557,7 +553,10 @@ export default function ToolbarPlugin() {
   }, [editor, isLink]);
 
   return (
-    <div className="toolbar relative" ref={toolbarRef}>
+    <div
+      className="toolbar sticky top-0 z-10 shadow rounded-xl"
+      ref={toolbarRef}
+    >
       <button
         disabled={!canUndo}
         onClick={() => {
