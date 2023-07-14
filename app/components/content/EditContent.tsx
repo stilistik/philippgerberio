@@ -53,8 +53,6 @@ export function EditContent({ content, resources }: EditContentProps) {
     const fullText = await editor.getContent();
     fullTextInput.value = fullText;
 
-    console.log(fullText);
-
     submit(formRef.current);
   }
 
@@ -94,6 +92,7 @@ export function EditContent({ content, resources }: EditContentProps) {
         ref={editorRef}
         content={content.fullText ?? ""}
         resources={resources}
+        onRequestSave={handleSubmit}
       />
 
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">

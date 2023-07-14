@@ -560,13 +560,13 @@ export default function ToolbarPlugin({ resources }: ToolbarPluginProps) {
 
   return (
     <div
-      className="toolbar sticky top-0 z-10 shadow rounded-xl"
+      className="toolbar sticky w-full top-0 z-10 shadow rounded-xl"
       ref={toolbarRef}
     >
       <button
         disabled={!canUndo}
         onClick={() => {
-          editor.dispatchCommand(UNDO_COMMAND);
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
         className="toolbar-item spaced"
         aria-label="Undo"
@@ -576,7 +576,7 @@ export default function ToolbarPlugin({ resources }: ToolbarPluginProps) {
       <button
         disabled={!canRedo}
         onClick={() => {
-          editor.dispatchCommand(REDO_COMMAND);
+          editor.dispatchCommand(REDO_COMMAND, undefined);
         }}
         className="toolbar-item"
         aria-label="Redo"

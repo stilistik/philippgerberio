@@ -14,6 +14,7 @@ import { CodeNode } from "./nodes/CodeNode";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
+import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPlugin";
 import { TRANSFORMERS } from "@lexical/markdown";
 
@@ -32,8 +33,16 @@ import { VideoNode } from "./nodes/VideoNode";
 import { CustomParagraphNode } from "./nodes/CustomParagraphNode";
 
 function Placeholder() {
-  return <div className="editor-placeholder">Start typing</div>;
+  return (
+    <div className="absolute w-full top-0 left-0 grid grid-cols-12 px-1 py-5 pointer-events-none">
+      <span className="col-span-10 col-start-2 text-gray-300">
+        Type something
+      </span>
+    </div>
+  );
 }
+
+const SAVE_TIMEOUT_MS = 3000;
 
 const editorConfig = {
   theme: ExampleTheme,
@@ -67,6 +76,7 @@ const editorConfig = {
 export interface EditorProps {
   content: string;
   resources: Resource[];
+  onRequestSave: () => void;
 }
 
 export interface EditorImperativeHandle {
@@ -74,8 +84,9 @@ export interface EditorImperativeHandle {
 }
 
 export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
-  ({ content = "", resources = [] }, ref) => {
+  ({ content = "", resources = [], onRequestSave }, ref) => {
     const innerRef = React.useRef<LexicalEditor | null>(null);
+    const timerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     React.useImperativeHandle(
       ref,
@@ -112,13 +123,22 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
       });
     }, []);
 
+    function handleChange() {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+      timerRef.current = setTimeout(() => {
+        onRequestSave();
+      }, SAVE_TIMEOUT_MS);
+    }
+
     return (
       <LexicalComposer initialConfig={{ ...editorConfig }}>
         <div className="editor-container">
           <ToolbarPlugin resources={resources} />
           <div className="editor-inner">
             <RichTextPlugin
-              contentEditable={<ContentEditable />}
+              contentEditable={<ContentEditable className="py-5" />}
               placeholder={<Placeholder />}
               ErrorBoundary={LexicalErrorBoundary}
             />
@@ -133,6 +153,7 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
             <ListMaxIndentLevelPlugin maxDepth={7} />
             <MarkdownShortcutPlugin transformers={TRANSFORMERS} />
             <EditorRefPlugin editorRef={innerRef} />
+            <OnChangePlugin onChange={handleChange} />
           </div>
         </div>
       </LexicalComposer>
