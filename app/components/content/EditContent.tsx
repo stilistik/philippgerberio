@@ -14,9 +14,10 @@ import { CheckCircleBlankIcon } from "~/icons/CheckCircleBlank";
 
 interface EditContentProps {
   content: Project | Post;
+  resources: Resource[];
 }
 
-export function EditContent({ content }: EditContentProps) {
+export function EditContent({ content, resources }: EditContentProps) {
   const editorRef = React.useRef<EditorImperativeHandle>(null);
   const formRef = React.useRef<HTMLFormElement>(null);
   const fullTextInputRef = React.useRef<HTMLInputElement>(null);
@@ -88,8 +89,13 @@ export function EditContent({ content }: EditContentProps) {
           <input type="hidden" name="fullText" ref={fullTextInputRef} />
         </header>
       </Form>
+
       <main>
-        <Editor ref={editorRef} content={content.fullText ?? ""} />
+        <Editor
+          ref={editorRef}
+          content={content.fullText ?? ""}
+          resources={resources}
+        />
       </main>
 
       <div className="fixed bottom-10 right-10 flex flex-col gap-5">

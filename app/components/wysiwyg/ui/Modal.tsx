@@ -1,5 +1,7 @@
 import { ReactNode, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { IconButton } from "~/components/interaction/IconButton";
+import { CloseIcon } from "~/icons/Close";
 
 function PortalImpl({
   onClose,
@@ -57,24 +59,21 @@ function PortalImpl({
 
   return (
     <div
-      className="flex justify-center items-center fixed flex-col top-0 bottom-0 left-0 right-0 z-100"
+      className="flex justify-center items-center fixed flex-col top-0 bottom-0 left-0 right-0 z-50 "
       role="dialog"
     >
       <div
-        className="p-10 min-h-[100px] min-w-[300px] flex flex-col bg-white relative rounded-lg"
+        className="p-5 min-h-[100px] min-w-[300px] flex flex-col bg-white relative rounded-lg shadow-2xl border"
         tabIndex={-1}
         ref={modalRef}
       >
-        <h2 className="">{title}</h2>
-        <button
-          className=""
-          aria-label="Close modal"
-          type="button"
-          onClick={onClose}
-        >
-          X
-        </button>
-        <div className="">{children}</div>
+        <div className="flex justify-between items-center mb-4">
+          <h4 className="">{title}</h4>
+          <IconButton aria-label="Close modal" type="button" onClick={onClose}>
+            <CloseIcon />
+          </IconButton>
+        </div>
+        {children}
       </div>
     </div>
   );

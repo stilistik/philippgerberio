@@ -41,7 +41,7 @@ const ImageResourceDisplay = ({ resource }: ResourceDisplayProps) => {
   );
 };
 
-const ResourceDisplay = ({ resource }: ResourceDisplayProps) => {
+export const ResourceDisplay = ({ resource }: ResourceDisplayProps) => {
   if (resource.mimetype.includes("image")) {
     return <ImageResourceDisplay resource={resource} />;
   } else {

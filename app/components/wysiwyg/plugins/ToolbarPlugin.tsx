@@ -1,5 +1,6 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Resource } from "@prisma/client";
 import {
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
@@ -431,7 +432,11 @@ function BlockOptionsDropdownList({
   );
 }
 
-export default function ToolbarPlugin() {
+interface ToolbarPluginProps {
+  resources: Resource[];
+}
+
+export default function ToolbarPlugin({ resources }: ToolbarPluginProps) {
   const [editor] = useLexicalComposerContext();
   const toolbarRef = useRef(null);
   const [canUndo, setCanUndo] = useState(false);
@@ -700,7 +705,11 @@ export default function ToolbarPlugin() {
           <button
             onClick={() => {
               showModal("Insert Image", (onClose) => (
-                <InsertImageDialog activeEditor={editor} onClose={onClose} />
+                <InsertImageDialog
+                  activeEditor={editor}
+                  resources={resources}
+                  onClose={onClose}
+                />
               ));
             }}
             className="toolbar-item"

@@ -9,12 +9,13 @@ import {
   LexicalCommand,
   LexicalEditor,
 } from "lexical";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { $createImageNode, ImageNode, ImagePayload } from "../nodes/ImageNode";
 import Button from "../ui/Button";
-import { DialogActions, DialogButtonsList } from "../ui/Dialog";
+import { DialogActions } from "../ui/Dialog";
 import TextInput from "../ui/TextInput";
-import FileInput from "../ui/FileInput";
+import { Resource } from "@prisma/client";
+import { ResourceDisplay } from "~/components/interaction/ResourceBrowser";
 
 export type InsertImagePayload = Readonly<ImagePayload>;
 
@@ -22,47 +23,40 @@ export const INSERT_IMAGE_COMMAND: LexicalCommand<InsertImagePayload> =
   createCommand("INSERT_IMAGE_COMMAND");
 
 export function InsertImageUriDialogBody({
+  resources,
   onClick,
 }: {
+  resources: Resource[];
   onClick: (payload: InsertImagePayload) => void;
 }) {
-  const [src, setSrc] = useState("");
-  const [altText, setAltText] = useState("");
-
-  const isDisabled = src === "";
-
   return (
-    <>
-      <TextInput label="Image URL" onChange={setSrc} value={src} />
-      <TextInput label="Alt Text" onChange={setAltText} value={altText} />
-      <DialogActions>
-        <Button disabled={isDisabled} onClick={() => onClick({ altText, src })}>
-          Confirm
-        </Button>
-      </DialogActions>
-    </>
+    <div className="flex gap-2 flex-wrap">
+      {resources.map((r) => (
+        <button key={r.id} onClick={() => onClick({ altText: "", src: r.url })}>
+          <ResourceDisplay resource={r} />
+        </button>
+      ))}
+    </div>
   );
 }
 
 export function InsertImageDialog({
   activeEditor,
+  resources,
   onClose,
 }: {
   activeEditor: LexicalEditor;
+  resources: Resource[];
   onClose: () => void;
 }): JSX.Element {
   const onClick = (payload: InsertImagePayload) => {
     activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
     onClose();
   };
-  return <InsertImageUriDialogBody onClick={onClick} />;
+  return <InsertImageUriDialogBody onClick={onClick} resources={resources} />;
 }
 
-export default function ImagesPlugin({
-  captionsEnabled,
-}: {
-  captionsEnabled?: boolean;
-}): JSX.Element | null {
+export default function ImagesPlugin(): JSX.Element | null {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
@@ -83,7 +77,7 @@ export default function ImagesPlugin({
       },
       COMMAND_PRIORITY_EDITOR
     );
-  }, [captionsEnabled, editor]);
+  }, [editor]);
 
   return null;
 }

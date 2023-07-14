@@ -1,4 +1,4 @@
-import { Project } from "@prisma/client";
+import { Project, Resource } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -17,10 +17,6 @@ export const action: ActionFunction = async ({ request }) => {
   const description = formData.get("description");
   const thumbnail = formData.get("thumbnail");
   const published = formData.get("published") === "true" ? true : false;
-
-  console.log("TEST");
-
-  console.log(fullText);
 
   if (
     typeof id !== "string" ||
@@ -55,10 +51,17 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.id, "Expected params.id");
-  return db.project.findUnique({ where: { id: params.id } });
+  const project = await db.project.findUnique({ where: { id: params.id } });
+  const resources = await db.resource.findMany({
+    where: { projectId: params.id },
+  });
+  return { project, resources };
 };
 
 export default function EditProject() {
-  const project = useLoaderData<Project>();
-  return <EditContent content={project} />;
+  const { project, resources } = useLoaderData<{
+    project: Project;
+    resources: Resource[];
+  }>();
+  return <EditContent content={project} resources={resources} />;
 }

@@ -21,10 +21,11 @@ import CodeHighlightPlugin from "./plugins/CodeHighlightPlugin";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
 import ImagesPlugin from "./plugins/ImagesPlugin";
 import { ImageNode } from "./nodes/ImageNode";
-import { EditorConfig, LexicalEditor, $getRoot, $insertNodes } from "lexical";
+import { LexicalEditor, $getRoot, $insertNodes } from "lexical";
 import { $generateHtmlFromNodes, $generateNodesFromDOM } from "@lexical/html";
 import React from "react";
 import { EditorRefPlugin } from "./plugins/EditorRefPlugin";
+import { Resource } from "@prisma/client";
 
 function Placeholder() {
   return <div className="editor-placeholder">Start typing</div>;
@@ -53,6 +54,7 @@ const editorConfig = {
 
 export interface EditorProps {
   content: string;
+  resources: Resource[];
 }
 
 export interface EditorImperativeHandle {
@@ -60,7 +62,7 @@ export interface EditorImperativeHandle {
 }
 
 export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
-  ({ content = "" }, ref) => {
+  ({ content = "", resources = [] }, ref) => {
     const innerRef = React.useRef<LexicalEditor | null>(null);
 
     React.useImperativeHandle(
@@ -103,7 +105,7 @@ export const Editor = React.forwardRef<EditorImperativeHandle, EditorProps>(
     return (
       <LexicalComposer initialConfig={{ ...editorConfig }}>
         <div className="editor-container">
-          <ToolbarPlugin />
+          <ToolbarPlugin resources={resources} />
           <div className="editor-inner">
             <RichTextPlugin
               contentEditable={<ContentEditable className="editor-input" />}
