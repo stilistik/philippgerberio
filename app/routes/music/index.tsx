@@ -21,7 +21,7 @@ export default function About() {
             src="https://open.spotify.com/embed/track/3W0Dil6itcc5lGWBtsJPc9?utm_source=generator&theme=0"
             width="100%"
             height="352"
-            allowfullscreen=""
+            allowFullScreen={false}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
           />
@@ -33,8 +33,7 @@ export default function About() {
             src="https://open.spotify.com/embed/track/0x1IZgpIN2T3r0gk3LRgMW?utm_source=generator&theme=0"
             width="100%"
             height="352"
-            frameBorder="0"
-            allowfullscreen=""
+            allowFullScreen={false}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
           />
@@ -46,8 +45,7 @@ export default function About() {
             src="https://open.spotify.com/embed/track/45rklRf10XcCKqbQuKg48n?utm_source=generator&theme=0"
             width="100%"
             height="352"
-            frameBorder="0"
-            allowfullscreen=""
+            allowFullScreen={false}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
           />
@@ -59,8 +57,7 @@ export default function About() {
             src="https://open.spotify.com/embed/track/58cPmAwTenjPUTLw9ZBsCp?utm_source=generator&theme=0"
             width="100%"
             height="352"
-            frameBorder="0"
-            allowfullscreen=""
+            allowFullScreen={false}
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"
           />
