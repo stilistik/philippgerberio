@@ -77,7 +77,7 @@ export const MainNav = ({ showLogout = false }: MainNavProps) => {
 
   return (
     <>
-      <div className="relative w-full overflow-hidden flex justify-between items-center container mx-auto px-8 xl:px-28 py-5 md:py-20 z-10">
+      <div className="relative w-full overflow-hidden flex justify-between items-center container mx-auto px-3 xl:px-28 mb-6 md:mb-0 py-3 md:py-20 z-10">
         <div className="flex items-center gap-5 sm:gap-10">
           <Link to="/" className="mr-5 sm:mr-10" onClick={handleClick}>
             <Button
@@ -262,7 +262,7 @@ const MobileMenu = () => {
       <button
         ref={buttonRef}
         onClick={() => setMenuOpen((o) => !o)}
-        className="sm:hidden absolute top-11 right-11 z-10"
+        className="sm:hidden absolute top-8 right-8 z-10"
       >
         <div
           className="w-6 h-1 bg-black rounded m-1"
