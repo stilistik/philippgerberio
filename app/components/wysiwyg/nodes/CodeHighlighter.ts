@@ -25,6 +25,11 @@ import "prismjs/components/prism-swift";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-java";
 import "prismjs/components/prism-cpp";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-graphql";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-arduino";
 
 import { mergeRegister } from "@lexical/utils";
 import {
