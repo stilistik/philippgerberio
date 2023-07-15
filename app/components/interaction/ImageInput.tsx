@@ -14,11 +14,11 @@ export const ImageInput = ({ name, value, onClick }: ImageInputProps) => {
       <button
         onClick={onClick}
         className={clx(
-          "w-full rounded-xl cursor-pointer flex items-center justify-center",
-          { "h-[500px]": !value }
+          "w-full rounded-xl cursor-pointer flex items-center justify-center h-[300px] md:h-[600px] bg-cover bg-center"
         )}
+        style={{ backgroundImage: `url(${value})` }}
       >
-        {value ? <img src={value} /> : <ImageIcon />}
+        {value ? null : <ImageIcon />}
       </button>
       <input type="hidden" value={value} name={name} />
     </div>

@@ -49,7 +49,7 @@
   }
 
   header {
-    @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl mb-10 md:mb-20;
+    @apply relative grid grid-cols-4 gap-x-4 md:grid-cols-8 lg:grid-cols-12 lg:gap-x-6 mx-auto max-w-7xl;
   }
 
   header :is(h1, h2, h3, h4, h5, h6) {
@@ -355,7 +355,8 @@ main pre:after {
 }
 
 .editor-quote {
-  margin: 0;
+  margin-top: 15px;
+  margin-bottom: 30px;
   margin-left: 20px;
   font-size: 15px;
   color: rgb(101, 103, 107);
