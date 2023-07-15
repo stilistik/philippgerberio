@@ -102,7 +102,7 @@
   }
 
   main a {
-    @apply font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-black after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100;
+    @apply text-blue-400 font-bold relative after:absolute after:bottom-0 after:left-0 after:w-full after:bg-blue-400 after:transform after:transition-all after:ease-in-out after:origin-left after:h-[2px] after:scale-x-0 hover:after:scale-x-100;
   }
 
   main blockquote {
@@ -114,11 +114,11 @@
   }
 
   main ul {
-    @apply list-inside list-disc col-span-full;
+    @apply list-disc col-span-full md:col-span-10 md:col-start-2 mb-5 mx-10;
   }
 
   main ol {
-    @apply list-inside list-decimal col-span-full;
+    @apply list-decimal col-span-full;
   }
 
   main article {
@@ -262,11 +262,6 @@
   font-size: 94%;
 }
 
-.editor-link {
-  color: rgb(33, 111, 219);
-  text-decoration: none;
-}
-
 .editor-code,
 main pre {
   margin-top: 15px;
@@ -364,26 +359,6 @@ main pre:after {
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
-}
-
-.editor-list-ol {
-  padding: 0;
-  margin: 0;
-  margin-left: 16px;
-}
-
-.editor-list-ul {
-  padding: 0;
-  margin: 0;
-  margin-left: 16px;
-}
-
-.editor-listitem {
-  margin: 8px 32px 8px 32px;
-}
-
-.editor-nested-listitem {
-  list-style-type: none;
 }
 
 pre::-webkit-scrollbar {
@@ -598,87 +573,4 @@ pre::-webkit-scrollbar-thumb {
   margin-right: 12px;
   line-height: 16px;
   background-size: contain;
-}
-
-.link-editor {
-  position: absolute;
-  z-index: 100;
-  top: -10000px;
-  left: -10000px;
-  margin-top: -6px;
-  max-width: 300px;
-  width: 100%;
-  opacity: 0;
-  background-color: #fff;
-  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
-  transition: opacity 0.5s;
-}
-
-.link-editor .link-input {
-  display: block;
-  width: calc(100% - 24px);
-  box-sizing: border-box;
-  margin: 8px 12px;
-  padding: 8px 12px;
-  border-radius: 15px;
-  background-color: #eee;
-  font-size: 15px;
-  color: rgb(5, 5, 5);
-  border: 0;
-  outline: 0;
-  position: relative;
-  font-family: inherit;
-}
-
-.link-editor div.link-edit {
-  background-size: 16px;
-  background-position: center;
-  background-repeat: no-repeat;
-  width: 35px;
-  vertical-align: -0.25em;
-  position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  cursor: pointer;
-}
-
-.link-editor .link-input a {
-  text-decoration: none;
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  margin-right: 30px;
-  text-overflow: ellipsis;
-}
-
-.link-editor .link-input a:hover {
-  text-decoration: underline;
-}
-
-.link-editor .button {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  padding: 6px;
-  border-radius: 8px;
-  cursor: pointer;
-  margin: 0 2px;
-}
-
-.link-editor .button.hovered {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-  background-color: #eee;
-}
-
-.link-editor .button i,
-.actions i {
-  background-size: contain;
-  display: inline-block;
-  height: 20px;
-  width: 20px;
-  vertical-align: -0.25em;
 }

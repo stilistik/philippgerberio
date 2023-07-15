@@ -13,6 +13,7 @@ import {
   $isRangeSelection,
   $createParagraphNode,
   $getNodeByKey,
+  LexicalEditor,
 } from "lexical";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
@@ -99,12 +100,10 @@ function positionEditorElement(editor, rect) {
   }
 }
 
-function FloatingLinkEditor({ editor }) {
-  const editorRef = useRef(null);
-  const inputRef = useRef(null);
-  const mouseDownRef = useRef(false);
+function FloatingLinkEditor({ editor }: { editor: LexicalEditor }) {
+  const editorRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const [linkUrl, setLinkUrl] = useState("");
-  const [isEditMode, setEditMode] = useState(false);
   const [lastSelection, setLastSelection] = useState(null);
 
   const updateLinkEditor = useCallback(() => {
@@ -120,6 +119,7 @@ function FloatingLinkEditor({ editor }) {
         setLinkUrl("");
       }
     }
+
     const editorElem = editorRef.current;
     const nativeSelection = window.getSelection();
     const activeElement = document.activeElement;
@@ -147,14 +147,11 @@ function FloatingLinkEditor({ editor }) {
         rect = domRange.getBoundingClientRect();
       }
 
-      if (!mouseDownRef.current) {
-        positionEditorElement(editorElem, rect);
-      }
+      positionEditorElement(editorElem, rect);
       setLastSelection(selection);
     } else if (!activeElement || activeElement.className !== "link-input") {
       positionEditorElement(editorElem, null);
       setLastSelection(null);
-      setEditMode(false);
       setLinkUrl("");
     }
 
@@ -187,54 +184,41 @@ function FloatingLinkEditor({ editor }) {
   }, [editor, updateLinkEditor]);
 
   useEffect(() => {
-    if (isEditMode && inputRef.current) {
+    if (lastSelection && inputRef.current) {
       inputRef.current.focus();
     }
-  }, [isEditMode]);
+  }, [lastSelection]);
 
   return (
-    <div ref={editorRef} className="link-editor">
-      {isEditMode ? (
-        <input
-          ref={inputRef}
-          className="link-input"
-          value={linkUrl}
-          onChange={(event) => {
-            setLinkUrl(event.target.value);
-          }}
-          onKeyDown={(event) => {
-            if (event.key === "Enter") {
-              event.preventDefault();
-              if (lastSelection !== null) {
-                if (linkUrl !== "") {
-                  editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
-                }
-                setEditMode(false);
-              }
-            } else if (event.key === "Escape") {
-              event.preventDefault();
-              setEditMode(false);
+    <div
+      ref={editorRef}
+      className="absolute z-100 bg-white shadow-xl rounded-lg border p-2"
+    >
+      <input
+        ref={inputRef}
+        className="link-input"
+        value={linkUrl}
+        autoFocus
+        onChange={(event) => {
+          setLinkUrl(event.target.value);
+        }}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            if (linkUrl !== "") {
+              editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
             }
-          }}
-        />
-      ) : (
-        <>
-          <div className="link-input">
-            <a href={linkUrl} target="_blank" rel="noopener noreferrer">
-              {linkUrl}
-            </a>
-            <div
-              className="link-edit"
-              role="button"
-              tabIndex={0}
-              onMouseDown={(event) => event.preventDefault()}
-              onClick={() => {
-                setEditMode(true);
-              }}
-            />
-          </div>
-        </>
-      )}
+            setTimeout(() => {
+              positionEditorElement(editorRef.current, null);
+              inputRef.current?.blur();
+            }, 50);
+          } else if (event.key === "Escape") {
+            event.preventDefault();
+            positionEditorElement(editorRef.current, null);
+            inputRef.current?.blur();
+          }
+        }}
+      />
     </div>
   );
 }
