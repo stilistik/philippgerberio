@@ -91,7 +91,7 @@ const Picture = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
   return (
     <BackgroundVideo
-      src="spiral.mp4"
+      src={isMobile ? "spiral-mobile.mp4" : "spiral.mp4"}
       value={value}
       style={{
         transform: isMobile
@@ -125,19 +125,26 @@ const BackgroundVideo = React.memo(
     const ref = React.useRef<HTMLVideoElement>(null);
     const valueRef = useValueRef(lerp(value, start, end));
 
+    // required for ios devices to load the video
+    function activate(video: HTMLVideoElement) {
+      video.play();
+      video.pause();
+    }
+
     React.useEffect(() => {
       const video = ref.current;
       if (!video) return;
 
-      video.play();
-      video.pause();
+      video.src = `videos/${src}`;
+      video.load();
+      activate(video);
 
       setInterval(function () {
         video.pause();
         const t = valueRef.current * video.duration;
         video.currentTime = t;
       }, 40);
-    }, []);
+    }, [src]);
 
     function getVisible() {
       if (value > start && value < end) {
@@ -161,14 +168,12 @@ const BackgroundVideo = React.memo(
         style={{ display: getVisible() ? "block" : "none", ...style }}
       >
         <video
+          key={src}
           ref={ref}
           playsInline
-          preload="auto"
           muted
           className="absolute top-0 left-0 w-full h-full object-cover"
-        >
-          <source src={src} type="video/mp4" />
-        </video>
+        />
       </div>
     );
   }
@@ -720,11 +725,12 @@ const PgBall = ({ value }: { value: number }) => {
 
 const EndSection = () => {
   const { ref, value } = useScrollPosition();
+  const isMobile = useIsMobile();
   return (
     <section ref={ref} className="w-full h-[1200vh] -mt-[100vh]">
       <Rays value={value} />
       <BackgroundVideo
-        src="lightnings.mp4"
+        src={isMobile ? "lightnings-mobile.mp4" : "lightnings.mp4"}
         value={value}
         start={0.2}
         end={1}
