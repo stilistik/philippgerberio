@@ -1,4 +1,4 @@
-import { Post } from "@prisma/client";
+import { Post, Resource } from "@prisma/client";
 import { useLoaderData } from "@remix-run/react";
 import { LoaderFunction } from "@remix-run/node";
 import invariant from "tiny-invariant";
@@ -12,10 +12,20 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!post) {
     return badRequest({ slug: params.slug, error: "Post not found" });
   }
-  return post;
+
+  let frontImage = null;
+  if (post?.thumbnail) {
+    frontImage = await db.resource.findFirst({
+      where: { url: post.thumbnail },
+    });
+  }
+  return { post, frontImage };
 };
 
 export default function Post() {
-  const post = useLoaderData<Post>();
-  return <ContentDisplay content={post} />;
+  const { post, frontImage } = useLoaderData<{
+    post: Post;
+    frontImage: Resource;
+  }>();
+  return <ContentDisplay content={post} frontImage={frontImage} />;
 }

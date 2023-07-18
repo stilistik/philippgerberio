@@ -52,16 +52,28 @@ export const action: ActionFunction = async ({ request }) => {
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.id, "Expected params.id");
   const project = await db.project.findUnique({ where: { id: params.id } });
+
+  let thumbnail = null;
+  if (project?.thumbnail) {
+    thumbnail = await db.resource.findFirst({
+      where: { url: project.thumbnail },
+    });
+  }
+
   const resources = await db.resource.findMany({
     where: { projectId: params.id },
   });
-  return { project, resources };
+
+  return { project, resources, thumbnail };
 };
 
 export default function EditProject() {
-  const { project, resources } = useLoaderData<{
+  const { project, thumbnail, resources } = useLoaderData<{
     project: Project;
+    thumbnail: Resource;
     resources: Resource[];
   }>();
+  console.log(thumbnail);
+
   return <EditContent content={project} resources={resources} />;
 }

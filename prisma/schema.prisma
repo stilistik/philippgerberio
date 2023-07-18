@@ -52,6 +52,7 @@ model Resource {
   url       String
   postId    String?
   projectId String?
+  blurHash  String?
   mimetype  String
   name      String
   post      Post?    @relation(fields: [postId], references: [id])

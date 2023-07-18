@@ -1,19 +1,21 @@
 import React from "react";
-import { Post, Project } from "@prisma/client";
+import { Post, Project, Resource } from "@prisma/client";
 import { SubHeader } from "../layout/SubHeader";
 import { ImageIcon } from "~/icons/Image";
-import { useIsMobile, useMobileAutoHoverOnScroll } from "~/utils/hooks";
-import clx from "classnames";
+import { useMobileAutoHoverOnScroll } from "~/utils/hooks";
 import { colors } from "~/utils/colors";
+import { FrontImage } from "./FrontImage";
 
 interface ContentThumbnailProps {
   content: Post | Project;
+  frontImage: Resource;
   onMouseEnter?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseLeave?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const ContentThumbnail = ({
   content,
+  frontImage,
   onMouseEnter,
   onMouseLeave,
 }: ContentThumbnailProps) => {
@@ -41,15 +43,8 @@ export const ContentThumbnail = ({
         }}
       />
       <div className="m-2 p-5 bg-white rounded-xl">
-        {content.thumbnail ? (
-          <div
-            className="rounded-md w-full h-[300px] md:h-[380px] lg:h-[500px] shadow-xl"
-            style={{
-              backgroundImage: `url("${content.thumbnail}")`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          />
+        {frontImage ? (
+          <FrontImage resource={frontImage} />
         ) : (
           <div className="rounded-md border shadow-xl w-full h-60 flex items-center justify-center">
             <ImageIcon />

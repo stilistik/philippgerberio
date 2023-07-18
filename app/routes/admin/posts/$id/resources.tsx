@@ -8,21 +8,15 @@ import { ResourceBrowser } from "~/components/interaction/ResourceBrowser";
 import { CloseIcon } from "~/icons/Close";
 import { UploadIcon } from "~/icons/Upload";
 import { db } from "~/utils/db.server";
-import { deletefile, parseFormData } from "~/utils/file.server";
+import {
+  deletefile,
+  handleFileUpload,
+  parseFormData,
+} from "~/utils/file.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 async function handlePostRequest(request: Request, postId: string) {
-  const data = await parseFormData(request);
-  const file = data.get("file") as NodeOnDiskFile;
-
-  return db.resource.create({
-    data: {
-      name: file.name,
-      url: `/uploads/${file.name}`,
-      mimetype: file.type,
-      postId,
-    },
-  });
+  return handleFileUpload(request, { postId });
 }
 
 async function handleDeleteRequest(request: Request) {

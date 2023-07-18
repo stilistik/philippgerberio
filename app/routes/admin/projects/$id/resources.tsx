@@ -2,27 +2,18 @@ import { Resource } from "@prisma/client";
 import { NodeOnDiskFile, redirect } from "@remix-run/node";
 import { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { Form, Link, useLoaderData, useSubmit } from "@remix-run/react";
+import { project } from "paper/dist/paper-core";
 import invariant from "tiny-invariant";
 import { Button } from "~/components/interaction/Button";
 import { ResourceBrowser } from "~/components/interaction/ResourceBrowser";
 import { CloseIcon } from "~/icons/Close";
 import { UploadIcon } from "~/icons/Upload";
 import { db } from "~/utils/db.server";
-import { deletefile, parseFormData } from "~/utils/file.server";
+import { deletefile, handleFileUpload } from "~/utils/file.server";
 import { requireLoggedInUser } from "~/utils/session.server";
 
 async function handlePostRequest(request: Request, projectId: string) {
-  const data = await parseFormData(request);
-  const file = data.get("file") as NodeOnDiskFile;
-
-  return db.resource.create({
-    data: {
-      name: file.name,
-      url: `/uploads/${file.name}`,
-      mimetype: file.type,
-      projectId,
-    },
-  });
+  return handleFileUpload(request, { projectId });
 }
 
 async function handleDeleteRequest(request: Request) {

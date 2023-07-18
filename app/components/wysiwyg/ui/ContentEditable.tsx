@@ -1,6 +1,7 @@
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import * as React from "react";
 import { useCallback, useState } from "react";
+import { CAN_USE_DOM } from "~/utils/math";
 
 export type Props = {
   ariaActiveDescendant?: React.AriaAttributes["aria-activedescendant"];
@@ -16,6 +17,12 @@ export type Props = {
   autoCapitalize?: HTMLDivElement["autocapitalize"];
   "data-testid"?: string | null | undefined;
 } & React.AllHTMLAttributes<HTMLDivElement>;
+
+import { useEffect, useLayoutEffect } from "react";
+
+const useLayoutEffectImpl: typeof useLayoutEffect = CAN_USE_DOM
+  ? useLayoutEffect
+  : useEffect;
 
 export function ContentEditable({
   ariaActiveDescendant,
@@ -48,7 +55,7 @@ export function ContentEditable({
     [editor]
   );
 
-  React.useLayoutEffect(() => {
+  useLayoutEffectImpl(() => {
     setEditable(editor.isEditable());
     return editor.registerEditableListener((currentIsEditable) => {
       setEditable(currentIsEditable);

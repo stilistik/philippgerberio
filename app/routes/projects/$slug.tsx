@@ -1,4 +1,4 @@
-import { Project } from "@prisma/client";
+import { Project, Resource } from "@prisma/client";
 import { LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -12,10 +12,21 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!project) {
     return badRequest({ slug: params.slug, error: "Project not found" });
   }
-  return project;
+
+  let thumbnail = null;
+  if (project?.thumbnail) {
+    thumbnail = await db.resource.findFirst({
+      where: { url: project.thumbnail },
+    });
+  }
+
+  return { project, thumbnail };
 };
 
 export default function Project() {
-  const project = useLoaderData<Project>();
-  return <ContentDisplay content={project} />;
+  const { project, thumbnail } = useLoaderData<{
+    project: Project;
+    thumbnail: Resource;
+  }>();
+  return <ContentDisplay content={project} frontImage={thumbnail} />;
 }
