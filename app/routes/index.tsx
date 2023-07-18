@@ -140,6 +140,7 @@ const BackgroundVideo = React.memo(
       activate(video);
 
       setInterval(function () {
+        if (!video.duration) return;
         video.pause();
         const t = valueRef.current * video.duration;
         video.currentTime = t;
