@@ -1,11 +1,13 @@
 import React from "react";
 import { useIsMobile, useScrollPosition, useValueRef } from "~/utils/hooks";
-import { PaperScope, Path, Point, Group, Color, PointText } from "paper";
+import { Path, Point, Group, PointText } from "paper";
 import { colors } from "../utils/colors";
 import { Link } from "@remix-run/react";
 import { usePaper } from "~/utils/paper";
 import { getHeight, getWidth, lerp } from "~/utils/math";
 import { Blob } from "~/utils/blobs";
+import { ArrowDownIcon } from "~/icons/ArrowDown";
+import clx from "classnames";
 
 const Blobs = ({ value }: { value: number }) => {
   const { ref, paper } = usePaper({ resolution: "half" });
@@ -42,13 +44,45 @@ const Blobs = ({ value }: { value: number }) => {
   return <canvas ref={ref} className="w-screen h-screen fixed top-0 left-0" />;
 };
 
+const CoolArrow = ({
+  hasScrolled,
+  value,
+}: {
+  hasScrolled: boolean;
+  value: number;
+}) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 50 50"
+      width="50"
+      className={clx("", {
+        "animate-bounce": !hasScrolled,
+      })}
+      style={{
+        transform: `translateY(${value * 100}vh)`,
+      }}
+    >
+      <polygon points="0,0 50,0 25,50" fill="currentColor" />
+      <path
+        d="M10,7 L40,7 L25,37 L10,7"
+        fill="none"
+        stroke="black"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+};
+
 const Hello = ({ value }: { value: number }) => {
   const isMobile = useIsMobile();
   const f = isMobile ? 3 : 1;
+  const hasScrolled = value > 0;
   return (
     <>
       <h1
-        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-40 md:top-56 lg:top-64 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${-lerp(value, 0, 0.1) * 100}vw)`,
         }}
@@ -56,7 +90,7 @@ const Hello = ({ value }: { value: number }) => {
         Hello
       </h1>
       <h1
-        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-40 md:top-56 lg:top-64 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translateX(${100 - lerp(value, 0.1, 0.3) * 200 * f}vw)`,
         }}
@@ -64,13 +98,16 @@ const Hello = ({ value }: { value: number }) => {
         I'm Philipp
       </h1>
       <h1
-        className="fixed top-56 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
+        className="fixed top-40 md:top-56 lg:top-64 w-screen whitespace-nowrap text-[8rem] lg:text-[15rem] leading-[10rem] sm:leading-[15rem] font-black text-white mt-16 text-center mix-blend-difference origin-top"
         style={{
           transform: `translate(${200 - lerp(value, 0.3, 0.6) * 400 * f}vw)`,
         }}
       >
         Nice to meet you
       </h1>
+      <div className="fixed bottom-32 w-screen flex justify-center mix-blend-difference text-white">
+        <CoolArrow hasScrolled={hasScrolled} value={value} />
+      </div>
     </>
   );
 };
