@@ -225,10 +225,10 @@ const MobileMenu = () => {
     <>
       <canvas
         ref={ref}
-        className="w-screen h-screen absolute top-0 left-0 z-10 pointer-events-none"
+        className="w-screen h-screen absolute top-0 left-0 z-20 pointer-events-none"
       />
       {showLinks && (
-        <div className="absolute w-screen h-screen top-0 left-0 z-10 flex flex-col items-center pt-40">
+        <div className="absolute w-screen h-screen top-0 left-0 z-20 flex flex-col items-center pt-40">
           <NavLink
             to="/projects"
             onClick={() => setMenuOpen(false)}
@@ -262,7 +262,7 @@ const MobileMenu = () => {
       <button
         ref={buttonRef}
         onClick={() => setMenuOpen((o) => !o)}
-        className="sm:hidden absolute top-8 right-8 z-10"
+        className="sm:hidden absolute top-8 right-8 z-20"
       >
         <div
           className="w-6 h-1 bg-black rounded m-1"
