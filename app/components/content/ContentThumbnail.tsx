@@ -6,16 +6,18 @@ import { useMobileAutoHoverOnScroll } from "~/utils/hooks";
 import { colors } from "~/utils/colors";
 import { FrontImage } from "./FrontImage";
 
+type ContentWithFrontImage = (Post | Project) & {
+  frontImage?: Resource;
+};
+
 interface ContentThumbnailProps {
-  content: Post | Project;
-  frontImage: Resource;
+  content: ContentWithFrontImage;
   onMouseEnter?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onMouseLeave?: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 export const ContentThumbnail = ({
   content,
-  frontImage,
   onMouseEnter,
   onMouseLeave,
 }: ContentThumbnailProps) => {
@@ -43,8 +45,8 @@ export const ContentThumbnail = ({
         }}
       />
       <div className="m-2 p-5 bg-white rounded-xl">
-        {frontImage ? (
-          <FrontImage resource={frontImage} />
+        {content.frontImage ? (
+          <FrontImage resource={content.frontImage} />
         ) : (
           <div className="rounded-md border shadow-xl w-full h-60 flex items-center justify-center">
             <ImageIcon />

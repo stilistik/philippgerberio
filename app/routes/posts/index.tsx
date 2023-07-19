@@ -37,7 +37,7 @@ export default function Posts() {
       {posts.map((post) => {
         return (
           <Link to={`/posts/${post.slug}`} key={post.id}>
-            <ContentThumbnail content={post} frontImage={post.frontImage} />
+            <ContentThumbnail content={post} />
           </Link>
         );
       })}

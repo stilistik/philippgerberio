@@ -1,4 +1,4 @@
-import { Post } from "@prisma/client";
+import { Post, Resource } from "@prisma/client";
 import { ActionFunction, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
@@ -51,10 +51,19 @@ export const action: ActionFunction = async ({ request }) => {
 
 export const loader: LoaderFunction = async ({ params }) => {
   invariant(params.id, "Expected params.id");
-  return db.post.findUnique({ where: { id: params.id } });
+  const post = await db.post.findUnique({ where: { id: params.id } });
+
+  const resources = await db.resource.findMany({
+    where: { postId: params.id },
+  });
+
+  return { post, resources };
 };
 
 export default function EditPost() {
-  const post = useLoaderData<Post>();
-  return <EditContent content={post} />;
+  const { post, resources } = useLoaderData<{
+    post: Post;
+    resources: Resource[];
+  }>();
+  return <EditContent content={post} resources={resources} />;
 }

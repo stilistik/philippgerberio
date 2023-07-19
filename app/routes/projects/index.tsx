@@ -37,10 +37,7 @@ export default function Projects() {
       {projects.map((project) => {
         return (
           <Link to={`/projects/${project.slug}`} key={project.id}>
-            <ContentThumbnail
-              content={project}
-              frontImage={project.frontImage}
-            />
+            <ContentThumbnail content={project} />
           </Link>
         );
       })}
