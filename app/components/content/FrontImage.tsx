@@ -19,6 +19,7 @@ export const FrontImage = ({ resource }: { resource: Resource }) => {
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
+
     if (resource.blurHash && canvas && ctx) {
       const pixels = decode(resource.blurHash, canvas.width, canvas.height);
       const imageData = ctx.createImageData(canvas.width, canvas.height);
@@ -30,17 +31,14 @@ export const FrontImage = ({ resource }: { resource: Resource }) => {
   return (
     <div className="relative col-span-full h-[300px] md:h-[600px] rounded-lg shadow-lg overflow-hidden">
       <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center"
+        className="absolute top-0 left-0 w-full h-full bg-cover bg-center z-10"
         style={{
           backgroundImage: `url(${resource.url})`,
           opacity: loaded ? 1 : 0,
           transition: "all 0.5s ease-in-out",
         }}
       />
-      <canvas
-        ref={canvasRef}
-        className="absolute top-0 left-0 w-full h-full -z-10"
-      />
+      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />
     </div>
   );
 };
